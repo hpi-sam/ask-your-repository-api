@@ -1,11 +1,5 @@
-import os
-import signal
-from flask import Flask
-from flask import jsonify
+from application import create_app
 
-app = Flask(__name__)
-
-signal.signal(signal.SIGINT, lambda s, f: os._exit(0))
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
+# Call the Application Factory function to construct a Flask application instance
+# using the standard configuration defined in /instance/flask.cfg
+app = create_app('development_config.cfg')
