@@ -1,33 +1,42 @@
 import unittest
 from flask import jsonify, current_app
 from application import artefacts
-import pytest
+import datetime
+from mock_elasticsearch import ElasticMock
 
-@pytest.fixture
-def populate_elasticsearc():
-    current_app.es.index(index="artefact", doc_type="image", id=1234, body={"text": "cat, tiger, big, red", "file_url": "cat.png"})
-    current_app.es.index(index="artefact", doc_type="image", id=1235, body={"text": "yellow, cat", "file_url": "another_cat.png"})
+def test_artefacts_index_without_params(test_client):
+    current_app.es = ElasticMock(function="search", return_value={"hits":{"hits":[]}})
 
-def test_artefacts_index_without_params(test_client, populate_elasticsearc):
-    response = test_client.get("/artefacts", json={"type": 'image', "search": ""})
-
-    print(response.json)
-    assert response.status_code == 200
-    assert response.json["hits"]["hits"][0]["_id"] == 1234 and response.json["hits"]["hits"][1]["_id"] == 1235
-
-def test_artefacts_index_with_params(test_client, populate_elasticsearc):
     response = test_client.get("/artefacts", json={"type": 'image', "search": ""})
 
     assert response.status_code == 200
-    assert response.json["hits"]["hits"][0]["_source"]["file_url"] == "cat.png"
-    assert response.json["hits"]["hits"][0]["_source"]["text"] == "cat, tiger, big, red"
+
+def test_artefacts_index_with_range(test_client):
+    current_app.es = ElasticMock(function="search", return_value={"hits":{"hits":[]}})
+
+    response = test_client.get("/artefacts", json={
+        "type": 'image', 
+        "date_range": {
+            "start_date": (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat(),
+            "end_date": (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
+        },
+        "search": ""})
+
+    assert response.status_code == 200
+
+def test_artefacts_index_with_params(test_client):
+    current_app.es = ElasticMock(function="search", return_value={"hits":{"hits":[]}})
+
+    response = test_client.get("/artefacts", json={"type": 'image', "search": "class diagram"})
+
+    assert response.status_code == 200
 
 
 def test_artefacts_create(test_client):
-    current_app.es.index(index="artefact", doc_type="image", id=1234, body={"text": "cat, tiger, big, red", "file_url": "cat.png"})
+    current_app.es = ElasticMock(function="index", return_value={"result":"created"})
 
-    response = test_client.post("/artefacts", json={"type": 'image', "tags":"yellow, cat", "file_url": "another_cat.pn"})
+    response = test_client.post("/artefacts", json={"id":"1","type": 'image', "tags":"uml, class diagram, architecture", "file_url": "class_diagram.png"})
 
     assert response.status_code == 200
-    assert response.json["created"] == True
+    assert response.json["result"] == "created"
 
