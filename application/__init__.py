@@ -1,9 +1,8 @@
 from flask import Flask
 from elasticsearch import Elasticsearch
 import os
-import signal
-
-signal.signal(signal.SIGINT, lambda s, f: os._exit(0))
+from os import popen
+import subprocess
 
 ######################################
 #### Application Factory Function ####
@@ -12,7 +11,7 @@ signal.signal(signal.SIGINT, lambda s, f: os._exit(0))
 def create_app(config_filename=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_pyfile(config_filename)
-    app.es = Elasticsearch(hosts=[app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
+    app.es = Elasticsearch(app.config['ELASTICSEARCH_URL']) if app.config['ELASTICSEARCH_URL'] else None
     register_blueprints(app)
     return app
 
