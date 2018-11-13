@@ -16,8 +16,8 @@ def index(params):
         doc_type=params["type"],
         body={
             "sort" : [
-                { "created_at" : { "order": "desc"}},
-                "_score"
+                "_score",
+                { "created_at" : { "order": "desc"}}
             ],
             "query": {
                 "bool": {
