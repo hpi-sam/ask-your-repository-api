@@ -15,8 +15,6 @@ def test_client(request):
 
     testing_client = flask_app.test_client()
 
-    print(request.config.getoption('--with-db'))
-
     testing_client.use_db = request.config.getoption('--with-db')
     # Establish an application context before running the tests.
     ctx = flask_app.app_context()

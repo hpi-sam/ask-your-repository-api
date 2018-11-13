@@ -8,10 +8,10 @@ load_dotenv()
 
 @pytest.fixture
 def es_fixture(test_client):
-    print(test_client.use_db)
     if not test_client.use_db:
         yield None
         return False
+
     es = Elasticsearch(os.environ.get('ES_TEST_URL'))
 
     es.indices.delete(index="artefact", ignore=[400,404])
@@ -50,7 +50,7 @@ def es_fixture(test_client):
 
 
 def test_index(test_client, es_fixture):
-    if not test_client.use_db:
+    if not current_app.es:
         return False
 
     response = es_fixture.index(index="artefact", doc_type="image", body={
@@ -59,11 +59,10 @@ def test_index(test_client, es_fixture):
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=14)).isoformat()
     })
 
-    print(response)
     assert response["result"] == "created"
 
 def test_search_with_daterange(test_client, es_fixture):
-    if not test_client.use_db:
+    if not current_app.es:
         return False
 
     response = es_fixture.search(
@@ -91,12 +90,11 @@ def test_search_with_daterange(test_client, es_fixture):
             }
         })
 
-    print(response)
     assert len(response["hits"]["hits"]) == 1 and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png"
 
     
 def test_search_with_text(test_client, es_fixture):
-    if not test_client.use_db:
+    if not current_app.es:
         return False
 
     response = es_fixture.search(
@@ -121,11 +119,10 @@ def test_search_with_text(test_client, es_fixture):
             }
         })
 
-    print(response)
     assert len(response["hits"]["hits"]) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "class_diagram.png"
 
 def test_search_all(test_client, es_fixture):
-    if not test_client.use_db:
+    if not current_app.es:
         return False
 
     response = es_fixture.search(
@@ -150,5 +147,4 @@ def test_search_all(test_client, es_fixture):
             }
         })
 
-    print(response)
     assert len(response["hits"]["hits"]) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png"

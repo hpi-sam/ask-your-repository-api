@@ -15,7 +15,7 @@ def test_index_without_elasticsearch(test_client):
 def test_index_with_elasticsearch(test_client):
     if not test_client.use_db:
         return False
-
+    
     current_app.es = Elasticsearch(os.environ.get('ES_TEST_URL'))
 
     response = test_client.get("/")
