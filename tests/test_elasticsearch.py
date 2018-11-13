@@ -1,6 +1,7 @@
 import datetime
 import pytest
 from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError
 from flask import current_app
 import os
 from dotenv import load_dotenv
@@ -31,13 +32,13 @@ def es_fixture(test_client):
         }
     })
 
-    es.index(index="artefact", doc_type="image", refresh=True, body={
+    es.index(index="artefact", doc_type="image", id="1", refresh=True, body={
         "tags": "class diagram, uml, architecture", 
         "file_url": "class_diagram.png",
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=14)).isoformat()
     })
 
-    es.index(index="artefact", doc_type="image", refresh=True, body={
+    es.index(index="artefact", doc_type="image", id="2", refresh=True, body={
         "tags": "use case diagram, uml, szenario", 
         "file_url": "use_case_diagram.png",
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=7)).isoformat()
@@ -48,7 +49,24 @@ def es_fixture(test_client):
     es.indices.delete(index="artefact")
 
 
+def test_get_existing(test_client, es_fixture):
+    response = es_fixture.get(
+        index="artefact",
+        doc_type="image",
+        id="1"
+    )
 
+    assert response["found"] == True
+    assert response["_source"]["file_url"] == "class_diagram.png"
+
+def test_get_missing(test_client, es_fixture):
+    with pytest.raises(NotFoundError):
+        es_fixture.get(
+            index="artefact",
+            doc_type="image",
+            id="3"
+        )
+    
 def test_index(test_client, es_fixture):
     if not current_app.es:
         return False
@@ -148,3 +166,47 @@ def test_search_all(test_client, es_fixture):
         })
 
     assert len(response["hits"]["hits"]) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png"
+
+
+def test_update_existing(test_client, es_fixture):
+    response = es_fixture.update(
+        index="artefact",
+        doc_type="image",
+        id="1",
+        body={
+            "doc": {
+                "file_url": "class_diagram_2.png"
+            }
+        }
+    )
+
+    assert response["result"] == "updated"
+
+def test_update_missing(test_client, es_fixture):
+    with pytest.raises(NotFoundError):
+        es_fixture.update(
+            index="artefact",
+            doc_type="image",
+            id="3",
+            body={
+                "doc": {
+                    "file_url": "class_diagram_2.png"
+                }
+            }
+        )
+
+def test_delete_existing(test_client, es_fixture):
+    response = es_fixture.delete(
+        index="artefact",
+        doc_type="image",
+        id="1"
+    )
+    assert response["result"] == "deleted"
+
+def test_delete_missing(test_client, es_fixture):
+    with pytest.raises(NotFoundError):
+        es_fixture.delete(
+            index="artefact",
+            doc_type="image",
+            id="3"
+        )        
