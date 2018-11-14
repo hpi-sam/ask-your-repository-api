@@ -12,6 +12,7 @@ def es_mock():
     yield current_app.es
     current_app.es = es
 
+
 def test_artefacts_show(test_client, es_mock):
     es_mock.mock(function="get", return_value={"_source":{"class_diagram.png":""}})
 
@@ -27,6 +28,7 @@ def test_artefacts_index_without_params(test_client, es_mock):
 
     assert response.status_code == 200
 
+
 def test_artefacts_index_with_range(test_client, es_mock):
     es_mock.mock(function="search", return_value={"hits":{"hits":[]}})
 
@@ -38,6 +40,7 @@ def test_artefacts_index_with_range(test_client, es_mock):
         "search": ""})
 
     assert response.status_code == 200
+
 
 def test_artefacts_index_with_params(test_client, es_mock):
     es_mock.mock(function="search", return_value={"hits":{"hits":[]}})
@@ -55,12 +58,14 @@ def test_artefacts_create(test_client, es_mock):
     assert response.status_code == 201
     assert response.json["result"] == "created"
 
+
 def test_artefacts_update(test_client, es_mock):
     es_mock.mock(function="update", return_value={"result":"updated"})
 
     response = test_client.put("/artefacts/image/1", json={"tags":"uml, class diagram, architecture"})
 
     assert response.status_code == 204
+
 
 def test_artefacts_delete(test_client, es_mock):
     es_mock.mock(function="delete", return_value={"result":"deleted"})

@@ -9,6 +9,14 @@ def show(type,id):
     return make_response(jsonify(response), status)
 
 
+@artefacts_blueprint.route('/artefacts/<string:type>', methods=['GET'])
+def index(type):
+    params = request.json or {}
+    params["type"] = type
+    response, status = artefacts_controller.index(params)
+    return make_response(jsonify(response), status)
+
+
 @artefacts_blueprint.route('/artefacts/<string:type>', methods=['POST'])
 def create(type):
     params = request.json
@@ -16,12 +24,6 @@ def create(type):
     response, status = artefacts_controller.create(params)
     return make_response(jsonify(response), status)
 
-@artefacts_blueprint.route('/artefacts/<string:type>', methods=['GET'])
-def index(type):
-    params = request.json
-    params["type"] = type
-    response, status = artefacts_controller.index(params)
-    return make_response(jsonify(response), status)
 
 @artefacts_blueprint.route('/artefacts/<string:type>/<string:id>', methods=['PUT'])
 def update(type, id):
