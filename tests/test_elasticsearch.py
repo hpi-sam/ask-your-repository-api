@@ -50,6 +50,9 @@ def es_fixture(test_client):
 
 
 def test_get_existing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+
     response = es_fixture.get(
         index="artefact",
         doc_type="image",
@@ -60,6 +63,9 @@ def test_get_existing(test_client, es_fixture):
     assert response["_source"]["file_url"] == "class_diagram.png"
 
 def test_get_missing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+
     with pytest.raises(NotFoundError):
         es_fixture.get(
             index="artefact",
@@ -169,6 +175,9 @@ def test_search_all(test_client, es_fixture):
 
 
 def test_update_existing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+
     response = es_fixture.update(
         index="artefact",
         doc_type="image",
@@ -183,6 +192,9 @@ def test_update_existing(test_client, es_fixture):
     assert response["result"] == "updated"
 
 def test_update_missing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+
     with pytest.raises(NotFoundError):
         es_fixture.update(
             index="artefact",
@@ -196,6 +208,9 @@ def test_update_missing(test_client, es_fixture):
         )
 
 def test_delete_existing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+
     response = es_fixture.delete(
         index="artefact",
         doc_type="image",
@@ -204,6 +219,9 @@ def test_delete_existing(test_client, es_fixture):
     assert response["result"] == "deleted"
 
 def test_delete_missing(test_client, es_fixture):
+    if not current_app.es:
+        return False
+        
     with pytest.raises(NotFoundError):
         es_fixture.delete(
             index="artefact",

@@ -9,6 +9,8 @@ Flask = "==1.0.2"
 coverage = "*"
 python-coveralls = "*"
 pylint = "*"
+elasticsearch = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

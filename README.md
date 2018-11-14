@@ -7,11 +7,11 @@
   - At the end of installation allow usage of paths longer than 260 characters
   - See: [Setup Python](https://docs.python.org/3/using/windows.html)
 
-- Setup Flask:
-  - In project folder run `py -m venv venv`
-  - Run: `venv\Scripts\activate`
-  - Add: *path-to-your-project*/venv/Scripts to your path variables
-  - [Setup Flask](http://flask.pocoo.org/docs/1.0/installation/)
+- Setup Pipenv and flask:
+  - [Install Pipenv](https://pipenv.readthedocs.io/en/latest/)
+  - In project folder run `pipenv install`
+
+- Copy .env.example into new .env file
 
 - Install Elasticsearch
   - [Setup Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
@@ -30,17 +30,15 @@
     `./bin/elasticsearch-service.bat elasticsearch-test`
 
 # Install dependencies  
-- Run: `pip install -r requirements.txt`
-- If you add additional dependencies, add them to requirements.txt
-  and after installing them run `pip freeze > requirements-freeze.txt`
+- Run: `pipenv install`
 
 # Setup database
-- Run: `python utils/setup_elasticsearch.py`
+- Run: `pipenv run python utils/setup_elasticsearch.py`
 
 # Running tests
-- Run: `python -m pytest -v tests` for testing without elasticsearch
-- Run: `python -m pytest -v tests --use-db` for testing with elasticsearch
+- Run: `pipenv run python -m pytest -v tests` for testing without elasticsearch
+- Run: `pipenv run python -m pytest -v tests --use-db` for testing with elasticsearch
 - All calls to elasticsearch must by mocked **but** all elasticsearch queries must be tested in test_elasticsearch.py
 
 # Start service
-- Run: `flask run`
+- Run: `pipenv run flask run`
