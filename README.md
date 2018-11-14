@@ -1,3 +1,5 @@
+# Elija
+
 # Setup service
 - Install Python 3.7
 - On Windows:
@@ -31,6 +33,9 @@
 - Run: `pip install -r requirements.txt`
 - If you add additional dependencies, add them to requirements.txt
   and after installing them run `pip freeze > requirements-freeze.txt`
+
+# Setup database
+- Run: `python utils/setup_elasticsearch.py`
 
 # Running tests
 - Run: `python -m pytest -v tests` for testing without elasticsearch

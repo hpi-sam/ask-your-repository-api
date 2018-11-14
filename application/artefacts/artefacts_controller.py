@@ -1,20 +1,22 @@
 from flask import current_app
 import uuid
 import datetime
-from elasticsearch.exceptions import NotFoundError
+from elasticsearch.exceptions import NotFoundError, ConflictError
 
 def show(params): 
     if not current_app.es:
         return {"error":"search engine not available"}, 503
+    
     try:
         result = current_app.es.get(
-            index="artefacts",
+            index="artefact",
             doc_type=params["type"],
             id=params["id"]
         )
         return result, 200
     except NotFoundError:
         return {"error":"not found"}, 404
+
 
 def index(params):
     if not current_app.es:
@@ -41,26 +43,36 @@ def index(params):
                         }
                     },        
                     "should": {
-                        "match": {"tags": params["search"]}
+                        "match": {"tags": params.get("search", "")}
                     } 
                 }   
             }
         })
     return result["hits"]["hits"], 200
 
+
 def create(params):
     if not current_app.es:
         return {"error":"search engine not available"}, 503
+
     date = datetime.datetime.now().isoformat()
-    return current_app.es.create(
-        index="artefact", 
-        doc_type=params["type"], 
-        id=params["id"], 
-        body={
-            "tags": params["tags"], 
-            "file_url": params["file_url"],
-            "created_at": date
-        }), 201
+    body = {
+        "tags": params["tags"], 
+        "file_url": params["file_url"],
+        "created_at": date
+    }
+
+    try:
+        result = current_app.es.create(
+            index="artefact", 
+            doc_type=params["type"], 
+            id=params["id"], 
+            body=body)
+        result["_source"] = body
+        return result, 201
+    except ConflictError:
+        return {"error":"document already exists"}, 404
+
 
 def update(params):
     if not current_app.es:
@@ -82,9 +94,11 @@ def update(params):
     except NotFoundError:
         return {"error":"not found"}, 404     
 
+
 def delete(params):
     if not current_app.es:
         return {"error":"search engine not available"}, 503
+    
     try:
         current_app.es.delete(
             index="artefact",
