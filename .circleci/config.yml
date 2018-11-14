@@ -1,0 +1,51 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: sudo pip install pipenv && pipenv install
+      - run: pipenv run coverage run -m pytest -v tests
+      - run: pipenv run coveralls
+  lint:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: sudo pip install pipenv && pipenv install
+      - run: pipenv run pylint application/ tests/
+  build:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run: docker build -t bp2018hg1/elija:$CIRCLE_BUILD_NUM -t bp2018hg1/elija:latest .
+      - run: docker push bp2018hg1/elija:$CIRCLE_BUILD_NUM
+      - run: docker push bp2018hg1/elija:latest
+  deploy:
+    docker:
+      - image: dtzar/helm-kubectl:2.11.0
+    steps:
+      - run: kubectl set image deployment elija elija=bp2018hg1/elija:$CIRCLE_BUILD_NUM --server=$KUBERNETES_SERVER --token=$KUBERNETES_BEARER_TOKEN
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - test
+      - lint
+      - build:
+          requires:
+            - test
+            - lint
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
