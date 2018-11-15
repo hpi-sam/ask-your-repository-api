@@ -38,24 +38,8 @@ def index(params):
     result = current_app.es.search(
         index="artefact",
         doc_type=params["type"],
-        body={
-            "sort": [
-                "_score",
-                {"created_at": {"order": "desc"}}
-            ],
-            "query": {
-                "bool": {
-                    "filter": {
-                        "range": {
-                            "created_at": date_range
-                        }
-                    },
-                    "should": {
-                        "match": {"tags": params.get("search", "")}
-                    }
-                }
-            }
-        })
+        body=search_body_helper(params.get("search", ""), date_range))
+
     return result["hits"]["hits"], 200
 
 
@@ -123,3 +107,27 @@ def delete(params):
         return '', 204
     except NotFoundError:
         return {"error": "not found"}, 404
+
+
+def search_body_helper(search, daterange):
+    """ Defines a common body for search function """
+
+    body = {
+        "sort": [
+            "_score",
+            {"created_at": {"order": "desc"}}
+        ],
+        "query": {
+            "bool": {
+                "filter": {
+                    "range": {
+                        "created_at": daterange
+                    }
+                },
+                "should": {
+                    "match": {"tags": search}
+                }
+            }
+        }
+    }
+    return body
