@@ -22,14 +22,14 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker build -t bp2018hg1/elija:$CIRCLE_BUILD_NUM -t bp2018hg1/elija:latest .
-      - run: docker push bp2018hg1/elija:$CIRCLE_BUILD_NUM
+      - run: docker build -t bp2018hg1/elija:$CIRCLE_WORKFLOW_ID -t bp2018hg1/elija:latest .
+      - run: docker push bp2018hg1/elija:$CIRCLE_WORKFLOW_ID
       - run: docker push bp2018hg1/elija:latest
   deploy:
     docker:
       - image: dtzar/helm-kubectl:2.11.0
     steps:
-      - run: kubectl set image deployment elija elija=bp2018hg1/elija:$CIRCLE_BUILD_NUM --server=$KUBERNETES_SERVER --token=$KUBERNETES_BEARER_TOKEN
+      - run: kubectl set image deployment elija elija=bp2018hg1/elija:$CIRCLE_WORKFLOW_ID --server=$KUBERNETES_SERVER --token=$KUBERNETES_BEARER_TOKEN
 workflows:
   version: 2
   pipeline:
