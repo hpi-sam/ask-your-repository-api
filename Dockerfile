@@ -7,4 +7,6 @@ WORKDIR /src
 
 RUN pipenv install --system --deploy
 
-CMD [ "python", "app.py" ]
+EXPOSE 5000
+
+CMD [ "flask", "run" ]
