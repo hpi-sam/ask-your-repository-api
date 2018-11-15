@@ -22,14 +22,15 @@
   - Copy the contents of elasticsearch.example.yml in this repository into elasticsearch.yml in config.development
   - Make a new directory named config.test and copy the contents of config.development into it
   - Edit the elasticsearch.yml by replacing every occurence of development with test and **change the port to 9400**
-  - Start both services by running 
+  - Start both services by running
     `ES_PATH_CONF=config.development ./bin/elasticsearch-service.bat install elasticsearch-development`
     `./bin/elasticsearch-service.bat start elasticsearch-development`
-    and 
-    `ES_PATH_CONF=config.test ./bin/elasticsearch-service.bat elasticsearch-test`
-    `./bin/elasticsearch-service.bat elasticsearch-test`
+    and
+    `ES_PATH_CONF=config.test ./bin/elasticsearch-service.bat install elasticsearch-test`
+    `./bin/elasticsearch-service.bat start elasticsearch-test`
+  - Unfortunately sometimes a service crashes, then you neet to run both commands again
 
-# Install dependencies  
+# Install dependencies
 - Run: `pipenv install`
 
 # Setup database

@@ -1,20 +1,13 @@
-import unittest
-from flask import jsonify, current_app
-from application import artefacts
+"""
+Define all methods for unit_testing the artefacts blueprint.
+"""
+
 import datetime
-from .mock_elasticsearch import ElasticMock
-import pytest
-
-@pytest.fixture
-def es_mock():
-    es = current_app.es
-    current_app.es = ElasticMock()
-    yield current_app.es
-    current_app.es = es
-
 
 def test_artefacts_show(test_client, es_mock):
-    es_mock.mock(function="get", return_value={"_source":{"class_diagram.png":""}})
+    """ GET /artefact/{type}/{id} """
+
+    es_mock.mock(function_name="get", return_value={"_source":{"class_diagram.png":""}})
 
     response = test_client.get("/artefacts/image/1")
 
@@ -22,7 +15,9 @@ def test_artefacts_show(test_client, es_mock):
 
 
 def test_artefacts_index_without_params(test_client, es_mock):
-    es_mock.mock(function="search", return_value={"hits":{"hits":[]}})
+    """ GET /artefacts/{type} without any parameters """
+
+    es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
     response = test_client.get("/artefacts/image", json={"search": ""})
 
@@ -30,7 +25,9 @@ def test_artefacts_index_without_params(test_client, es_mock):
 
 
 def test_artefacts_index_with_range(test_client, es_mock):
-    es_mock.mock(function="search", return_value={"hits":{"hits":[]}})
+    """ GET /artefacts/{type} with range paramters """
+
+    es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
     response = test_client.get("/artefacts/image", json={
         "date_range": {
@@ -43,7 +40,9 @@ def test_artefacts_index_with_range(test_client, es_mock):
 
 
 def test_artefacts_index_with_params(test_client, es_mock):
-    es_mock.mock(function="search", return_value={"hits":{"hits":[]}})
+    """ GET /artefacts/{type} with search parameters """
+
+    es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
     response = test_client.get("/artefacts/image", json={"search": "class diagram"})
 
@@ -51,24 +50,35 @@ def test_artefacts_index_with_params(test_client, es_mock):
 
 
 def test_artefacts_create(test_client, es_mock):
-    es_mock.mock(function="create", return_value={"result":"created"})
+    """ POST /artefacts/{type} """
 
-    response = test_client.post("/artefacts/image", json={"id":"1", "tags":"uml, class diagram, architecture", "file_url": "class_diagram.png"})
+    es_mock.mock(function_name="create", return_value={"result":"created"})
+
+    response = test_client.post("/artefacts/image",
+                                json={
+                                    "id":"1",
+                                    "tags":"uml, class diagram, architecture",
+                                    "file_url": "class_diagram.png"})
 
     assert response.status_code == 201
     assert response.json["result"] == "created"
 
 
 def test_artefacts_update(test_client, es_mock):
-    es_mock.mock(function="update", return_value={"result":"updated"})
+    """ PUT /artefacts/{type}/{id} """
 
-    response = test_client.put("/artefacts/image/1", json={"tags":"uml, class diagram, architecture"})
+    es_mock.mock(function_name="update", return_value={"result":"updated"})
+
+    response = test_client.put("/artefacts/image/1",
+                               json={"tags":"uml, class diagram, architecture"})
 
     assert response.status_code == 204
 
 
 def test_artefacts_delete(test_client, es_mock):
-    es_mock.mock(function="delete", return_value={"result":"deleted"})
+    """ DELETE /artefacts/{type}/{id} """
+
+    es_mock.mock(function_name="delete", return_value={"result":"deleted"})
 
     response = test_client.delete("/artefacts/image/1")
 

@@ -1,57 +1,18 @@
+"""
+Defines all elasticsearch call tests.
+Only runs when command --with-db is set.
+"""
+
 import datetime
 import pytest
-from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError
 from flask import current_app
-import os
-from dotenv import load_dotenv
-load_dotenv()
 
-@pytest.fixture
-def es_fixture(test_client):
-    if not test_client.use_db:
-        yield None
-        return False
+def test_get_existing(es_fixture):
+    """ Tests valid elasticsearch.get() """
 
-    es = Elasticsearch(os.environ.get('ES_TEST_URL'))
-
-    es.indices.delete(index="artefact", ignore=[400,404])
-
-    es.indices.create(index="artefact", body= {
-        "mappings": {
-            "image": { 
-                "properties": { 
-                    "tags": { "type": "text"  }, 
-                    "image_url": { "type": "text"  },
-                    "created_at":  {
-                        "type":   "date", 
-                        "format": "strict_date_optional_time||epoch_millis"
-                    }
-                }
-            }
-        }
-    })
-
-    es.index(index="artefact", doc_type="image", id="1", refresh=True, body={
-        "tags": "class diagram, uml, architecture", 
-        "file_url": "class_diagram.png",
-        "created_at": (datetime.datetime.now() - datetime.timedelta(days=14)).isoformat()
-    })
-
-    es.index(index="artefact", doc_type="image", id="2", refresh=True, body={
-        "tags": "use case diagram, uml, szenario", 
-        "file_url": "use_case_diagram.png",
-        "created_at": (datetime.datetime.now() - datetime.timedelta(days=7)).isoformat()
-    })
-
-    yield es
-
-    es.indices.delete(index="artefact")
-
-
-def test_get_existing(test_client, es_fixture):
     if not current_app.es:
-        return False
+        return
 
     response = es_fixture.get(
         index="artefact",
@@ -59,12 +20,15 @@ def test_get_existing(test_client, es_fixture):
         id="1"
     )
 
-    assert response["found"] == True
+    assert response["found"]
     assert response["_source"]["file_url"] == "class_diagram.png"
 
-def test_get_missing(test_client, es_fixture):
+
+def test_get_missing(es_fixture):
+    """ Tests invalid elasticsearch.get() """
+
     if not current_app.es:
-        return False
+        return
 
     with pytest.raises(NotFoundError):
         es_fixture.get(
@@ -72,62 +36,75 @@ def test_get_missing(test_client, es_fixture):
             doc_type="image",
             id="3"
         )
-    
-def test_index(test_client, es_fixture):
-    if not current_app.es:
-        return False
 
-    response = es_fixture.index(index="artefact", doc_type="image", body={
-        "text": "class diagram, uml, architecture", 
+
+def test_create(es_fixture):
+    """ Tests valid elasticsearch.create() """
+
+    if not current_app.es:
+        return
+
+    response = es_fixture.create(index="artefact", doc_type="image", body={
+        "text": "class diagram, uml, architecture",
+        "id": "3",
         "file_url": "class_diagram.png",
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=14)).isoformat()
     })
 
     assert response["result"] == "created"
 
-def test_search_with_daterange(test_client, es_fixture):
+
+def test_search_with_daterange(es_fixture):
+    """ Tests valid elasticsearch.search() with daterange """
+
     if not current_app.es:
-        return False
+        return
+
+    start_time = (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat()
+    end_time = (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
 
     response = es_fixture.search(
-        index="artefact", 
+        index="artefact",
         doc_type="image",
         body={
-            "sort" : [
+            "sort": [
                 "_score",
-                { "created_at" : { "order": "desc"}}
+                {"created_at": {"order": "desc"}}
             ],
             "query": {
                 "bool": {
                     "filter": {
                         "range": {
                             "created_at": {
-                                "gte": (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat(),
-                                "lte": (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
+                                "gte": start_time,
+                                "lte": end_time
                             }
                         }
-                    },        
+                    },
                     "should": {
                         "match": {"tags": ""}
-                    } 
-                }   
+                    }
+                }
             }
         })
 
-    assert len(response["hits"]["hits"]) == 1 and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png"
+    assert (len(response["hits"]["hits"]) == 1
+            and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png")
 
-    
-def test_search_with_text(test_client, es_fixture):
+
+def test_search_with_text(es_fixture):
+    """ Tests valid elasticsearch.search() with search tesxt """
+
     if not current_app.es:
-        return False
+        return
 
     response = es_fixture.search(
-        index="artefact", 
-        doc_type="image", 
+        index="artefact",
+        doc_type="image",
         body={
-            "sort" : [
+            "sort": [
                 "_score",
-                { "created_at" : { "order": "desc"}}
+                {"created_at": {"order": "desc"}}
             ],
             "query": {
                 "bool": {
@@ -135,27 +112,31 @@ def test_search_with_text(test_client, es_fixture):
                         "range": {
                             "created_at": {}
                         }
-                    },        
+                    },
                     "should": {
                         "match": {"tags": "Class diagram"}
-                    } 
-                }   
+                    }
+                }
             }
         })
 
-    assert len(response["hits"]["hits"]) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "class_diagram.png"
+    assert len(response["hits"]["hits"]
+               ) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "class_diagram.png"
 
-def test_search_all(test_client, es_fixture):
+
+def test_search_all(es_fixture):
+    """ Tests valid elasticsearch.search() without parameters """
+
     if not current_app.es:
-        return False
+        return
 
     response = es_fixture.search(
-        index="artefact", 
-        doc_type="image", 
+        index="artefact",
+        doc_type="image",
         body={
-            "sort" : [
+            "sort": [
                 "_score",
-                { "created_at" : { "order": "desc"}}
+                {"created_at": {"order": "desc"}}
             ],
             "query": {
                 "bool": {
@@ -163,20 +144,23 @@ def test_search_all(test_client, es_fixture):
                         "range": {
                             "created_at": {}
                         }
-                    },        
+                    },
                     "should": {
                         "match": {"tags": ""}
-                    } 
-                }   
+                    }
+                }
             }
         })
 
-    assert len(response["hits"]["hits"]) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png"
+    assert (len(response["hits"]["hits"]) == 2
+            and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png")
 
 
-def test_update_existing(test_client, es_fixture):
+def test_update_existing(es_fixture):
+    """ Tests valid elasticsearch.update() """
+
     if not current_app.es:
-        return False
+        return
 
     response = es_fixture.update(
         index="artefact",
@@ -191,9 +175,12 @@ def test_update_existing(test_client, es_fixture):
 
     assert response["result"] == "updated"
 
-def test_update_missing(test_client, es_fixture):
+
+def test_update_missing(es_fixture):
+    """ Tests invalid elasticsearch.update() """
+
     if not current_app.es:
-        return False
+        return
 
     with pytest.raises(NotFoundError):
         es_fixture.update(
@@ -207,9 +194,12 @@ def test_update_missing(test_client, es_fixture):
             }
         )
 
-def test_delete_existing(test_client, es_fixture):
+
+def test_delete_existing(es_fixture):
+    """ Tests valid elasticsearch.delete() """
+
     if not current_app.es:
-        return False
+        return
 
     response = es_fixture.delete(
         index="artefact",
@@ -218,13 +208,16 @@ def test_delete_existing(test_client, es_fixture):
     )
     assert response["result"] == "deleted"
 
-def test_delete_missing(test_client, es_fixture):
+
+def test_delete_missing(es_fixture):
+    """ Tests invalid elasticsearch.delete() """
+
     if not current_app.es:
-        return False
-        
+        return
+
     with pytest.raises(NotFoundError):
         es_fixture.delete(
             index="artefact",
             doc_type="image",
             id="3"
-        )        
+        )
