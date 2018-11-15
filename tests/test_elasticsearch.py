@@ -7,6 +7,7 @@ import datetime
 import pytest
 from elasticsearch.exceptions import NotFoundError
 from flask import current_app
+from application.artefacts.artefacts_controller import search_body_helper
 
 def test_get_existing(es_fixture):
     """ Tests valid elasticsearch.get() """
@@ -168,26 +169,3 @@ def test_delete_missing(es_fixture):
             doc_type="image",
             id="3"
         )
-
-def search_body_helper(tags, daterange):
-    """ Defines a common body for search function """
-
-    body = {
-        "sort": [
-            "_score",
-            {"created_at": {"order": "desc"}}
-        ],
-        "query": {
-            "bool": {
-                "filter": {
-                    "range": {
-                        "created_at": daterange
-                    }
-                },
-                "should": {
-                    "match": {"tags": tags}
-                }
-            }
-        }
-    }
-    return body
