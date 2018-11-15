@@ -62,31 +62,12 @@ def test_search_with_daterange(es_fixture):
 
     start_time = (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat()
     end_time = (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
+    daterange = {"gte": start_time, "lte": end_time}
 
     response = es_fixture.search(
         index="artefact",
         doc_type="image",
-        body={
-            "sort": [
-                "_score",
-                {"created_at": {"order": "desc"}}
-            ],
-            "query": {
-                "bool": {
-                    "filter": {
-                        "range": {
-                            "created_at": {
-                                "gte": start_time,
-                                "lte": end_time
-                            }
-                        }
-                    },
-                    "should": {
-                        "match": {"tags": ""}
-                    }
-                }
-            }
-        })
+        body=search_body_helper("", daterange))
 
     assert (len(response["hits"]["hits"]) == 1
             and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png")
@@ -101,24 +82,7 @@ def test_search_with_text(es_fixture):
     response = es_fixture.search(
         index="artefact",
         doc_type="image",
-        body={
-            "sort": [
-                "_score",
-                {"created_at": {"order": "desc"}}
-            ],
-            "query": {
-                "bool": {
-                    "filter": {
-                        "range": {
-                            "created_at": {}
-                        }
-                    },
-                    "should": {
-                        "match": {"tags": "Class diagram"}
-                    }
-                }
-            }
-        })
+        body=search_body_helper("Class Diagram", {}))
 
     assert len(response["hits"]["hits"]
                ) == 2 and response["hits"]["hits"][0]["_source"]["file_url"] == "class_diagram.png"
@@ -133,24 +97,7 @@ def test_search_all(es_fixture):
     response = es_fixture.search(
         index="artefact",
         doc_type="image",
-        body={
-            "sort": [
-                "_score",
-                {"created_at": {"order": "desc"}}
-            ],
-            "query": {
-                "bool": {
-                    "filter": {
-                        "range": {
-                            "created_at": {}
-                        }
-                    },
-                    "should": {
-                        "match": {"tags": ""}
-                    }
-                }
-            }
-        })
+        body=search_body_helper("", {}))
 
     assert (len(response["hits"]["hits"]) == 2
             and response["hits"]["hits"][0]["_source"]["file_url"] == "use_case_diagram.png")
@@ -221,3 +168,26 @@ def test_delete_missing(es_fixture):
             doc_type="image",
             id="3"
         )
+
+def search_body_helper(tags, daterange):
+    """ Defines a common body for search function """
+
+    body = {
+        "sort": [
+            "_score",
+            {"created_at": {"order": "desc"}}
+        ],
+        "query": {
+            "bool": {
+                "filter": {
+                    "range": {
+                        "created_at": daterange
+                    }
+                },
+                "should": {
+                    "match": {"tags": tags}
+                }
+            }
+        }
+    }
+    return body
