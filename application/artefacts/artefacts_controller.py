@@ -1,12 +1,18 @@
-from flask import current_app
-import uuid
+"""
+Handles all logic of the artefacts api
+"""
+
 import datetime
+from flask import current_app
 from elasticsearch.exceptions import NotFoundError, ConflictError
 
-def show(params): 
+
+def show(params):
+    "Logic for getting a single artefact"
+
     if not current_app.es:
-        return {"error":"search engine not available"}, 503
-    
+        return {"error": "search engine not available"}, 503
+
     try:
         result = current_app.es.get(
             index="artefact",
@@ -15,13 +21,15 @@ def show(params):
         )
         return result, 200
     except NotFoundError:
-        return {"error":"not found"}, 404
+        return {"error": "not found"}, 404
 
 
 def index(params):
+    "Logic for querying several artefacts"
+
     if not current_app.es:
-        return {"error":"search engine not available"}, 503
-    
+        return {"error": "search engine not available"}, 503
+
     date_range = {
         "gte": params["date_range"]["start_date"],
         "lte": params["date_range"]["end_date"]
@@ -31,9 +39,9 @@ def index(params):
         index="artefact",
         doc_type=params["type"],
         body={
-            "sort" : [
+            "sort": [
                 "_score",
-                { "created_at" : { "order": "desc"}}
+                {"created_at": {"order": "desc"}}
             ],
             "query": {
                 "bool": {
@@ -41,46 +49,52 @@ def index(params):
                         "range": {
                             "created_at": date_range
                         }
-                    },        
+                    },
                     "should": {
                         "match": {"tags": params.get("search", "")}
-                    } 
-                }   
+                    }
+                }
             }
         })
     return result["hits"]["hits"], 200
 
 
 def create(params):
+    "Logic for creating an artefact"
+
     if not current_app.es:
-        return {"error":"search engine not available"}, 503
+        return {"error": "search engine not available"}, 503
 
     date = datetime.datetime.now().isoformat()
     body = {
-        "tags": params["tags"], 
+        "tags": params["tags"],
         "file_url": params["file_url"],
         "created_at": date
     }
 
     try:
         result = current_app.es.create(
-            index="artefact", 
-            doc_type=params["type"], 
-            id=params["id"], 
+            index="artefact",
+            doc_type=params["type"],
+            id=params["id"],
             body=body)
         result["_source"] = body
         return result, 201
     except ConflictError:
-        return {"error":"document already exists"}, 404
+        return {"error": "document already exists"}, 404
 
 
 def update(params):
+    "Logic for updating an artefact"
+
     if not current_app.es:
-        return {"error":"search engine not available"}, 503
-    
+        return {"error": "search engine not available"}, 503
+
     update_params = {}
-    if "tags" in params: update_params["tags"] = params["tags"] 
-    if "image_url" in params: update_params["file_url"] = params["file_url"]
+    if "tags" in params:
+        update_params["tags"] = params["tags"]
+    if "image_url" in params:
+        update_params["file_url"] = params["file_url"]
 
     try:
         current_app.es.update(
@@ -88,17 +102,19 @@ def update(params):
             doc_type=params["type"],
             id=params["id"],
             body={
-                "doc" : update_params
+                "doc": update_params
             })
         return '', 204
     except NotFoundError:
-        return {"error":"not found"}, 404     
+        return {"error": "not found"}, 404
 
 
 def delete(params):
+    "Logic for deleting an artefact"
+
     if not current_app.es:
-        return {"error":"search engine not available"}, 503
-    
+        return {"error": "search engine not available"}, 503
+
     try:
         current_app.es.delete(
             index="artefact",
@@ -106,4 +122,4 @@ def delete(params):
             id=params["id"])
         return '', 204
     except NotFoundError:
-        return {"error":"not found"}, 404     
+        return {"error": "not found"}, 404

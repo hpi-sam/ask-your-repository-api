@@ -1,4 +1,13 @@
+"""
+Initialize artefacts blueprint
+"""
+
 from flask import Blueprint
-artefacts_blueprint = Blueprint('artefacts',__name__)
+
+artefact_blueprint = Blueprint('artefacts', __name__)
+
+#pylint: disable=wrong-import-position
 
 from . import artefacts_routes
+
+#pylint: enable=wrong-import-position
