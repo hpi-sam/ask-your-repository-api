@@ -2,7 +2,7 @@ import unittest
 from flask import jsonify, current_app
 from application import artefacts
 import datetime
-from mock_elasticsearch import ElasticMock
+from .mock_elasticsearch import ElasticMock
 import pytest
 
 @pytest.fixture
