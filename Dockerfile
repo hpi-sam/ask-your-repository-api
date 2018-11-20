@@ -9,4 +9,4 @@ RUN pipenv install --system --deploy
 
 EXPOSE 5000
 
-CMD [ "flask", "run" ]
+CMD [ "gunicorn", "app:app", "-b", ":5000" ]

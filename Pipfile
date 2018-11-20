@@ -11,6 +11,7 @@ python-coveralls = "*"
 pylint = "*"
 elasticsearch = "*"
 python-dotenv = "*"
+gunicorn = "*"
 
 [dev-packages]
 
