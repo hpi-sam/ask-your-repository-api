@@ -18,7 +18,7 @@
   - Don't forget to set JAVA_HOME path to the path of java jdk
 
 - Setup elasticsearch development and testing
-  - Rename config directory to config.development
+  - Rename config directory to config.development in your elasticsearch installation directory
   - Copy the contents of elasticsearch.example.yml in this repository into elasticsearch.yml in config.development
   - Make a new directory named config.test and copy the contents of config.development into it
   - Edit the elasticsearch.yml by replacing every occurence of development with test and **change the port to 9400**
