@@ -30,17 +30,18 @@ def index(params):
     if not current_app.es:
         return {"error": "search engine not available"}, 503
 
-    date_range = {
-        "gte": params["date_range"]["start_date"],
-        "lte": params["date_range"]["end_date"]
-    } if "date_range" in params else {}
+    date_range = {}
+    if "start_date" in params:
+        date_range["gte"] = params["start_date"]
+    if "end_date" in params:
+        date_range["lte"] = params["end_date"]
 
     result = current_app.es.search(
         index="artefact",
         doc_type=params["type"],
         body=search_body_helper(params.get("search", ""), date_range))
 
-    return result["hits"]["hits"], 200
+    return {"results": result["hits"]["hits"]}, 200
 
 
 def create(params):
