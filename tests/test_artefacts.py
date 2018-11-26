@@ -68,6 +68,7 @@ def test_artefacts_create(test_client, es_mock):
 def test_artefacts_update(test_client, es_mock):
     """ PUT /artefacts/{id} """
 
+    es_mock.mock(function_name="get", return_value={"_type":"image"})
     es_mock.mock(function_name="update", return_value={"result":"updated"})
 
     response = test_client.put("/artefacts/1",
@@ -79,6 +80,7 @@ def test_artefacts_update(test_client, es_mock):
 def test_artefacts_delete(test_client, es_mock):
     """ DELETE /artefacts/{id} """
 
+    es_mock.mock(function_name="get", return_value={"_type":"image"})
     es_mock.mock(function_name="delete", return_value={"result":"deleted"})
 
     response = test_client.delete("/artefacts/1")
