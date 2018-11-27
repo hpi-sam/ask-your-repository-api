@@ -19,22 +19,28 @@ def test_artefacts_index_without_params(test_client, es_mock):
 
     es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
-    response = test_client.get("/artefacts", json={"search": ""})
+    response = test_client.get("/artefacts")
 
     assert response.status_code == 200
 
+def test_artefacts_index_with_pagination(test_client, es_mock):
+    """ GET /artefacts without any parameters """
+
+    es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
+
+    response = test_client.get("/artefacts?search=&offset=0&limit=1")
+
+    assert response.status_code == 200
 
 def test_artefacts_index_with_range(test_client, es_mock):
     """ GET /artefacts with range paramters """
 
     es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
-    response = test_client.get("/artefacts", json={
-        "date_range": {
-            "start_date": (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat(),
-            "end_date": (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
-        },
-        "search": ""})
+    response = test_client.get("/artefacts?start_date={}&end_date={}&search=".format(
+        (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat(),
+        (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()))
+
 
     assert response.status_code == 200
 
@@ -44,7 +50,7 @@ def test_artefacts_index_with_params(test_client, es_mock):
 
     es_mock.mock(function_name="search", return_value={"hits":{"hits":[]}})
 
-    response = test_client.get("/artefacts", json={"type":"image", "search": "class diagram"})
+    response = test_client.get("/artefacts?type=image&search=class diagram")
 
     assert response.status_code == 200
 
