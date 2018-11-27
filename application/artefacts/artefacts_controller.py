@@ -36,11 +36,15 @@ def index(params):
     if "end_date" in params:
         date_range["lte"] = params["end_date"]
 
+    search = params.get("search", "")
+    offset = params.get("offset", 0)
+    limit = params.get("limit", 10)
     artefact_types = params.get("types", "")
+
     result = current_app.es.search(
         index="artefact",
         doc_type=artefact_types,
-        body=search_body_helper(params.get("search", ""), date_range))
+        body=search_body_helper(search, date_range, limit, offset))
 
     return {"results": result["hits"]["hits"]}, 200
 
@@ -123,10 +127,11 @@ def delete(params):
         id=params["id"])
     return '', 204
 
-def search_body_helper(search, daterange):
+def search_body_helper(search, daterange, limit, offset):
     """ Defines a common body for search function """
 
     body = {
+        "from": offset, "size": limit,
         "sort": [
             "_score",
             {"created_at": {"order": "desc"}}
