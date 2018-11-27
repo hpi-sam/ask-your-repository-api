@@ -127,7 +127,7 @@ def delete(params):
         id=params["id"])
     return '', 204
 
-def search_body_helper(search, daterange, limit, offset):
+def search_body_helper(search, daterange, limit=10, offset=0):
     """ Defines a common body for search function """
 
     body = {
