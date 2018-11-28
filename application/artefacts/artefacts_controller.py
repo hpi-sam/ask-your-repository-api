@@ -39,7 +39,7 @@ def index(params):
     search = params.get("search", "")
     offset = params.get("offset", 0)
     limit = params.get("limit", 10)
-    artefact_types = params.get("types", "")
+    artefact_types = ",".join(params.getlist("type"))
 
     result = current_app.es.search(
         index="artefact",
@@ -56,6 +56,7 @@ def create(params):
         return {"error": "search engine not available"}, 503
 
     date = datetime.datetime.now().isoformat()
+    current_app.logger.info(params)
     artefact_type = params.get("type", "image")
     body = {
         "tags": params["tags"],

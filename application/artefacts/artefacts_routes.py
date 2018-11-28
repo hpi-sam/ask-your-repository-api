@@ -1,7 +1,8 @@
 """
 Define all routes for artefacts here. Don't put logic into routes.
 """
-from flask import jsonify, request, make_response
+from flask import jsonify, request, make_response, current_app
+from werkzeug.datastructures import MultiDict
 from . import artefact_blueprint
 from . import artefacts_controller
 
@@ -17,9 +18,9 @@ def show(artefact_id):
 @artefact_blueprint.route('/artefacts', methods=['GET'])
 def index():
     "Route to get several artefacts with filters"
-    params = dict(request.args) or {}
-    if not "type" in params:
-        params["type"] = "image"
+    current_app.logger.info(request.args)
+    params = request.args or MultiDict()
+    current_app.logger.info(params)
     response, status = artefacts_controller.index(params)
     return make_response(jsonify(response), status)
 
