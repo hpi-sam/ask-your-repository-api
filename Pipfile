@@ -12,6 +12,8 @@ pylint = "*"
 elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"
+mamba = "*"
+expects = "*"
 
 [dev-packages]
 

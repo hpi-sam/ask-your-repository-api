@@ -1,7 +1,7 @@
 """
 Define all routes for artefacts here. Don't put logic into routes.
 """
-from flask import jsonify, request, make_response, current_app
+from flask import jsonify, request, make_response
 from werkzeug.datastructures import MultiDict
 from . import artifact_blueprint
 from . import artifacts_controller
