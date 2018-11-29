@@ -26,7 +26,7 @@ def register_blueprints(app):
     Register all new blueprints here.
     Blueprints are components of the app that belong together e.g. artefacts
     """
-    from application.artefacts import artefact_blueprint
+    from application.artifacts import artifact_blueprint
     from application.home import home_blueprint
-    app.register_blueprint(artefact_blueprint)
+    app.register_blueprint(artifact_blueprint)
     app.register_blueprint(home_blueprint)
