@@ -8,14 +8,14 @@ from elasticsearch.exceptions import NotFoundError, ConflictError
 
 
 def show(params):
-    "Logic for getting a single artefact"
+    "Logic for getting a single artifact"
 
     if not current_app.es:
         return {"error": "search engine not available"}, 503
 
     try:
         result = current_app.es.get(
-            index="artefact",
+            index="artifact",
             doc_type="_all",
             id=params["id"]
         )
@@ -25,7 +25,7 @@ def show(params):
 
 
 def index(params):
-    "Logic for querying several artefacts"
+    "Logic for querying several artifacts"
 
     if not current_app.es:
         return {"error": "search engine not available"}, 503
@@ -42,7 +42,7 @@ def index(params):
     artefact_types = ",".join(params.getlist("type"))
 
     result = current_app.es.search(
-        index="artefact",
+        index="artifact",
         doc_type=artefact_types,
         body=search_body_helper(search, date_range, limit, offset))
 
@@ -50,7 +50,7 @@ def index(params):
 
 
 def create(params):
-    "Logic for creating an artefact"
+    "Logic for creating an artifact"
 
     if not current_app.es:
         return {"error": "search engine not available"}, 503
@@ -66,7 +66,7 @@ def create(params):
 
     try:
         result = current_app.es.create(
-            index="artefact",
+            index="artifact",
             doc_type=artefact_type,
             id=params["id"],
             body=body)
@@ -77,7 +77,7 @@ def create(params):
 
 
 def update(params):
-    "Logic for updating an artefact"
+    "Logic for updating an artifact"
 
     if not current_app.es:
         return {"error": "search engine not available"}, 503
@@ -90,7 +90,7 @@ def update(params):
 
     try:
         result = current_app.es.get(
-            index="artefact",
+            index="artifact",
             doc_type="_all",
             id=params["id"]
         )
@@ -98,7 +98,7 @@ def update(params):
         return {"error": "not found"}, 404
 
     current_app.es.update(
-        index="artefact",
+        index="artifact",
         doc_type=result["_type"],
         id=params["id"],
         body={
@@ -108,14 +108,14 @@ def update(params):
 
 
 def delete(params):
-    "Logic for deleting an artefact"
+    "Logic for deleting an artifact"
 
     if not current_app.es:
         return {"error": "search engine not available"}, 503
 
     try:
         result = current_app.es.get(
-            index="artefact",
+            index="artifact",
             doc_type="_all",
             id=params["id"]
         )
@@ -123,7 +123,7 @@ def delete(params):
         return {"error": "not found"}, 404
 
     current_app.es.delete(
-        index="artefact",
+        index="artifact",
         doc_type=result["_type"],
         id=params["id"])
     return '', 204

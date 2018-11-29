@@ -74,9 +74,9 @@ def es_fixture(test_client):
 
     #pylint: disable=unexpected-keyword-arg
 
-    elastic_search.indices.delete(index="artefact", ignore=[400, 404])
+    elastic_search.indices.delete(index="artifact", ignore=[400, 404])
 
-    elastic_search.indices.create(index="artefact", body={
+    elastic_search.indices.create(index="artifact", body={
         "mappings": {
             "image": {
                 "properties": {
@@ -91,13 +91,13 @@ def es_fixture(test_client):
         }
     })
 
-    elastic_search.index(index="artefact", doc_type="image", id="1", refresh=True, body={
+    elastic_search.index(index="artifact", doc_type="image", id="1", refresh=True, body={
         "tags": "class diagram, uml, architecture",
         "file_url": "class_diagram.png",
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=14)).isoformat()
     })
 
-    elastic_search.index(index="artefact", doc_type="image", id="2", refresh=True, body={
+    elastic_search.index(index="artifact", doc_type="image", id="2", refresh=True, body={
         "tags": "use case diagram, uml, szenario",
         "file_url": "use_case_diagram.png",
         "created_at": (datetime.datetime.now() - datetime.timedelta(days=7)).isoformat()
@@ -105,7 +105,7 @@ def es_fixture(test_client):
 
     yield elastic_search
 
-    elastic_search.indices.delete(index="artefact")
+    elastic_search.indices.delete(index="artifact")
 
     #pylint: enable=unexpected-keyword-arg
 
