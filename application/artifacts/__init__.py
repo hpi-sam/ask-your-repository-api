@@ -1,10 +1,10 @@
 """
-Initialize artefacts blueprint
+Initialize artifacts blueprint
 """
 
 from flask import Blueprint
 
-artifact_blueprint = Blueprint('artefacts', __name__)
+artifact_blueprint = Blueprint('artifacts', __name__)
 
 #pylint: disable=wrong-import-position
 
