@@ -4,18 +4,20 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytest = "==3.0.6"
 Flask = "==1.0.2"
-coverage = "*"
-python-coveralls = "*"
-pylint = "*"
 elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"
-mamba = "*"
-expects = "*"
 
 [dev-packages]
+pytest = "==3.0.6"
+coverage = "*"
+python-coveralls = "*"
+pylint = "*"
+mamba = "*"
+expects = "*"
+doublex = "*"
+doublex-expects = "*"
 
 [requires]
 python_version = "3.7"
