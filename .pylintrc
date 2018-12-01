@@ -200,7 +200,7 @@ attr-naming-style=snake_case
 
 # Regular expression matching correct attribute names. Overrides attr-naming-
 # style.
-#attr-rgx=
+attr-rgx=[a-z0-9_]{1,30}$
 
 # Bad variable names which should always be refused, separated by a comma.
 bad-names=foo,
@@ -293,7 +293,8 @@ variable-naming-style=snake_case
 
 # Regular expression matching correct variable names. Overrides variable-
 # naming-style.
-#variable-rgx=
+
+variable-rgx=[a-z0-9_]{1,30}$
 
 
 [FORMAT]

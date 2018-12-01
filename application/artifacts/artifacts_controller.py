@@ -3,10 +3,10 @@ Handles all logic of the artefacts api
 """
 
 import datetime
-import json
-from flask import current_app, request
+from flask import current_app
 from flask_restful import Resource, reqparse
-from .artifacts_helper import Artifact, NotFound, NotSaved
+from application.errors import NotFound, NotSaved
+from .artifacts_helper import Artifact
 
 def search_params():
     """ Defines and validates search params """
