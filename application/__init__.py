@@ -25,7 +25,9 @@ def create_app(config_filename=None):
     return app
 
 def add_resources(api):
+    from application.home.home_controller import HomeResources
     from application.artifacts.artifacts_controller import ArtifactsResource, ArtifactResource
+    api.add_resource(HomeResources, '/')
     api.add_resource(ArtifactsResource, '/artifacts')
     api.add_resource(ArtifactResource, '/artifacts/<artifact_id>')
 
