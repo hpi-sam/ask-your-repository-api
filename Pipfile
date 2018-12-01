@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 Flask = "==1.0.2"
+flask-restful = "*"
 elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"

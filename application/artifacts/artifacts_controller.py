@@ -3,151 +3,106 @@ Handles all logic of the artefacts api
 """
 
 import datetime
-from flask import current_app
-from elasticsearch.exceptions import NotFoundError, ConflictError
+import json
+from flask import current_app, request
+from flask_restful import Resource, reqparse
+from .artifacts_helper import Artifact, NotFound, NotSaved
 
+def search_params():
+    """ Defines and validates search params """
+    parser = reqparse.RequestParser()
+    parser.add_argument("searchTerm", default="", dest="search")
+    parser.add_argument("type", action="append", dest="types")
+    parser.add_argument("start_date")
+    parser.add_argument("end_date")
+    parser.add_argument("offset", type=int, default=0)
+    parser.add_argument("limit", type=int, default=12)
 
-def show(params):
-    "Logic for getting a single artifact"
+    return parser.parse_args()
 
-    if not current_app.es:
-        return {"error": "search engine not available"}, 503
+def create_params():
+    """ Defines and validates create params """
+    parser = reqparse.RequestParser()
+    parser.add_argument("type", default="image")
+    parser.add_argument("file_url")
+    parser.add_argument("tags", action="append", default=[], location="json")
+    return parser.parse_args()
 
-    try:
-        result = current_app.es.get(
-            index="artifact",
-            doc_type="_all",
-            id=params["id"]
-        )
-        return result, 200
-    except NotFoundError:
-        return {"error": "not found"}, 404
+def update_params():
+    """ Defines and validates update params """
+    parser = reqparse.RequestParser()
+    parser.add_argument("file_url")
+    parser.add_argument("tags", action="append", default=[])
+    return parser.parse_args()
 
+class ArtifactResource(Resource):
+    """ Defines Routes on member """
+    def get(self, artifact_id):
+        "Logic for getting a single artifact"
 
-def index(params):
-    "Logic for querying several artifacts"
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
 
-    if not current_app.es:
-        return {"error": "search engine not available"}, 503
+        try:
+            return vars(Artifact.find(artifact_id))
+        except NotFound:
+            return {"error": "not found"}, 404
 
-    date_range = {}
-    if "start_date" in params:
-        date_range["gte"] = params["start_date"]
-    if "end_date" in params:
-        date_range["lte"] = params["end_date"]
+    def put(self, artifact_id):
+        "Logic for updating an artifact"
 
-    search = params.get("search", "")
-    offset = params.get("offset", 0)
-    limit = params.get("limit", 10)
-    artefact_types = ",".join(params.getlist("type"))
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
 
-    result = current_app.es.search(
-        index="artifact",
-        doc_type=artefact_types,
-        body=search_body_helper(search, date_range, limit, offset))
+        params = update_params()
+        try:
+            artifact = Artifact.find(artifact_id)
+            artifact.update(params)
+            return '', 204
+        except NotFound:
+            return {"error": "not found"}, 404
 
-    return {"results": result["hits"]["hits"]}, 200
+    def delete(self, artifact_id):
+        "Logic for deleting an artifact"
 
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
 
-def create(params):
-    "Logic for creating an artifact"
+        try:
+            artifact = Artifact.find(artifact_id)
+            artifact.delete()
+            return '', 204
+        except NotFound:
+            return {"error": "not found"}, 404
 
-    if not current_app.es:
-        return {"error": "search engine not available"}, 503
+class ArtifactsResource(Resource):
+    """ Defines Routes on collection """
 
-    date = datetime.datetime.now().isoformat()
-    current_app.logger.info(params)
-    artefact_type = params.get("type", "image")
-    body = {
-        "tags": params["tags"],
-        "file_url": params["file_url"],
-        "created_at": date
-    }
+    def get(self):
+        "Logic for querying several artifacts"
 
-    try:
-        result = current_app.es.create(
-            index="artifact",
-            doc_type=artefact_type,
-            id=params["id"],
-            body=body)
-        result["_source"] = body
-        return result, 201
-    except ConflictError:
-        return {"error": "document already exists"}, 404
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
 
+        params = search_params()
 
-def update(params):
-    "Logic for updating an artifact"
+        result = Artifact.search(params)
 
-    if not current_app.es:
-        return {"error": "search engine not available"}, 503
+        return {"results": result}, 200
 
-    update_params = {}
-    if "tags" in params:
-        update_params["tags"] = params["tags"]
-    if "file_url" in params:
-        update_params["file_url"] = params["file_url"]
+    def post(self):
+        "Logic for creating an artifact"
 
-    try:
-        result = current_app.es.get(
-            index="artifact",
-            doc_type="_all",
-            id=params["id"]
-        )
-    except NotFoundError:
-        return {"error": "not found"}, 404
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
 
-    current_app.es.update(
-        index="artifact",
-        doc_type=result["_type"],
-        id=params["id"],
-        body={
-            "doc": update_params
-        })
-    return '', 204
+        params = create_params()
+        params["file_date"] = datetime.datetime.now().isoformat()
+        #params["tags"] = ", ".join(params["tags"])
+        artifact = Artifact(params)
 
-
-def delete(params):
-    "Logic for deleting an artifact"
-
-    if not current_app.es:
-        return {"error": "search engine not available"}, 503
-
-    try:
-        result = current_app.es.get(
-            index="artifact",
-            doc_type="_all",
-            id=params["id"]
-        )
-    except NotFoundError:
-        return {"error": "not found"}, 404
-
-    current_app.es.delete(
-        index="artifact",
-        doc_type=result["_type"],
-        id=params["id"])
-    return '', 204
-
-def search_body_helper(search, daterange, limit=10, offset=0):
-    """ Defines a common body for search function """
-
-    body = {
-        "from": offset, "size": limit,
-        "sort": [
-            "_score",
-            {"created_at": {"order": "desc"}}
-        ],
-        "query": {
-            "bool": {
-                "filter": {
-                    "range": {
-                        "created_at": daterange
-                    }
-                },
-                "should": {
-                    "match": {"tags": search}
-                }
-            }
-        }
-    }
-    return body
+        try:
+            artifact.save()
+            return vars(artifact), 200
+        except NotSaved:
+            return {"error": "artifact could not be saved"}, 404
