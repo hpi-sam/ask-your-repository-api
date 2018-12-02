@@ -4,8 +4,9 @@ Handles all logic of the artefacts api
 
 import datetime
 from flask import current_app
-from flask_restful import Resource, reqparse
+from flask_restful import reqparse
 from application.errors import NotFound, NotSaved
+from application.application_helpers import ApplicationController
 from .artifacts_helper import Artifact
 
 
@@ -39,10 +40,10 @@ def update_params():
     return parser.parse_args()
 
 
-class ArtifactResource(Resource):
-    """ Defines Routes on member """
+class ArtifactsController(ApplicationController):
+    """ Controller for Artifacts """
 
-    def get(self, artifact_id):
+    def show(self, artifact_id):
         "Logic for getting a single artifact"
 
         if not current_app.es:
@@ -53,7 +54,36 @@ class ArtifactResource(Resource):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def put(self, artifact_id):
+    def index(self):
+        "Logic for querying several artifacts"
+
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
+
+        params = search_params()
+
+        result = Artifact.search(params)
+
+        return {"results": result}, 200
+
+    def create(self):
+        "Logic for creating an artifact"
+
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
+
+        params = create_params()
+        params["file_date"] = datetime.datetime.now().isoformat()
+        # params["tags"] = ", ".join(params["tags"])
+        artifact = Artifact(params)
+
+        try:
+            artifact.save()
+            return vars(artifact), 200
+        except NotSaved:
+            return {"error": "artifact could not be saved"}, 404
+
+    def update(self, artifact_id):
         "Logic for updating an artifact"
 
         if not current_app.es:
@@ -79,36 +109,3 @@ class ArtifactResource(Resource):
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
-
-
-class ArtifactsResource(Resource):
-    """ Defines Routes on collection """
-
-    def get(self):
-        "Logic for querying several artifacts"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
-        params = search_params()
-
-        result = Artifact.search(params)
-
-        return {"results": result}, 200
-
-    def post(self):
-        "Logic for creating an artifact"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
-        params = create_params()
-        params["file_date"] = datetime.datetime.now().isoformat()
-        # params["tags"] = ", ".join(params["tags"])
-        artifact = Artifact(params)
-
-        try:
-            artifact.save()
-            return vars(artifact), 200
-        except NotSaved:
-            return {"error": "artifact could not be saved"}, 404
