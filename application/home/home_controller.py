@@ -3,13 +3,13 @@ Handles all logic of the home api
 """
 
 from flask import current_app
-from flask_restful import Resource
+from application.application_helpers import ApplicationController
 
 
-class HomeResources(Resource):
+class HomeController(ApplicationController):
     """ Defines Routes on collection """
 
-    def get(self):
+    def show_status(self):
         "Create a json description that is shown when connecting to the service without params"
         database_status = "on" if current_app.es else "off"
         return {"service name": "artefact service",
