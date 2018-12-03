@@ -17,7 +17,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 def search_params():
     """ Defines and validates search params """
     parser = reqparse.RequestParser()
-    parser.add_argument("searchTerm", default="", dest="search")
+    parser.add_argument("search", default="")
     parser.add_argument("type", action="append", dest="types")
     parser.add_argument("start_date")
     parser.add_argument("end_date")
