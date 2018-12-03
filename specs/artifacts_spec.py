@@ -27,7 +27,7 @@ with description('/artifacts') as self:
                 elastic_mock.get(
                     doc_type='_all', id='1',
                     index='artifact').returns(
-                    {"_source": {"class_diagram.png": ""}})
+                        {"_source": {"class_diagram.png": ""}})
             current_app.es = elastic_mock
             self.response = self.context.client().get("/artifacts/1")
 
