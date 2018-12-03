@@ -11,7 +11,6 @@ python-dotenv = "*"
 gunicorn = "*"
 
 [dev-packages]
-pytest = "==3.0.6"
 coverage = "*"
 python-coveralls = "*"
 pylint = "*"

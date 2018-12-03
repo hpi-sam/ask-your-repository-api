@@ -5,8 +5,8 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
-      - run: sudo pip install pipenv && pipenv install
-      - run: pipenv run coverage run --source=application -m pytest -v tests
+      - run: sudo pip install pipenv && pipenv install --dev
+      - run: pipenv run coverage run --source=application -m mamba.cli specs
       - run: pipenv run coveralls
   lint:
     docker:
