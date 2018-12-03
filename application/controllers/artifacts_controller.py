@@ -1,14 +1,17 @@
 """
 Handles all logic of the artefacts api
 """
-
+import os
+import uuid
 import datetime
-from flask import current_app, request
-from flask_restful import reqparse, Resource
+import werkzeug
+from flask import current_app
+from flask_restful import reqparse
 from application.errors import NotFound, NotSaved
 from .application_controller import ApplicationController
 from application.models.artifact import Artifact
 
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 def search_params():
     """ Defines and validates search params """
@@ -27,7 +30,7 @@ def create_params():
     """ Defines and validates create params """
     parser = reqparse.RequestParser()
     parser.add_argument("type", default="image")
-    parser.add_argument("file_url", location="json")
+    parser.add_argument("file", required=True, type=werkzeug.datastructures.FileStorage, location='files')
     parser.add_argument("tags", action="append", default=[], location="json")
     return parser.parse_args()
 
@@ -46,6 +49,10 @@ def add_tags_params():
     parser.add_argument("tags", action="append", default=[])
     return parser.parse_args()
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -81,8 +88,11 @@ class ArtifactsController(ApplicationController):
 
         params = create_params()
         params["file_date"] = datetime.datetime.now().isoformat()
-        print(params)
-        # params["tags"] = ", ".join(params["tags"])
+        uploaded_file = params["file"]
+        filename = str(uuid.uuid4()) + "_" + werkzeug.utils.secure_filename(uploaded_file.filename)
+        file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
+        uploaded_file.save(file_url)
+        params["file_url"] = filename
         artifact = Artifact(params)
 
         try:

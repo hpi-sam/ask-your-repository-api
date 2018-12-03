@@ -1,5 +1,5 @@
 from .esmodel import ESModel
-
+from flask import current_app
 
 class Artifact(ESModel):
     """ Handles saving and searching """
@@ -10,6 +10,13 @@ class Artifact(ESModel):
         "tags",
         "file_date"
     ]
+
+    @classmethod
+    def parse_params(cls, params):
+        params = super().parse_params(params)
+        params["file_url"] = current_app.config["FILE_SERVER"] + "/" + params["file_url"]
+        print(params)
+        return params
 
     @classmethod
     def search(cls, params):
