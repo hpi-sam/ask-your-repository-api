@@ -9,6 +9,7 @@ from elasticsearch.exceptions import NotFoundError
 from flask import current_app
 from application.artefacts.artefacts_controller import search_body_helper
 
+
 def test_get_existing(es_fixture):
     """ Tests valid elasticsearch.get() """
 
@@ -61,8 +62,10 @@ def test_search_with_daterange(es_fixture):
     if not current_app.es:
         return
 
-    start_time = (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat()
-    end_time = (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()
+    start_time = (datetime.datetime.now() -
+                  datetime.timedelta(days=9)).isoformat()
+    end_time = (datetime.datetime.now() -
+                datetime.timedelta(days=6)).isoformat()
     daterange = {"gte": start_time, "lte": end_time}
 
     response = es_fixture.search(

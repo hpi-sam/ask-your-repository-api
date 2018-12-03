@@ -1,4 +1,6 @@
 """ Defines all Routes """
+
+
 def create_routes(api):
     """ Creates Routes. Called in __init__ """
 

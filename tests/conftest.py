@@ -15,6 +15,7 @@ load_dotenv()
 
 use_db = False
 
+
 def pytest_addoption(parser):
     """
     Parses the user input params when running the test command.
@@ -23,6 +24,7 @@ def pytest_addoption(parser):
 
     parser.addoption("--with-db", action="store_true", default=False,
                      help="run with life databse")
+
 
 @pytest.fixture(scope='module')
 def test_client(request):
@@ -83,7 +85,7 @@ def es_fixture(test_client):
                     "tags": {"type": "text"},
                     "image_url": {"type": "text"},
                     "created_at": {
-                        "type":   "date",
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     }
                 }

@@ -6,6 +6,7 @@ from flask import current_app
 from elasticsearch.exceptions import NotFoundError, ConflictError
 from .errors import NotFound, NotInitialized, NotSaved
 
+
 class ESModel():
     """ Handles saving and searching """
 
