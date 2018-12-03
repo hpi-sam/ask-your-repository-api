@@ -4,14 +4,13 @@ import sys
 from flask import current_app
 from mamba import description, before, after, it
 from expects import expect, equal
-from doublex_expects import *
 from doublex import Mock, Stub
+# pylint: disable=wrong-import-position
+from specs.spec_helpers import Context
+# pylint: enable=wrong-import-position
 
 sys.path.insert(0, 'specs')
 
-#pylint: disable=wrong-import-position
-from specs.spec_helpers import Context
-#pylint: enable=wrong-import-position
 
 with description('/artifacts') as self:
 
@@ -25,7 +24,10 @@ with description('/artifacts') as self:
     with description('GET'):
         with before.each:
             with Mock() as elastic_mock:
-                 elastic_mock.get(doc_type='_all', id='1', index='artifact').returns({"_source":{"class_diagram.png":""}})
+                elastic_mock.get(
+                    doc_type='_all', id='1',
+                    index='artifact').returns(
+                    {"_source": {"class_diagram.png": ""}})
             current_app.es = elastic_mock
             self.response = self.context.client().get("/artifacts/1")
 
@@ -35,7 +37,10 @@ with description('/artifacts') as self:
     with description('POST'):
         with before.each:
             with Mock() as elastic_mock:
-                 elastic_mock.get(doc_type='_all', id='1', index='artifact').returns({"_source":{"class_diagram.png":""}})
+                elastic_mock.get(
+                    doc_type='_all', id='1',
+                    index='artifact').returns(
+                        {"_source": {"class_diagram.png": ""}})
             current_app.es = elastic_mock
             self.response = self.context.client().get("/artifacts/1")
 

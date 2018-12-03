@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 from flask_restful import Api
 from .routes import create_routes
 
+
 def create_app(config_filename=None):
     """
     Creates the app using the specifig config file of that environment.

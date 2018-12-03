@@ -1,6 +1,7 @@
 """ Defines helpers for Artifact saving and input validation """
 from application.models import ESModel
 
+
 def search_body_helper(search, daterange, limit=10, offset=0):
     """ Defines a common body for search function """
 
@@ -25,6 +26,7 @@ def search_body_helper(search, daterange, limit=10, offset=0):
     }
     return body
 
+
 class Artifact(ESModel):
     """ Handles saving and searching """
 
@@ -47,4 +49,5 @@ class Artifact(ESModel):
         body = search_body_helper(params["search"], date_range,
                                   params["limit"], params["offset"])
 
-        return super(Artifact, cls).search({"types": params["types"], "search_body": body})
+        return super(Artifact, cls).search(
+            {"types": params["types"], "search_body": body})

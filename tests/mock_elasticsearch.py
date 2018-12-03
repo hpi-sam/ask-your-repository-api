@@ -2,6 +2,7 @@
 Define all helpers for mocking Elasticsearch here.
 """
 
+
 class ElasticMock:
     """
     Defines a class for Mocking elasticsearch calls.

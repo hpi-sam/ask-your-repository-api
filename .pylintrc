@@ -385,7 +385,6 @@ spelling-store-unknown-words=no
 
 
 [TYPECHECK]
-ignored-modules=mamba
 # List of decorators that produce context managers, such as
 # contextlib.contextmanager. Add to this list to register other decorators that
 # produce valid context managers.
@@ -421,7 +420,7 @@ ignored-classes=optparse.Values,thread._local,_thread._local
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis. It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules=mamba
 
 # Show a hint with possible names when a member name was not found. The aspect
 # of finding the hint is based on edit distance.

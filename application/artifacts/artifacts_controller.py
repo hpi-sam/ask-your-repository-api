@@ -8,6 +8,7 @@ from flask_restful import Resource, reqparse
 from application.errors import NotFound, NotSaved
 from .artifacts_helper import Artifact
 
+
 def search_params():
     """ Defines and validates search params """
     parser = reqparse.RequestParser()
@@ -20,6 +21,7 @@ def search_params():
 
     return parser.parse_args()
 
+
 def create_params():
     """ Defines and validates create params """
     parser = reqparse.RequestParser()
@@ -28,6 +30,7 @@ def create_params():
     parser.add_argument("tags", action="append", default=[], location="json")
     return parser.parse_args()
 
+
 def update_params():
     """ Defines and validates update params """
     parser = reqparse.RequestParser()
@@ -35,8 +38,10 @@ def update_params():
     parser.add_argument("tags", action="append", default=[])
     return parser.parse_args()
 
+
 class ArtifactResource(Resource):
     """ Defines Routes on member """
+
     def get(self, artifact_id):
         "Logic for getting a single artifact"
 
@@ -75,6 +80,7 @@ class ArtifactResource(Resource):
         except NotFound:
             return {"error": "not found"}, 404
 
+
 class ArtifactsResource(Resource):
     """ Defines Routes on collection """
 
@@ -98,7 +104,7 @@ class ArtifactsResource(Resource):
 
         params = create_params()
         params["file_date"] = datetime.datetime.now().isoformat()
-        #params["tags"] = ", ".join(params["tags"])
+        # params["tags"] = ", ".join(params["tags"])
         artifact = Artifact(params)
 
         try:
