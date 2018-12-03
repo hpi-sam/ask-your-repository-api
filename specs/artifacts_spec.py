@@ -8,11 +8,12 @@ from doublex import Mock, Stub, ANY_ARG
 # pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
 # pylint: enable=wrong-import-position
+from io import BytesIO
 
 sys.path.insert(0, 'specs')
 
 
-with description('/artifacts') as self:
+with description('/images') as self:
 
     with before.each:
         self.context = Context()
@@ -29,7 +30,7 @@ with description('/artifacts') as self:
                         {"hits": {"hits": []}})
 
                 current_app.es = elastic_mock
-                self.response = self.context.client().get("/artifacts")
+                self.response = self.context.client().get("/images")
             with it('returns a 200 status code'):
                 expect(self.response.status_code).to(equal(200))
 
@@ -48,7 +49,7 @@ with description('/artifacts') as self:
                                          "file_url": "asdf",
                                          "file_date": "today"}})
                 current_app.es = elastic_mock
-                self.response = self.context.client().get("/artifacts/1")
+                self.response = self.context.client().get("/images/1")
 
             with it('returns a 200 status code'):
                 expect(self.response.status_code).to(equal(200))
@@ -56,23 +57,13 @@ with description('/artifacts') as self:
         with description('POST'):
             with before.each:
                 with Mock() as elastic_mock:
-                    elastic_mock.get(
-                        doc_type='_all', id='1',
-                        index='artifact').returns(
-                            {"_id": "asdf",
-                             "_type": "image",
-                             "_source": {"tags": ["class_diagram.png", ""],
-                                         "created_at": "today",
-                                         "updated_at": "today",
-                                         "file_url": "asdf",
-                                         "file_date": "today"}})
+                    elastic_mock.index(ANY_ARG).returns({})
                 current_app.es = elastic_mock
                 print(vars(current_app.url_map))
-                self.response = self.context.client().post("/artifacts", json={
-                    "type": "image",
-                    "id": "1",
-                    "tags": "uml, class diagram, architecture",
-                    "file_url": "class_diagram.png"})
+                self.response = self.context.client().post("/images",content_type='multipart/form-data', data={
+                    "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                    "tags": []
+                    })
 
             with it('returns a 200 status code'):
-                expect(self.response.status_code).to(equal(201))
+                expect(self.response.status_code).to(equal(200))
