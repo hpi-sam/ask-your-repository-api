@@ -12,6 +12,7 @@ def create_routes(api):
     # api.add_resource(ArtifactsController, '/artifacts')
     # api.add_resource(controller.new_resource(name, method), url)
     add_method(api, '/', "show_status", HomeController, method="get")
-    add_resource(api, '/artifacts', ArtifactsController)
-    add_method(api, '/artifacts/<object_id>/tags', "add_tags",
+    # add_resource(api, '/artifacts', ArtifactsController)
+    add_resource(api, '/images', ArtifactsController)
+    add_method(api, '/images/<object_id>/tags', "add_tags",
                ArtifactsController, method="post")

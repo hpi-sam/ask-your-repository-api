@@ -8,6 +8,7 @@ from flask import Flask, Blueprint
 from elasticsearch import Elasticsearch
 from flask_restful import Api
 from .routes import create_routes
+from flask_cors import CORS
 
 
 def create_app(config_filename=None):
@@ -16,6 +17,7 @@ def create_app(config_filename=None):
     See instance directory.
     """
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     api_bp = Blueprint('api', __name__)
     api = Api(api_bp)
     create_routes(api)

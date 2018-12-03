@@ -5,7 +5,7 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app
+from flask import current_app, request
 from flask_restful import reqparse
 from application.errors import NotFound, NotSaved
 from .application_controller import ApplicationController
@@ -30,7 +30,7 @@ def create_params():
     """ Defines and validates create params """
     parser = reqparse.RequestParser()
     parser.add_argument("type", default="image")
-    parser.add_argument("file", required=True, type=werkzeug.datastructures.FileStorage, location='files')
+    parser.add_argument("image", dest="file", required=True, type=werkzeug.datastructures.FileStorage, location='files')
     parser.add_argument("tags", action="append", default=[], location="json")
     return parser.parse_args()
 
@@ -78,7 +78,7 @@ class ArtifactsController(ApplicationController):
 
         result = Artifact.search(params)
 
-        return {"results": result}, 200
+        return {"images": result}, 200
 
     def create(self):
         "Logic for creating an artifact"
@@ -86,7 +86,10 @@ class ArtifactsController(ApplicationController):
         if not current_app.es:
             return {"error": "search engine not available"}, 503
 
+        print("Hello")
+        print(request.files)
         params = create_params()
+        print("Hello2")
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
         filename = str(uuid.uuid4()) + "_" + werkzeug.utils.secure_filename(uploaded_file.filename)
