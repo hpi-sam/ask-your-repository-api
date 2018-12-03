@@ -141,7 +141,8 @@ disable=print-statement,
         deprecated-sys-function,
         exception-escape,
         comprehension-escape,
-        no-self-use
+        no-self-use,
+        arguments-differ
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -231,7 +232,7 @@ const-naming-style=UPPER_CASE
 # Regular expression matching correct constant names. Overrides const-naming-
 # style.
 #const-rgx=
-const-rgx=[a-z_][a-z0-9_]{2,30}$
+#const-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Minimum line length for functions/classes that require docstrings, shorter
 # ones are exempt.

@@ -1,5 +1,7 @@
-from .esmodel import ESModel
+""" Elastic search artifact model wraps api into crud methods"""
 from flask import current_app
+from .esmodel import ESModel
+
 
 class Artifact(ESModel):
     """ Handles saving and searching """
@@ -14,7 +16,8 @@ class Artifact(ESModel):
     @classmethod
     def parse_params(cls, params):
         params = super().parse_params(params)
-        params["file_url"] = current_app.config["FILE_SERVER"] + "/" + params["file_url"]
+        params["file_url"] = current_app.config["FILE_SERVER"] + \
+            "/" + params["file_url"]
         print(params)
         return params
 
