@@ -16,9 +16,9 @@ class Artifact(ESModel):
     @classmethod
     def parse_params(cls, params):
         params = super().parse_params(params)
-        params["file_url"] = current_app.config["FILE_SERVER"] + \
+        params["url"] = current_app.config["FILE_SERVER"] + \
             "/" + params["file_url"]
-        print(params)
+        del params["file_url"]
         return params
 
     @classmethod
