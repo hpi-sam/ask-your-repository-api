@@ -67,7 +67,12 @@ with description('/artifacts') as self:
                                          "file_url": "asdf",
                                          "file_date": "today"}})
                 current_app.es = elastic_mock
-                self.response = self.context.client().get("/artifacts/1")
+                print(vars(current_app.url_map))
+                self.response = self.context.client().post("/artifacts", json={
+                    "type": "image",
+                    "id": "1",
+                    "tags": "uml, class diagram, architecture",
+                    "file_url": "class_diagram.png"})
 
             with it('returns a 200 status code'):
-                expect(self.response.status_code).to(equal(200))
+                expect(self.response.status_code).to(equal(201))

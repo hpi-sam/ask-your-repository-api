@@ -4,7 +4,7 @@ import uuid
 import datetime
 from flask import current_app
 from elasticsearch.exceptions import NotFoundError, ConflictError
-from .errors import NotFound, NotInitialized, NotSaved
+from application.errors import NotFound, NotInitialized, NotSaved
 
 
 class ESModel():
