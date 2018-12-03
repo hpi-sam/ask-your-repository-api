@@ -1,6 +1,7 @@
 """ Tests for artifacts """
 
 import sys
+from io import BytesIO
 from flask import current_app
 from mamba import description, before, after, it
 from expects import expect, equal
@@ -8,7 +9,6 @@ from doublex import Mock, Stub, ANY_ARG
 # pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
 # pylint: enable=wrong-import-position
-from io import BytesIO
 
 sys.path.insert(0, 'specs')
 
@@ -60,9 +60,10 @@ with description('/images') as self:
                     elastic_mock.index(ANY_ARG).returns({})
                 current_app.es = elastic_mock
                 print(vars(current_app.url_map))
-                self.response = self.context.client().post("/images",content_type='multipart/form-data', data={
-                    "image": (BytesIO(b'oof'), 'helloworld.jpg'),
-                    "tags": []
+                self.response = self.context.client().post(
+                    "/images", content_type='multipart/form-data', data={
+                        "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                        "tags": []
                     })
 
             with it('returns a 200 status code'):

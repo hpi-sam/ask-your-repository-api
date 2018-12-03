@@ -7,8 +7,8 @@ import os
 from flask import Flask, Blueprint
 from elasticsearch import Elasticsearch
 from flask_restful import Api
-from .routes import create_routes
 from flask_cors import CORS
+from .routes import create_routes
 
 
 def create_app(config_filename=None):
