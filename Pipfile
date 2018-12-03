@@ -9,6 +9,7 @@ flask-restful = "*"
 elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"
+flask-cors = "*"
 
 [dev-packages]
 coverage = "*"
