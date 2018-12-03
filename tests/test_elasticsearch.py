@@ -7,7 +7,7 @@ import datetime
 import pytest
 from elasticsearch.exceptions import NotFoundError
 from flask import current_app
-from application.artefacts.artefacts_controller import search_body_helper
+from application.artefacts.artifacts_controller import search_body_helper
 
 
 def test_get_existing(es_fixture):

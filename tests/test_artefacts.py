@@ -9,7 +9,7 @@ def test_artefacts_show(test_client, es_mock):
     """ GET /artefact/{id} """
 
     es_mock.mock(function_name="get", return_value={
-                 "_source": {"class_diagram.png": ""}})
+        "_source": {"class_diagram.png": ""}})
 
     response = test_client.get("/artefacts/1")
 
@@ -41,9 +41,12 @@ def test_artefacts_index_with_range(test_client, es_mock):
 
     es_mock.mock(function_name="search", return_value={"hits": {"hits": []}})
 
-    response = test_client.get("/artefacts?start_date={}&end_date={}&search=".format(
-        (datetime.datetime.now() - datetime.timedelta(days=9)).isoformat(),
-        (datetime.datetime.now() - datetime.timedelta(days=6)).isoformat()))
+    response = test_client.get(
+        "/artefacts?start_date={}&end_date={}&search=".format(
+            (datetime.datetime.now() - datetime.timedelta(days=9))
+            .isoformat(),
+            (datetime.datetime.now() - datetime.timedelta(days=6))
+            .isoformat()))
 
     assert response.status_code == 200
 
@@ -81,7 +84,13 @@ def test_artefacts_update(test_client, es_mock):
     es_mock.mock(function_name="update", return_value={"result": "updated"})
 
     response = test_client.put("/artefacts/1",
-                               json={"type": "image", "tags": "uml, class diagram, architecture"})
+                               json={
+                                   "type": "image",
+                                   "tags": [
+                                       "uml",
+                                       "class diagram",
+                                       "architecture"
+                                   ]})
 
     assert response.status_code == 204
 
