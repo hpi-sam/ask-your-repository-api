@@ -7,9 +7,7 @@ from expects import expect, equal, raise_error
 from application.models.esmodel import ESModel
 from application.errors import NotInitialized
 from doublex import Mock, Stub, ANY_ARG
-# pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
-# pylint: enable=wrong-import-position
 
 sys.path.insert(0, 'specs')
 
