@@ -3,8 +3,8 @@
 import sys
 from io import BytesIO
 from flask import current_app
-from mamba import description, before, after, it
-from expects import expect, equal
+from mamba import description, context, before, after, it
+from expects import expect, equal, have_key
 from doublex import Mock, Stub, ANY_ARG
 # pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
@@ -41,14 +41,32 @@ with description('/images') as self:
                     elastic_mock.index(ANY_ARG).returns({})
                 current_app.es = elastic_mock
 
-                self.response = self.context.client().post(
-                    "/images", content_type='multipart/form-data', data={
-                        "image": (BytesIO(b'oof'), 'helloworld.jpg'),
-                        "tags": []
-                    })
+            with context("with file attached"):
+                with before.each:
+                    self.response = self.context.client().post(
+                        "/images", content_type='multipart/form-data', data={
+                            "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                            "tags": []
+                        })
 
-            with it('returns a 200 status code'):
-                expect(self.response.status_code).to(equal(200))
+                with it('returns a 200 status code'):
+                    expect(self.response.status_code).to(equal(200))
+
+                with it("returns an id"):
+                    expect(self.response.json).to(have_key("id"))
+
+                with it("returns a file_url"):
+                    expect(self.response.json).to(have_key("file_url"))
+
+            with context("without file attached"):
+                with before.each:
+                    self.response = self.context.client().post(
+                        "/images", content_type='multipart/form-data', data={
+                            "tags": []
+                        })
+
+                with it('returns a 400 status code'):
+                    expect(self.response.status_code).to(equal(400))
 
     with description('/1'):
         with description('GET'):
