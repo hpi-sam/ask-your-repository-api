@@ -24,6 +24,14 @@ with description('/images') as self:
         self.context.delete()
 
     with description('/'):
+        with description('GET without database'):
+            with before.each:
+                current_app.es = None
+                self.response = self.context.client().get("/images")
+
+            with it('returns a 503 status code'):
+                expect(self.response.status_code).to(equal(503))
+
         with description('GET'):
             with before.each:
                 with Mock() as elastic_mock:
@@ -108,12 +116,12 @@ with description('/images') as self:
                             doc_type='_all', id='1',
                             index='artifact').returns(
                                 {"_id": "1",
-                                "_type": "image",
-                                "_source": {"tags": ["class_diagram", ""],
-                                            "created_at": "today",
-                                            "updated_at": "today",
-                                            "file_url": "test.png",
-                                            "file_date": "today"}})
+                                 "_type": "image",
+                                 "_source": {"tags": ["class_diagram", ""],
+                                             "created_at": "today",
+                                             "updated_at": "today",
+                                             "file_url": "test.png",
+                                             "file_date": "today"}})
                     current_app.es = elastic_mock
                     self.response = self.context.client().get("/images/1")
 
@@ -144,16 +152,18 @@ with description('/images') as self:
                             doc_type='_all', id='1',
                             index='artifact').returns(
                                 {"_id": "1",
-                                "_type": "image",
-                                "_source": {"tags": ["class_diagram", ""],
-                                            "created_at": "today",
-                                            "updated_at": "today",
-                                            "file_url": "test.png",
-                                            "file_date": "today"}})
+                                 "_type": "image",
+                                 "_source": {"tags": ["class_diagram", ""],
+                                             "created_at": "today",
+                                             "updated_at": "today",
+                                             "file_url": "test.png",
+                                             "file_date": "today"}})
 
                         elastic_mock.update(
                             doc_type='image', id='1', index='artifact',
-                            body={'doc': {'file_url': "test_updated.png", "tags": ["added", "tags"]}})
+                            body={'doc': {
+                                'file_url': "test_updated.png",
+                                "tags": ["added", "tags"]}})
 
                     current_app.es = elastic_mock
                     self.response = self.context.client().put("/images/1", json={
@@ -188,12 +198,12 @@ with description('/images') as self:
                             doc_type='_all', id='1',
                             index='artifact').returns(
                                 {"_id": "1",
-                                "_type": "image",
-                                "_source": {"tags": ["class_diagram", ""],
-                                            "created_at": "today",
-                                            "updated_at": "today",
-                                            "file_url": "test.png",
-                                            "file_date": "today"}})
+                                 "_type": "image",
+                                 "_source": {"tags": ["class_diagram", ""],
+                                             "created_at": "today",
+                                             "updated_at": "today",
+                                             "file_url": "test.png",
+                                             "file_date": "today"}})
 
                         elastic_mock.delete(
                             doc_type='image', id='1', index='artifact')
@@ -229,12 +239,12 @@ with description('/images') as self:
                             doc_type='_all', id='1',
                             index='artifact').returns(
                                 {"_id": "1",
-                                "_type": "image",
-                                "_source": {"tags": ["class_diagram", ""],
-                                            "created_at": "today",
-                                            "updated_at": "today",
-                                            "file_url": "test.png",
-                                            "file_date": "today"}})
+                                 "_type": "image",
+                                 "_source": {"tags": ["class_diagram", ""],
+                                             "created_at": "today",
+                                             "updated_at": "today",
+                                             "file_url": "test.png",
+                                             "file_date": "today"}})
 
                         elastic_mock.update(
                             doc_type='image', id='1', index='artifact',
@@ -242,9 +252,9 @@ with description('/images') as self:
 
                     current_app.es = elastic_mock
                     self.response = self.context.client().post("/images/1/tags",
-                                                            json={"tags": [
-                                                                "new_tag", "class_diagram"
-                                                            ]})
+                                                               json={"tags": [
+                                                                   "new_tag", "class_diagram"
+                                                               ]})
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(204))
@@ -258,9 +268,9 @@ with description('/images') as self:
                             index='artifact').raises(NotFoundError)
                     current_app.es = elastic_mock
                     self.response = self.context.client().post("/images/1/tags",
-                                                            json={"tags": [
-                                                                "new_tag", "class_diagram"
-                                                            ]})
+                                                               json={"tags": [
+                                                                   "new_tag", "class_diagram"
+                                                               ]})
 
                 with it('returns a 404 status code'):
                     expect(self.response.status_code).to(equal(404))
