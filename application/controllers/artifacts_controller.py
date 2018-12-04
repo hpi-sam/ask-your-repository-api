@@ -90,12 +90,13 @@ class ArtifactsController(ApplicationController):
         if not current_app.es:
             return {"error": "search engine not available"}, 503
 
-        print("Hello")
-        print(request.files)
         params = create_params()
-        print("Hello2")
+
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
+        if not allowed_file(uploaded_file.filename):
+            return {"error": "file is not not allowed"}, 400
+
         filename = str(uuid.uuid4()) + "_" + \
             werkzeug.utils.secure_filename(uploaded_file.filename)
         file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
