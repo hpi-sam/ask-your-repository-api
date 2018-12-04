@@ -5,8 +5,8 @@ from io import BytesIO
 from flask import current_app
 from mamba import description, context, before, after, it
 from expects import expect, equal, have_key
+from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
-from elasticsearch.exceptions import NotFoundError, ConflictError
 # pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
 # pylint: enable=wrong-import-position

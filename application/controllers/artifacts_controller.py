@@ -57,15 +57,22 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def check_es(func):
+    """ Decorator that tests if elasticsearch is definded """
+    def func_wrapper(*args, **kwargs):
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
+        return func(*args, **kwargs)
+
+    return func_wrapper
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
+    method_decorators = [check_es]
+
     def show(self, object_id):
         "Logic for getting a single artifact"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
 
         try:
             return vars(Artifact.find(object_id))
@@ -75,9 +82,6 @@ class ArtifactsController(ApplicationController):
     def index(self):
         "Logic for querying several artifacts"
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
         params = search_params()
 
         result = Artifact.search(params)
@@ -86,9 +90,6 @@ class ArtifactsController(ApplicationController):
 
     def create(self):
         "Logic for creating an artifact"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
 
         params = create_params()
 
@@ -110,9 +111,6 @@ class ArtifactsController(ApplicationController):
     def update(self, object_id):
         "Logic for updating an artifact"
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
         params = update_params()
         try:
             artifact = Artifact.find(object_id)
@@ -124,9 +122,6 @@ class ArtifactsController(ApplicationController):
     def delete(self, object_id):
         "Logic for deleting an artifact"
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
         try:
             artifact = Artifact.find(object_id)
             artifact.delete()
@@ -137,8 +132,6 @@ class ArtifactsController(ApplicationController):
     def add_tags(self, object_id):
         """ Adds tags to an existing artifact """
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
         params = add_tags_params()
         try:
             artifact = Artifact.find(object_id)
