@@ -68,6 +68,16 @@ with description('/images') as self:
                 with it('returns a 400 status code'):
                     expect(self.response.status_code).to(equal(400))
 
+            with context("with malicious file attached"):
+                with before.each:
+                    self.response = self.context.client().post(
+                        "/images", content_type='multipart/form-data', data={
+                            "image": (BytesIO(b'oof'), 'malicious_file.exe')
+                        })
+
+                with it('returns a 400 status code'):
+                    expect(self.response.status_code).to(equal(400))
+
     with description('/1'):
         with description('GET'):
             with before.each:
