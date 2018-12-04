@@ -144,10 +144,10 @@ class ArtifactsController(ApplicationController):
         params = add_tags_params()
         try:
             artifact = Artifact.find(object_id)
-            print(vars(artifact))
-            new_list = getattr(artifact, "tags") + params["tags"]
-            artifact.update({
-                "tags": list(set(new_list))})
+            existing_tags = getattr(artifact, "tags")
+            new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
+
+            artifact.update({"tags": new_list})
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
