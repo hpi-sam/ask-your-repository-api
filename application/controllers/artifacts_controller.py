@@ -5,7 +5,7 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, request
+from flask import current_app
 from flask_restful import reqparse
 from application.errors import NotFound, NotSaved
 from application.models.artifact import Artifact
@@ -104,11 +104,8 @@ class ArtifactsController(ApplicationController):
         params["file_url"] = filename
         artifact = Artifact(params)
 
-        try:
-            artifact.save()
-            return vars(artifact), 200
-        except NotSaved:
-            return {"error": "artifact could not be saved"}, 404
+        artifact.save()
+        return vars(artifact), 200
 
     def update(self, object_id):
         "Logic for updating an artifact"
