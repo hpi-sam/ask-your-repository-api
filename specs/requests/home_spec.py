@@ -4,18 +4,18 @@ from flask import current_app
 from mamba import description, context, before, after, it
 from expects import expect, equal, have_keys
 from doublex import Mock, Stub, ANY_ARG
-# pylint: disable=wrong-import-position
 from specs.spec_helpers import Context
-# pylint: enable=wrong-import-position
 
 with description('/') as self:
 
+    # pylint: disable=duplicate-code
     with before.each:
         self.context = Context()
         current_app.es = Stub()
 
     with after.each:
         self.context.delete()
+    # pylint: enable=duplicate-code
 
     with context('database mocked'):
         with before.each:
