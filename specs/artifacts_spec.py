@@ -31,6 +31,22 @@ with description('/images') as self:
 
                 current_app.es = elastic_mock
                 self.response = self.context.client().get("/images")
+
+            with it('returns a 200 status code'):
+                expect(self.response.status_code).to(equal(200))
+
+        with description('POST'):
+            with before.each:
+                with Mock() as elastic_mock:
+                    elastic_mock.index(ANY_ARG).returns({})
+                current_app.es = elastic_mock
+
+                self.response = self.context.client().post(
+                    "/images", content_type='multipart/form-data', data={
+                        "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                        "tags": []
+                    })
+
             with it('returns a 200 status code'):
                 expect(self.response.status_code).to(equal(200))
 
@@ -41,12 +57,12 @@ with description('/images') as self:
                     elastic_mock.get(
                         doc_type='_all', id='1',
                         index='artifact').returns(
-                            {"_id": "asdf",
+                            {"_id": "1",
                              "_type": "image",
-                             "_source": {"tags": ["class_diagram.png", ""],
+                             "_source": {"tags": ["class_diagram", ""],
                                          "created_at": "today",
                                          "updated_at": "today",
-                                         "file_url": "asdf",
+                                         "file_url": "test.png",
                                          "file_date": "today"}})
                 current_app.es = elastic_mock
                 self.response = self.context.client().get("/images/1")
@@ -54,17 +70,80 @@ with description('/images') as self:
             with it('returns a 200 status code'):
                 expect(self.response.status_code).to(equal(200))
 
+        with description('UPDATE'):
+            with before.each:
+                with Mock() as elastic_mock:
+                    elastic_mock.get(
+                        doc_type='_all', id='1',
+                        index='artifact').returns(
+                            {"_id": "1",
+                             "_type": "image",
+                             "_source": {"tags": ["class_diagram", ""],
+                                         "created_at": "today",
+                                         "updated_at": "today",
+                                         "file_url": "test.png",
+                                         "file_date": "today"}})
+
+                    elastic_mock.update(
+                        doc_type='image', id='1', index='artifact',
+                        body={'doc': {'file_url': "test_updated.png", "tags": ["added", "tags"]}})
+
+                current_app.es = elastic_mock
+                self.response = self.context.client().put("/images/1", json={
+                    "tags": ["added", "tags"],
+                    "file_url": "test_updated.png"
+                })
+
+            with it('returns a 204 status code'):
+                expect(self.response.status_code).to(equal(204))
+
+        with description('DELETE'):
+            with before.each:
+                with Mock() as elastic_mock:
+                    elastic_mock.get(
+                        doc_type='_all', id='1',
+                        index='artifact').returns(
+                            {"_id": "1",
+                             "_type": "image",
+                             "_source": {"tags": ["class_diagram", ""],
+                                         "created_at": "today",
+                                         "updated_at": "today",
+                                         "file_url": "test.png",
+                                         "file_date": "today"}})
+
+                    elastic_mock.delete(
+                        doc_type='image', id='1', index='artifact')
+
+                current_app.es = elastic_mock
+                self.response = self.context.client().delete("/images/1")
+
+            with it('returns a 204 status code'):
+                expect(self.response.status_code).to(equal(204))
+
+    with description('/1/tags'):
         with description('POST'):
             with before.each:
                 with Mock() as elastic_mock:
-                    elastic_mock.index(ANY_ARG).returns({})
+                    elastic_mock.get(
+                        doc_type='_all', id='1',
+                        index='artifact').returns(
+                            {"_id": "1",
+                             "_type": "image",
+                             "_source": {"tags": ["class_diagram", ""],
+                                         "created_at": "today",
+                                         "updated_at": "today",
+                                         "file_url": "test.png",
+                                         "file_date": "today"}})
+
+                    elastic_mock.update(
+                        doc_type='image', id='1', index='artifact',
+                        body={'doc': {"tags": ["class_diagram", "", "new_tag"]}})
+
                 current_app.es = elastic_mock
-                print(vars(current_app.url_map))
-                self.response = self.context.client().post(
-                    "/images", content_type='multipart/form-data', data={
-                        "image": (BytesIO(b'oof'), 'helloworld.jpg'),
-                        "tags": []
-                    })
+                self.response = self.context.client().post("/images/1/tags",
+                                                          json={"tags": [
+                                                              "new_tag", "class_diagram"
+                                                          ]})
 
             with it('returns a 200 status code'):
-                expect(self.response.status_code).to(equal(200))
+                expect(self.response.status_code).to(equal(204))
