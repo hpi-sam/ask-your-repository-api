@@ -7,7 +7,7 @@ import datetime
 import werkzeug
 from flask import current_app
 from flask_restful import reqparse
-from application.errors import NotFound, NotSaved
+from application.errors import NotFound
 from application.models.artifact import Artifact
 from .application_controller import ApplicationController
 
