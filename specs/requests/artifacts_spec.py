@@ -8,19 +8,18 @@ from expects import expect, equal, have_key
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
 from specs.spec_helpers import Context
+from specs.factories.elasticsearch import es_search_response, es_get_response
 
 sys.path.insert(0, 'specs')
 
 with description('/images') as self:
 
-    # pylint: disable=duplicate-code
     with before.each:
         self.context = Context()
         current_app.es = Stub()
 
     with after.each:
         self.context.delete()
-    # pylint: enable=duplicate-code
 
     with description('/'):
         with description('GET without database'):
@@ -34,28 +33,7 @@ with description('/images') as self:
         with description('GET'):
             with before.each:
                 with Mock() as elastic_mock:
-                    elastic_mock.search(ANY_ARG).returns(
-                        {"hits": {"total": 12, "max_score": 1.0, "hits": [
-                            {"_index": "artifact",
-                             "_type": "image",
-                             "_id": 1,
-                             "_score": 1.0,
-                             "_source": {
-                                 "created_at": "today",
-                                 "updated_at": "today",
-                                 "file_url": "class_diagram.png",
-                                 "tags": ["uml", "class diagram"],
-                                 "file_date": "today"}},
-                            {"_index": "artifact",
-                             "_type": "image",
-                             "_id": 1,
-                             "_score": 0.5,
-                             "_source": {
-                                 "created_at": "yesterday",
-                                 "updated_at": "yesterday",
-                                 "file_url": "use_case_diagram.png",
-                                 "tags": ["uml", "use case diagram"],
-                                 "file_date": "yesterday"}}]}})
+                    elastic_mock.search(ANY_ARG).returns(es_search_response())
 
                 current_app.es = elastic_mock
                 self.response = self.context.client().get("/images")
@@ -103,24 +81,17 @@ with description('/images') as self:
                             "image": (BytesIO(b'oof'), 'malicious_file.exe')
                         })
 
-                with it('returns a 400 status code'):
-                    expect(self.response.status_code).to(equal(400))
+                with it('returns a 422 status code'):
+                    expect(self.response.status_code).to(equal(422))
 
-    with description('/1'):
+    with description('/:id'):
         with description('GET'):
             with context("the resource exists"):
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
                             doc_type='_all', id='1',
-                            index='artifact').returns(
-                                {"_id": "1",
-                                 "_type": "image",
-                                 "_source": {"tags": ["class_diagram", ""],
-                                             "created_at": "today",
-                                             "updated_at": "today",
-                                             "file_url": "test.png",
-                                             "file_date": "today"}})
+                            index='artifact').returns(es_get_response())
                     current_app.es = elastic_mock
                     self.response = self.context.client().get("/images/1")
 
@@ -149,14 +120,7 @@ with description('/images') as self:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
                             doc_type='_all', id='1',
-                            index='artifact').returns(
-                                {"_id": "1",
-                                 "_type": "image",
-                                 "_source": {"tags": ["class_diagram", ""],
-                                             "created_at": "today",
-                                             "updated_at": "today",
-                                             "file_url": "test.png",
-                                             "file_date": "today"}})
+                            index='artifact').returns(es_get_response())
 
                         elastic_mock.update(
                             doc_type='image', id='1', index='artifact',
@@ -195,14 +159,7 @@ with description('/images') as self:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
                             doc_type='_all', id='1',
-                            index='artifact').returns(
-                                {"_id": "1",
-                                 "_type": "image",
-                                 "_source": {"tags": ["class_diagram", ""],
-                                             "created_at": "today",
-                                             "updated_at": "today",
-                                             "file_url": "test.png",
-                                             "file_date": "today"}})
+                            index='artifact').returns(es_get_response())
 
                         elastic_mock.delete(
                             doc_type='image', id='1', index='artifact')
@@ -236,14 +193,7 @@ with description('/images') as self:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
                             doc_type='_all', id='1',
-                            index='artifact').returns(
-                                {"_id": "1",
-                                 "_type": "image",
-                                 "_source": {"tags": ["class_diagram", ""],
-                                             "created_at": "today",
-                                             "updated_at": "today",
-                                             "file_url": "test.png",
-                                             "file_date": "today"}})
+                            index='artifact').returns(es_get_response())
 
                         elastic_mock.update(
                             doc_type='image', id='1', index='artifact',

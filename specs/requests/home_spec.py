@@ -8,14 +8,12 @@ from specs.spec_helpers import Context
 
 with description('/') as self:
 
-    # pylint: disable=duplicate-code
     with before.each:
         self.context = Context()
         current_app.es = Stub()
 
     with after.each:
         self.context.delete()
-    # pylint: enable=duplicate-code
 
     with context('database mocked'):
         with before.each:
