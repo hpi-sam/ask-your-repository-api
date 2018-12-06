@@ -69,6 +69,11 @@ def add_tags_args():
         "tags": fields.List(fields.String(), missing=[]),
     }
 
+def suggested_tags_args():
+    """ Defines and validates suggested tags params """
+    return {
+        "tags": fields.List(fields.String(), missing=[]),
+    }
 
 def allowed_file(filename):
     """checks if file extension is allowed"""
@@ -162,10 +167,18 @@ class ArtifactsController(ApplicationController):
 
         try:
             artifact = Artifact.find(artifact_id)
-            existing_tags = getattr(artifact, "tags")
+            existing_tags = artifact.tags
+
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
             artifact.update({"tags": new_list})
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
+
+    def suggested_tags(self, object_id):
+        """ Takes an array of tags and suggests tags based on that """
+        params = parser.parse(suggested_tags_args(), request)
+
+        all_records = Artifact.all()
+        return all_records, 200
