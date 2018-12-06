@@ -57,10 +57,14 @@ class ActionController:
     def delete(self, *args, **kwargs):
         """ Method for getting a single resource """
 
+
     @classmethod
     def collection(cls, index=True, create=True):
         """ Creates the Collection class with allowed methods """
         methods = {}
+
+        # adds the list of collection_decorators to the list of
+        # all method decorators (preserves order)
 
         decorators = cls.method_decorators + \
             list(set(cls.collection_decorators) - set(cls.method_decorators))
@@ -80,6 +84,7 @@ class ActionController:
         """ Creates the member class with allowed methods """
         methods = {}
 
+        # adds the list of member_decorators to the list of all method decorators (preserves order)
         decorators = cls.method_decorators + \
             list(set(cls.member_decorators) - set(cls.method_decorators))
         methods["method_decorators"] = decorators
