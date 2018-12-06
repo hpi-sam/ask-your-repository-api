@@ -1,4 +1,4 @@
-# Elija
+# Elija &middot; [![Coverage Status](https://coveralls.io/repos/github/hpi-sam/ask-your-repository-artefact-service/badge.svg?branch=master)](https://coveralls.io/github/hpi-sam/ask-your-repository-artefact-service?branch=master)
 
 # Setup service
 - Install Python 3.7
