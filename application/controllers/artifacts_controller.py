@@ -33,7 +33,7 @@ def create_params():
     parser.add_argument("type", default="image")
     parser.add_argument("image", dest="file", required=True,
                         type=werkzeug.datastructures.FileStorage, location='files')
-    parser.add_argument("tags", action="append", default=[], location="json")
+    parser.add_argument("tags", action="append", default=[])
     return parser.parse_args()
 
 
@@ -75,7 +75,7 @@ class ArtifactsController(ApplicationController):
         "Logic for getting a single artifact"
 
         try:
-            return vars(Artifact.find(object_id))
+            return Artifact.find(object_id).to_json()
         except NotFound:
             return {"error": "not found"}, 404
 

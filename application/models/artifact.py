@@ -2,6 +2,10 @@
 from flask import current_app
 from .esmodel import ESModel
 
+def build_url(url):
+    """ Schema: fileserver/id_filename """
+    return current_app.config["FILE_SERVER"] + \
+            "/" + url
 
 class Artifact(ESModel):
     """ Handles saving and searching """
@@ -14,12 +18,15 @@ class Artifact(ESModel):
     ]
 
     @classmethod
-    def parse_params(cls, params):
-        params = super().parse_params(params)
-        params["url"] = current_app.config["FILE_SERVER"] + \
-            "/" + params["file_url"]
-        del params["file_url"]
-        return params
+    def parse_search_params(cls, params):
+        """ Parse array of dictionaries returned by elasticsearch """
+        result = []
+        for hit in params["hits"]["hits"]:
+            resource = cls.parse_params(hit)
+            resource["url"] = resource.pop("file_url")
+            resource["score"] = hit["_score"]
+            result.append(resource)
+        return result
 
     @classmethod
     def search(cls, params):
@@ -60,3 +67,9 @@ class Artifact(ESModel):
             }
         }
         return body
+
+    def to_json(self):
+        """ Parses the object to a dictionary """
+        result = vars(self).copy()
+        result["url"] = build_url(result.pop("file_url"))
+        return result

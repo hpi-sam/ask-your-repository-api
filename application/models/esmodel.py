@@ -63,7 +63,9 @@ class ESModel():
         """ Parse array of dictionaries returned by elasticsearch """
         result = []
         for hit in params["hits"]["hits"]:
-            result.append(cls.parse_params(hit))
+            resource = cls.parse_params(hit)
+            resource["score"] = hit["_score"]
+            result.append(resource)
         return result
 
     def __init__(self, params):
