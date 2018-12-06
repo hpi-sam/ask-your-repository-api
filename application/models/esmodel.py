@@ -14,6 +14,24 @@ class ESModel():
     members = []
 
     @classmethod
+    def all(cls):
+        """
+        Finds all es objects. Needs to fire two queries.
+        One to get the number of objects and one two return the objects.
+        Necessary because search has a default size value of 10.
+        """
+
+        get_all = current_app.es.search(
+            index=cls.index,
+        )
+        size = get_all["hits"]["total"]
+        result = current_app.es.search(
+            index=cls.index,
+            body={"from": 0, "size": size}
+        )
+        return cls.parse_search_params(result)
+
+    @classmethod
     def find(cls, object_id):
         """ Finds object by id """
         try:

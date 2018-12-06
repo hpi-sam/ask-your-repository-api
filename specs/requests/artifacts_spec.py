@@ -306,3 +306,20 @@ with description('/images') as self:
                 # sending a single tag is fine it will be parsed to an array with only one element
                 expect(self.response.json['errors']).to(have_key('object_id'))
 
+    with description('/:id/suggestions'):
+        with description('GET'):
+            with before.each:
+                with Mock() as elastic_mock:
+                    elastic_mock.search(index="artifact").returns({
+                        "hits": {
+                            "total": 2
+                        }
+                    })
+                    elastic_mock.search(index="artifact",
+                                        body={"from": 0, "size": 2}).returns(es_search_response())
+
+                current_app.es = elastic_mock
+                self.response = self.context.client().get("/images/1/suggestions")
+
+            with it('returns a 200 status code'):
+                expect(self.response.status_code).to(equal(200))
