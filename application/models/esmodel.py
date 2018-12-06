@@ -33,12 +33,12 @@ class ESModel():
             index=cls.index,
             doc_type=params["types"],
             body=params["search_body"])
-        return cls.parse_search_params(result)
+        return cls.parse_search_response(result)
 
     @classmethod
-    def from_es(cls, es_params):
+    def from_es(cls, es_response):
         """ Create a Resource from elastic_search """
-        params = cls.parse_params(es_params)
+        params = cls.parse_response(es_response)
         es_object = cls(params)
         es_object.id = params["id"]
         es_object.created_at = params["created_at"]
@@ -46,7 +46,7 @@ class ESModel():
         return es_object
 
     @classmethod
-    def parse_params(cls, params):
+    def parse_response(cls, params):
         """ Parse dictionary returned by elasticsearch """
         result = {}
         result["id"] = params["_id"]
@@ -59,12 +59,18 @@ class ESModel():
         return result
 
     @classmethod
-    def parse_search_params(cls, params):
+    def parse_single_search_response(cls, single_response):
+        """ Parses a single object from the elasticsearch response Array """
+        resource = cls.parse_response(single_response)
+        resource["score"] = single_response["_score"]
+        return resource
+
+    @classmethod
+    def parse_search_response(cls, response):
         """ Parse array of dictionaries returned by elasticsearch """
         result = []
-        for hit in params["hits"]["hits"]:
-            resource = cls.parse_params(hit)
-            resource["score"] = hit["_score"]
+        for hit in response["hits"]["hits"]:
+            resource = cls.parse_single_search_response(hit)
             result.append(resource)
         return result
 

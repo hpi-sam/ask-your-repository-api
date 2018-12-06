@@ -18,15 +18,11 @@ class Artifact(ESModel):
     ]
 
     @classmethod
-    def parse_search_params(cls, params):
-        """ Parse array of dictionaries returned by elasticsearch """
-        result = []
-        for hit in params["hits"]["hits"]:
-            resource = cls.parse_params(hit)
-            resource["url"] = resource.pop("file_url")
-            resource["score"] = hit["_score"]
-            result.append(resource)
-        return result
+    def parse_single_search_response(cls, single_response):
+        """ Parses a single object from the elasticsearch response Array """
+        resource = super().parse_single_search_response(single_response)
+        resource["url"] = build_url(resource.pop("file_url"))
+        return resource
 
     @classmethod
     def search(cls, params):
