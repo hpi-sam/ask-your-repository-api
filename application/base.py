@@ -33,6 +33,15 @@ class ActionController:
     Inspired by rails controllers.
     """
 
+    method_decorators = []
+    """ Defines decorators that get called for all actions """
+
+    member_decorators = []
+    """ Defines decorators that get called for member actions (show, update, delete)"""
+
+    collection_decorators = []
+    """ Defines decorators that get called for collection actions (index, create)"""
+
     def show(self, *args, **kwargs):
         """ Method for getting a single resource """
 
@@ -48,10 +57,19 @@ class ActionController:
     def delete(self, *args, **kwargs):
         """ Method for getting a single resource """
 
+
     @classmethod
     def collection(cls, index=True, create=True):
         """ Creates the Collection class with allowed methods """
         methods = {}
+
+        # adds the list of collection_decorators to the list of
+        # all method decorators (preserves order)
+
+        decorators = cls.method_decorators + \
+            list(set(cls.collection_decorators) - set(cls.method_decorators))
+        methods["method_decorators"] = decorators
+
         if create:
             methods["post"] = cls().create
 
@@ -65,6 +83,12 @@ class ActionController:
     def member(cls, show=True, update=True, delete=True):
         """ Creates the member class with allowed methods """
         methods = {}
+
+        # adds the list of member_decorators to the list of all method decorators (preserves order)
+        decorators = cls.method_decorators + \
+            list(set(cls.member_decorators) - set(cls.method_decorators))
+        methods["method_decorators"] = decorators
+
         if show:
             methods["get"] = cls().show
 
@@ -82,6 +106,7 @@ class ActionController:
         """ Creates resource class for new method """
 
         methods = {}
+        methods["method_decorators"] = cls.method_decorators
         methods[method] = getattr(cls(), name)
         new_class = type(name.capitalize(), (Resource,), methods)
 

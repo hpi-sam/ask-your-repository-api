@@ -3,8 +3,8 @@
 import uuid
 import datetime
 from flask import current_app
-from elasticsearch.exceptions import NotFoundError, ConflictError
-from application.errors import NotFound, NotInitialized, NotSaved
+from elasticsearch.exceptions import NotFoundError
+from application.errors import NotFound, NotInitialized
 
 
 class ESModel():
@@ -84,20 +84,17 @@ class ESModel():
         del body["id"]
         del body["type"]
 
-        try:
-            current_app.es.index(
-                index=self.index,
-                doc_type=self.type,
-                id=self.id,
-                body=body)
-            return self, 201
-        except ConflictError:
-            raise NotSaved
+        current_app.es.index(
+            index=self.index,
+            doc_type=self.type,
+            id=self.id,
+            body=body)
+        return self, 201
 
     def update(self, params):
         """ Update the Resource """
         if not self.id:
-            raise NotInitialized
+            raise NotInitialized()
 
         self.updated_at = datetime.datetime.now().isoformat()
         current_app.es.update(

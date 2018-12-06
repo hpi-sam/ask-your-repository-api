@@ -5,9 +5,9 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, request
+from flask import current_app
 from flask_restful import reqparse
-from application.errors import NotFound, NotSaved
+from application.errors import NotFound
 from application.models.artifact import Artifact
 from .application_controller import ApplicationController
 
@@ -57,15 +57,22 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def check_es(func):
+    """ Decorator that tests if elasticsearch is definded """
+    def func_wrapper(*args, **kwargs):
+        if not current_app.es:
+            return {"error": "search engine not available"}, 503
+        return func(*args, **kwargs)
+
+    return func_wrapper
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
+    method_decorators = [check_es]
+
     def show(self, object_id):
         "Logic for getting a single artifact"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
 
         try:
             return vars(Artifact.find(object_id))
@@ -74,9 +81,6 @@ class ArtifactsController(ApplicationController):
 
     def index(self):
         "Logic for querying several artifacts"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
 
         params = search_params()
 
@@ -87,15 +91,13 @@ class ArtifactsController(ApplicationController):
     def create(self):
         "Logic for creating an artifact"
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
-        print("Hello")
-        print(request.files)
         params = create_params()
-        print("Hello2")
+
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
+        if not allowed_file(uploaded_file.filename):
+            return {"error": "file is not allowed"}, 422
+
         filename = str(uuid.uuid4()) + "_" + \
             werkzeug.utils.secure_filename(uploaded_file.filename)
         file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
@@ -103,17 +105,11 @@ class ArtifactsController(ApplicationController):
         params["file_url"] = filename
         artifact = Artifact(params)
 
-        try:
-            artifact.save()
-            return vars(artifact), 200
-        except NotSaved:
-            return {"error": "artifact could not be saved"}, 404
+        artifact.save()
+        return vars(artifact), 200
 
     def update(self, object_id):
         "Logic for updating an artifact"
-
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
 
         params = update_params()
         try:
@@ -126,9 +122,6 @@ class ArtifactsController(ApplicationController):
     def delete(self, object_id):
         "Logic for deleting an artifact"
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-
         try:
             artifact = Artifact.find(object_id)
             artifact.delete()
@@ -139,15 +132,13 @@ class ArtifactsController(ApplicationController):
     def add_tags(self, object_id):
         """ Adds tags to an existing artifact """
 
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
         params = add_tags_params()
         try:
             artifact = Artifact.find(object_id)
-            print(vars(artifact))
-            new_list = getattr(artifact, "tags") + params["tags"]
-            artifact.update({
-                "tags": list(set(new_list))})
+            existing_tags = getattr(artifact, "tags")
+            new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
+
+            artifact.update({"tags": new_list})
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404

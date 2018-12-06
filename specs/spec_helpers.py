@@ -1,7 +1,6 @@
 """ Defines helpers for specs """
 from application import create_app
 
-
 class Context:
     """ Setup the testing app, testing context and client for all tests. """
 
