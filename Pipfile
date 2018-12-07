@@ -10,6 +10,7 @@ elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"
 flask-cors = "*"
+webargs = "*"
 
 [dev-packages]
 coverage = "*"
