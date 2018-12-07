@@ -3,7 +3,7 @@
 import sys
 from io import BytesIO
 from flask import current_app
-from mamba import description, context, before, after, it
+from mamba import shared_context, included_context, description, context, before, after, it
 from expects import expect, equal, have_key
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
@@ -11,6 +11,7 @@ from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 
 sys.path.insert(0, 'specs')
+
 
 with description('/images') as self:
 
@@ -22,10 +23,13 @@ with description('/images') as self:
         self.context.delete()
 
     with description('/'):
+        with before.each:
+            self.path = "/images"
+
         with description('GET without database'):
             with before.each:
                 current_app.es = None
-                self.response = self.context.client().get("/images")
+                self.response = self.context.client().get(self.path)
 
             with it('returns a 503 status code'):
                 expect(self.response.status_code).to(equal(503))
@@ -35,11 +39,65 @@ with description('/images') as self:
                 with Mock() as elastic_mock:
                     elastic_mock.search(ANY_ARG).returns(es_search_response())
 
-                current_app.es = elastic_mock
-                self.response = self.context.client().get("/images")
+            with shared_context('responds with error') as self:
+                with before.each:
+                    self.response = self.context.client().get(f'{self.path}?{self.param}={self.value}')
 
-            with it('returns a 200 status code'):
-                expect(self.response.status_code).to(equal(200))
+                with it('returns a 422 status code'):
+                    expect(self.response.status_code).to(equal(422))
+                
+                with it('returns a descriptive error message'):
+                    expect(self.response.json).to(have_key("errors"))
+                    expect(self.response.json["errors"]).to(have_key(f'{self.param}'))
+
+            with context('valid request'):
+                with before.each:
+                    with Mock() as elastic_mock:
+                        elastic_mock.search(ANY_ARG).returns(
+                            {"hits": {"total": 12, "max_score": 1.0, "hits": [
+                                {"_index": "artifact",
+                                "_type": "image",
+                                "_id": 1,
+                                "_score": 1.0,
+                                "_source": {
+                                    "created_at": "today",
+                                    "updated_at": "today",
+                                    "file_url": "class_diagram.png",
+                                    "tags": ["uml", "class diagram"],
+                                    "file_date": "today"}},
+                                {"_index": "artifact",
+                                "_type": "image",
+                                "_id": 1,
+                                "_score": 0.5,
+                                "_source": {
+                                    "created_at": "yesterday",
+                                    "updated_at": "yesterday",
+                                    "file_url": "use_case_diagram.png",
+                                    "tags": ["uml", "use case diagram"],
+                                    "file_date": "yesterday"}}]}})
+
+                    current_app.es = elastic_mock
+                    self.response = self.context.client().get("/images")
+
+                with it('returns a 200 status code'):
+                    expect(self.response.status_code).to(equal(200))
+            
+            with context('invalid requests'):                
+                with description('paramter: limit value: asdf'):
+                    with before.each:
+                        self.param = 'limit'
+                        self.value = 'asdf'
+
+                    with included_context('responds with error'):
+                        pass
+
+                with description('paramter: offset value: asdf'):
+                    with before.each:
+                        self.param = 'offset'
+                        self.value = 'asdf'
+
+                    with included_context('responds with error'):
+                        pass
 
         with description('POST'):
             with before.each:
@@ -56,6 +114,7 @@ with description('/images') as self:
                         })
 
                 with it('returns a 200 status code'):
+                    print(self.response.json)
                     expect(self.response.status_code).to(equal(200))
 
                 with it("returns an id"):
@@ -71,8 +130,8 @@ with description('/images') as self:
                             "tags": []
                         })
 
-                with it('returns a 400 status code'):
-                    expect(self.response.status_code).to(equal(400))
+                with it('returns a 422 status code'):
+                    expect(self.response.status_code).to(equal(422))
 
             with context("with malicious file attached"):
                 with before.each:

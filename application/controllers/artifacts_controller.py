@@ -5,18 +5,20 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app
+from flask import current_app, request
 from flask_restful import reqparse
 from application.errors import NotFound
 from application.models.artifact import Artifact
 from .application_controller import ApplicationController
+from webargs import fields, validate, ValidationError
+from webargs.flaskparser import use_args, use_kwargs, parser, abort
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
 def search_params():
     """ Defines and validates search params """
-    parser = reqparse.RequestParser()
+    parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument("search", default="")
     parser.add_argument("type", action="append", dest="types")
     parser.add_argument("start_date")
@@ -25,6 +27,16 @@ def search_params():
     parser.add_argument("limit", type=int, default=12)
 
     return parser.parse_args()
+
+def search_args():
+    return {
+        "search": fields.String(missing=""),
+        "types": fields.String(load_from="type", missing="artifact"),
+        "start_date": fields.DateTime(),
+        "end_date": fields.DateTime(),
+        "offset": fields.Integer(missing=0),
+        "limit": fields.Integer(missing=12)
+    }
 
 
 def create_params():
@@ -36,6 +48,21 @@ def create_params():
     parser.add_argument("tags", action="append", default=[])
     return parser.parse_args()
 
+def create_args():
+    return {
+        "type": fields.String(missing="image"),
+        "file": fields.Function(
+            deserialize=validate_image,
+            required=True,
+            location='files',
+            load_from='image'),
+        "tags": fields.List(fields.String())
+    }
+
+def validate_image(image):
+    if not allowed_file(image.filename):
+        raise ValidationError('Invalid require data: image')
+    return image
 
 def update_params():
     """ Defines and validates update params """
@@ -66,6 +93,13 @@ def check_es(func):
 
     return func_wrapper
 
+@parser.error_handler
+def handle_request_parsing_error(err, req, schema):
+    """webargs error handler that uses Flask-RESTful's abort function to return
+    a JSON error response to the client.
+    """
+    abort(422, errors=err.messages)
+
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
@@ -81,8 +115,12 @@ class ArtifactsController(ApplicationController):
 
     def index(self):
         "Logic for querying several artifacts"
+        
+            
+        params = parser.parse(search_args(), request)
+        print(params)
 
-        params = search_params()
+        #params = search_params()
 
         result = Artifact.search(params)
 
@@ -90,8 +128,10 @@ class ArtifactsController(ApplicationController):
 
     def create(self):
         "Logic for creating an artifact"
+        params = parser.parse(create_args(), request)
+        print(params)
 
-        params = create_params()
+        # params = create_params()
 
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
