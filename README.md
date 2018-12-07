@@ -39,7 +39,7 @@
 # Running tests
 - Run: `pipenv run python -m pytest -v tests` for testing without elasticsearch
 - Run: `pipenv run python -m pytest -v tests --use-db` for testing with elasticsearch
-- All calls to elasticsearch must by mocked **but** all elasticsearch queries must be tested in test_elasticsearch.py
+- All calls to elasticsearch must be mocked **but** all elasticsearch queries must be tested in test_elasticsearch.py
 
 # Start service
 - Run: `pipenv run flask run`
