@@ -37,9 +37,10 @@
 - Run: `pipenv run python utils/setup_elasticsearch.py`
 
 # Running tests
-- Run: `pipenv run python -m pytest -v tests` for testing without elasticsearch
-- Run: `pipenv run python -m pytest -v tests --use-db` for testing with elasticsearch
-- All calls to elasticsearch must be mocked **but** all elasticsearch queries must be tested in test_elasticsearch.py
+- Run: `pipenv run mamba specs`
+
+# Running linter
+- Run: `pipenv run pylint application/ specs/`
 
 # Start service
 - Run: `pipenv run flask run`
