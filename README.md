@@ -32,6 +32,7 @@
 
 # Install dependencies
 - Run: `pipenv install`
+- And run: `pipenv install --dev`
 
 # Setup database
 - Run: `pipenv run python utils/setup_elasticsearch.py`
