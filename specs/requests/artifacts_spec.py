@@ -9,6 +9,7 @@ from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
+from specs.factories.uuid_fixture import get_uuid
 
 sys.path.insert(0, 'specs')
 
@@ -39,6 +40,8 @@ with description('/images') as self:
                 with Mock() as elastic_mock:
                     elastic_mock.search(ANY_ARG).returns(es_search_response())
 
+                    current_app.es = elastic_mock
+
             with shared_context('responds with error') as self:
                 with before.each:
                     self.response = self.context.client().get(f'{self.path}?{self.param}={self.value}')
@@ -52,38 +55,13 @@ with description('/images') as self:
 
             with context('valid request'):
                 with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.search(ANY_ARG).returns(
-                            {"hits": {"total": 12, "max_score": 1.0, "hits": [
-                                {"_index": "artifact",
-                                "_type": "image",
-                                "_id": 1,
-                                "_score": 1.0,
-                                "_source": {
-                                    "created_at": "today",
-                                    "updated_at": "today",
-                                    "file_url": "class_diagram.png",
-                                    "tags": ["uml", "class diagram"],
-                                    "file_date": "today"}},
-                                {"_index": "artifact",
-                                "_type": "image",
-                                "_id": 1,
-                                "_score": 0.5,
-                                "_source": {
-                                    "created_at": "yesterday",
-                                    "updated_at": "yesterday",
-                                    "file_url": "use_case_diagram.png",
-                                    "tags": ["uml", "use case diagram"],
-                                    "file_date": "yesterday"}}]}})
-
-                    current_app.es = elastic_mock
                     self.response = self.context.client().get("/images")
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
             
             with context('invalid requests'):                
-                with description('paramter: limit value: asdf'):
+                with description('paramter: limit | value: asdf'):
                     with before.each:
                         self.param = 'limit'
                         self.value = 'asdf'
@@ -91,7 +69,7 @@ with description('/images') as self:
                     with included_context('responds with error'):
                         pass
 
-                with description('paramter: offset value: asdf'):
+                with description('paramter: offset | value: asdf'):
                     with before.each:
                         self.param = 'offset'
                         self.value = 'asdf'
@@ -149,10 +127,10 @@ with description('/images') as self:
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').returns(es_get_response())
                     current_app.es = elastic_mock
-                    self.response = self.context.client().get("/images/1")
+                    self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
@@ -162,10 +140,10 @@ with description('/images') as self:
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').raises(NotFoundError)
                     current_app.es = elastic_mock
-                    self.response = self.context.client().get("/images/1")
+                    self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 404 status code'):
                     expect(self.response.status_code).to(equal(404))
@@ -174,57 +152,73 @@ with description('/images') as self:
                     expect(self.response.json).to(have_key("error"))
 
         with description('UPDATE'):
-            with context("the resource exists"):
+            with context('valid request'):
+                with context("the resource exists"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').returns(es_get_response())
+
+                            elastic_mock.update(
+                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
+                                body={'doc': {
+                                    'file_url': "test_updated.png",
+                                    "tags": ["added", "tags"]}})
+
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().put(f"/images/{get_uuid(0)}", json={
+                            "tags": ["added", "tags"],
+                            "file_url": "test_updated.png"
+                        })
+
+                    with it('returns a 204 status code'):
+                        expect(self.response.status_code).to(equal(204))
+
+                with context("the resource doesn't exists"):
+
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').raises(NotFoundError)
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().put(f"/images/{get_uuid(0)}")
+
+                    with it('returns a 404 status code'):
+                        expect(self.response.status_code).to(equal(404))
+
+                    with it('includes error message'):
+                        expect(self.response.json).to(have_key("error"))
+
+            with context('invalid request'):
                 with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id='1',
-                            index='artifact').returns(es_get_response())
-
-                        elastic_mock.update(
-                            doc_type='image', id='1', index='artifact',
-                            body={'doc': {
-                                'file_url': "test_updated.png",
-                                "tags": ["added", "tags"]}})
-
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().put("/images/1", json={
-                        "tags": ["added", "tags"],
-                        "file_url": "test_updated.png"
-                    })
-
-                with it('returns a 204 status code'):
-                    expect(self.response.status_code).to(equal(204))
-
-            with context("the resource doesn't exists"):
-
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id='1',
-                            index='artifact').raises(NotFoundError)
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().put("/images/1")
-
-                with it('returns a 404 status code'):
-                    expect(self.response.status_code).to(equal(404))
-
-                with it('includes error message'):
-                    expect(self.response.json).to(have_key("error"))
+                    self.response = self.context.client().put("/images/asdf", json={
+                            "tags": "1234",
+                            "file_url": "nomnom"
+                        })
+                with it('responds with a 422'):
+                    print(self.response.json)
+                    expect(self.response.status_code).to(equal(422))
+                
+                with it('responds with correct error messages'):
+                    expect(self.response.json).to(have_key('errors'))
+                    expect(self.response.json['errors']).to(have_key('object_id'))
+                    expect(self.response.json['errors']).to(have_key('file_url'))
 
         with description('DELETE'):
             with context("the resource exists"):
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').returns(es_get_response())
 
                         elastic_mock.delete(
-                            doc_type='image', id='1', index='artifact')
+                            doc_type='image', id=f'{get_uuid(0)}', index='artifact')
 
                     current_app.es = elastic_mock
-                    self.response = self.context.client().delete("/images/1")
+                    self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                 with it('returns a 204 status code'):
                     expect(self.response.status_code).to(equal(204))
@@ -234,10 +228,10 @@ with description('/images') as self:
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').raises(NotFoundError)
                     current_app.es = elastic_mock
-                    self.response = self.context.client().delete("/images/1")
+                    self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                 with it('returns a 404 status code'):
                     expect(self.response.status_code).to(equal(404))
@@ -251,15 +245,15 @@ with description('/images') as self:
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').returns(es_get_response())
 
                         elastic_mock.update(
-                            doc_type='image', id='1', index='artifact',
+                            doc_type='image', id=f'{get_uuid(0)}', index='artifact',
                             body={'doc': {"tags": ["class_diagram", "", "new_tag"]}})
 
                     current_app.es = elastic_mock
-                    self.response = self.context.client().post("/images/1/tags",
+                    self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
                                                                json={"tags": [
                                                                    "new_tag", "class_diagram"
                                                                ]})
@@ -272,10 +266,10 @@ with description('/images') as self:
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
-                            doc_type='_all', id='1',
+                            doc_type='_all', id=f'{get_uuid(0)}',
                             index='artifact').raises(NotFoundError)
                     current_app.es = elastic_mock
-                    self.response = self.context.client().post("/images/1/tags",
+                    self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
                                                                json={"tags": [
                                                                    "new_tag", "class_diagram"
                                                                ]})

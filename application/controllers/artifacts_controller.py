@@ -71,6 +71,17 @@ def update_params():
     parser.add_argument("tags", action="append", default=[])
     return parser.parse_args()
 
+def update_args():
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "tags": fields.List(fields.String(), missing=[]),
+        "file_url": fields.Function(deserialize=validate_file_name)
+    }
+
+def validate_file_name(filename):
+    if not allowed_file(filename):
+        raise ValidationError('Errornous file_url')
+    return filename
 
 def add_tags_params():
     """ Defines and validates add tags params """
@@ -150,10 +161,12 @@ class ArtifactsController(ApplicationController):
 
     def update(self, object_id):
         "Logic for updating an artifact"
-
-        params = update_params()
+        print(request)
+        params = parser.parse(update_args(), request)
+        artifact_id = str(params.pop('id'))
+        # params = update_params()
         try:
-            artifact = Artifact.find(object_id)
+            artifact = Artifact.find(artifact_id)
             artifact.update(params)
             return '', 204
         except NotFound:
