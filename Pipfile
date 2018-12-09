@@ -22,6 +22,7 @@ doublex = "*"
 doublex-expects = "*"
 pep8 = "*"
 autopep8 = "*"
+rope = "*"
 
 [requires]
 python_version = "3.7"

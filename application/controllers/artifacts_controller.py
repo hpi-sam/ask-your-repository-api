@@ -73,6 +73,8 @@ def suggested_tags_args():
     """ Defines and validates suggested tags params """
     return {
         "tags": fields.List(fields.String(), missing=[]),
+        "min_support": fields.Number(missing=0.25),
+        "limit": fields.Integer(missing=3)
     }
 
 def allowed_file(filename):
@@ -95,6 +97,20 @@ def handle_request_parsing_error(err, req, schema): # pylint: disable=unused-arg
     a JSON error response to the client.
     """
     abort(422, errors=err.messages)
+
+def most_frequent_tags(records, limit):
+    """returns the most frequently used tags in a given list of artifacts"""
+    tag_frequencies = {}
+    for record in records:
+        for tag in record["tags"]:
+            if tag in tag_frequencies.keys():
+                tag_frequencies[tag] += 1
+            else:
+                tag_frequencies[tag] = 1
+    sorted_frequencies = sorted(tag_frequencies.items(),
+                                key=lambda kv: kv[1], reverse=True)[:limit]
+    sorted_tags = [frequency[0] for frequency in sorted_frequencies]
+    return sorted_tags
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -179,6 +195,38 @@ class ArtifactsController(ApplicationController):
     def suggested_tags(self, object_id):
         """ Takes an array of tags and suggests tags based on that """
         params = parser.parse(suggested_tags_args(), request)
+        current_tags = params.tags
 
+        # parameter validation
+        if params.min_support > 1:
+            return {"error": "min_support must be <= 1"}, 400
+        current_tags = [tag for tag in current_tags if tag != ""]
+
+        # all of this will be refactored in favor of a proper frequent
+        # itemset mining algorithm, probably charm
         all_records = Artifact.all()
-        return all_records, 200
+        tag_frequencies = {}
+        current_tags_frequency = 0
+
+        for record in all_records:
+            if (set(current_tags).intersection(set(record["tags"]))
+                and set(current_tags).difference(set(record["tags"]))):
+                current_tags_frequency += 1
+                for tag in set(record["tags"]).difference(set(current_tags)):
+                    if tag in tag_frequencies.keys():
+                        tag_frequencies[tag] += 1
+                    else:
+                        tag_frequencies[tag] = 1
+
+        min_support_frequencies = {key:value for (key, value) in tag_frequencies.items()
+                                   if value/current_tags_frequency >= params.min_support}
+
+        sorted_frequencies = sorted(min_support_frequencies.items(),
+                                    key=lambda kv: kv[1], reverse=True)[:params.limit]
+
+        sorted_tags = [frequency[0] for frequency in sorted_frequencies]
+        if not sorted_tags:
+            #raise Exception
+            return {"tags": most_frequent_tags(all_records, params.limit)}, 200
+        #raise NameError
+        return {"tags": sorted_tags}, 200
