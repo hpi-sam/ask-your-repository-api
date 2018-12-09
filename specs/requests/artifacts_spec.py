@@ -92,7 +92,6 @@ with description('/images') as self:
                         })
 
                 with it('returns a 200 status code'):
-                    print(self.response.json)
                     expect(self.response.status_code).to(equal(200))
 
                 with it("returns an id"):
@@ -198,84 +197,112 @@ with description('/images') as self:
                             "file_url": "nomnom"
                         })
                 with it('responds with a 422'):
-                    print(self.response.json)
+                    expect(self.response.status_code).to(equal(422))
+                
+                with it('responds with correct error messages'):
+                    expect(self.response.json).to(have_key('errors'))
+                    # sending a single tag is fine it will be parsed to an array with only one element
+                    expect(self.response.json['errors']).to(have_key('object_id'))
+                    expect(self.response.json['errors']).to(have_key('file_url'))
+
+        with description('DELETE'):
+            with context("valid request"):
+                with context("the resource exists"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').returns(es_get_response())
+
+                            elastic_mock.delete(
+                                doc_type='image', id=f'{get_uuid(0)}', index='artifact')
+
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+
+                    with it('returns a 204 status code'):
+                        expect(self.response.status_code).to(equal(204))
+
+                with context("the resource doesn't exists"):
+
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').raises(NotFoundError)
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+
+                    with it('returns a 404 status code'):
+                        expect(self.response.status_code).to(equal(404))
+
+                    with it('includes error message'):
+                        expect(self.response.json).to(have_key("error"))
+                        
+            with context('invalid request'):
+                with before.each:
+                    self.response = self.context.client().delete("/images/asdf")
+                        
+                with it('responds with a 422'):
                     expect(self.response.status_code).to(equal(422))
                 
                 with it('responds with correct error messages'):
                     expect(self.response.json).to(have_key('errors'))
                     expect(self.response.json['errors']).to(have_key('object_id'))
-                    expect(self.response.json['errors']).to(have_key('file_url'))
+    
+    with description('/:id/tags'):
+        with context('valid request'):
+            with description('POST'):
+                with context("the resource exists"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').returns(es_get_response())
 
-        with description('DELETE'):
-            with context("the resource exists"):
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').returns(es_get_response())
+                            elastic_mock.update(
+                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
+                                body={'doc': {"tags": ["class_diagram", "", "new_tag"]}})
 
-                        elastic_mock.delete(
-                            doc_type='image', id=f'{get_uuid(0)}', index='artifact')
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
+                                                                json={"tags": [
+                                                                    "new_tag", "class_diagram"
+                                                                ]})
 
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+                    with it('returns a 204 status code'):
+                        expect(self.response.status_code).to(equal(204))
 
-                with it('returns a 204 status code'):
-                    expect(self.response.status_code).to(equal(204))
+                with context("the resource doesn't exists"):
 
-            with context("the resource doesn't exists"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').raises(NotFoundError)
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
+                                                                json={"tags": [
+                                                                    "new_tag", "class_diagram"
+                                                                ]})
 
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').raises(NotFoundError)
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+                    with it('returns a 404 status code'):
+                        expect(self.response.status_code).to(equal(404))
 
-                with it('returns a 404 status code'):
-                    expect(self.response.status_code).to(equal(404))
+                    with it('includes error message'):
+                        expect(self.response.json).to(have_key("error"))
 
-                with it('includes error message'):
-                    expect(self.response.json).to(have_key("error"))
+        with context('invalid request'):
+            with before.each:
+                self.response = self.context.client().post("/images/asdf/tags", json={
+                    "tags": "1234"
+                })
+                    
+            with it('responds with a 422'):
+                expect(self.response.status_code).to(equal(422))
+            
+            with it('responds with correct error messages'):
+                expect(self.response.json).to(have_key('errors'))
+                # sending a single tag is fine it will be parsed to an array with only one element
+                expect(self.response.json['errors']).to(have_key('object_id'))
 
-    with description('/1/tags'):
-        with description('POST'):
-            with context("the resource exists"):
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').returns(es_get_response())
-
-                        elastic_mock.update(
-                            doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                            body={'doc': {"tags": ["class_diagram", "", "new_tag"]}})
-
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
-                                                               json={"tags": [
-                                                                   "new_tag", "class_diagram"
-                                                               ]})
-
-                with it('returns a 200 status code'):
-                    expect(self.response.status_code).to(equal(204))
-
-            with context("the resource doesn't exists"):
-
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').raises(NotFoundError)
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
-                                                               json={"tags": [
-                                                                   "new_tag", "class_diagram"
-                                                               ]})
-
-                with it('returns a 404 status code'):
-                    expect(self.response.status_code).to(equal(404))
-
-                with it('includes error message'):
-                    expect(self.response.json).to(have_key("error"))

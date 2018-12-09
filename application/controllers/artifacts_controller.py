@@ -6,29 +6,16 @@ import uuid
 import datetime
 import werkzeug
 from flask import current_app, request
-from flask_restful import reqparse
+from webargs import fields, ValidationError
+from webargs.flaskparser import parser, abort
 from application.errors import NotFound
 from application.models.artifact import Artifact
 from .application_controller import ApplicationController
-from webargs import fields, validate, ValidationError
-from webargs.flaskparser import use_args, use_kwargs, parser, abort
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
-
-def search_params():
-    """ Defines and validates search params """
-    parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument("search", default="")
-    parser.add_argument("type", action="append", dest="types")
-    parser.add_argument("start_date")
-    parser.add_argument("end_date")
-    parser.add_argument("offset", type=int, default=0)
-    parser.add_argument("limit", type=int, default=12)
-
-    return parser.parse_args()
-
 def search_args():
+    """Defines and validates params for index"""
     return {
         "search": fields.String(missing=""),
         "types": fields.String(load_from="type", missing="artifact"),
@@ -38,17 +25,8 @@ def search_args():
         "limit": fields.Integer(missing=12)
     }
 
-
-def create_params():
-    """ Defines and validates create params """
-    parser = reqparse.RequestParser()
-    parser.add_argument("type", default="image")
-    parser.add_argument("image", dest="file", required=True,
-                        type=werkzeug.datastructures.FileStorage, location='files')
-    parser.add_argument("tags", action="append", default=[])
-    return parser.parse_args()
-
 def create_args():
+    """Defines and validates params for create"""
     return {
         "type": fields.String(missing="image"),
         "file": fields.Function(
@@ -60,18 +38,12 @@ def create_args():
     }
 
 def validate_image(image):
-    if not allowed_file(image.filename):
-        raise ValidationError('Invalid require data: image')
+    """validator for uploaded files"""
+    validate_file_name(image.filename)
     return image
 
-def update_params():
-    """ Defines and validates update params """
-    parser = reqparse.RequestParser()
-    parser.add_argument("file_url")
-    parser.add_argument("tags", action="append", default=[])
-    return parser.parse_args()
-
 def update_args():
+    """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
         "tags": fields.List(fields.String(), missing=[]),
@@ -79,15 +51,23 @@ def update_args():
     }
 
 def validate_file_name(filename):
+    """validator for uploaded file names"""
     if not allowed_file(filename):
         raise ValidationError('Errornous file_url')
     return filename
 
-def add_tags_params():
-    """ Defines and validates add tags params """
-    parser = reqparse.RequestParser()
-    parser.add_argument("tags", action="append", default=[])
-    return parser.parse_args()
+def delete_args():
+    """Defines and validates params for delete"""
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args')
+    }
+
+def add_tags_args():
+    """Defines and validates params for add_tags"""
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "tags": fields.List(fields.String(), missing=[]),
+    }
 
 
 def allowed_file(filename):
@@ -105,7 +85,7 @@ def check_es(func):
     return func_wrapper
 
 @parser.error_handler
-def handle_request_parsing_error(err, req, schema):
+def handle_request_parsing_error(err, req, schema): # pylint: disable=unused-argument
     """webargs error handler that uses Flask-RESTful's abort function to return
     a JSON error response to the client.
     """
@@ -126,12 +106,7 @@ class ArtifactsController(ApplicationController):
 
     def index(self):
         "Logic for querying several artifacts"
-        
-            
         params = parser.parse(search_args(), request)
-        print(params)
-
-        #params = search_params()
 
         result = Artifact.search(params)
 
@@ -140,9 +115,6 @@ class ArtifactsController(ApplicationController):
     def create(self):
         "Logic for creating an artifact"
         params = parser.parse(create_args(), request)
-        print(params)
-
-        # params = create_params()
 
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
@@ -159,12 +131,10 @@ class ArtifactsController(ApplicationController):
         artifact.save()
         return vars(artifact), 200
 
-    def update(self, object_id):
+    def update(self, object_id): # pylint: disable=unused-argument
         "Logic for updating an artifact"
-        print(request)
         params = parser.parse(update_args(), request)
         artifact_id = str(params.pop('id'))
-        # params = update_params()
         try:
             artifact = Artifact.find(artifact_id)
             artifact.update(params)
@@ -172,22 +142,26 @@ class ArtifactsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def delete(self, object_id):
+    def delete(self, object_id): # pylint: disable=unused-argument
         "Logic for deleting an artifact"
 
+        params = parser.parse(delete_args(), request)
+        artifact_id = str(params.pop('id'))
+
         try:
-            artifact = Artifact.find(object_id)
+            artifact = Artifact.find(artifact_id)
             artifact.delete()
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
 
-    def add_tags(self, object_id):
+    def add_tags(self, object_id): # pylint: disable=unused-argument
         """ Adds tags to an existing artifact """
+        params = parser.parse(add_tags_args(), request)
+        artifact_id = str(params.pop('id'))
 
-        params = add_tags_params()
         try:
-            artifact = Artifact.find(object_id)
+            artifact = Artifact.find(artifact_id)
             existing_tags = getattr(artifact, "tags")
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
