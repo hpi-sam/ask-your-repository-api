@@ -192,7 +192,7 @@ class ArtifactsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def suggested_tags(self, object_id):
+    def suggested_tags(self, object_id):    # pylint: disable=unused-argument
         """ Takes an array of tags and suggests tags based on that """
         params = parser.parse(suggested_tags_args(), request)
         current_tags = params.tags
@@ -210,7 +210,7 @@ class ArtifactsController(ApplicationController):
 
         for record in all_records:
             if (set(current_tags).intersection(set(record["tags"]))
-                and set(current_tags).difference(set(record["tags"]))):
+                    and set(current_tags).difference(set(record["tags"]))):
                 current_tags_frequency += 1
                 for tag in set(record["tags"]).difference(set(current_tags)):
                     if tag in tag_frequencies.keys():
