@@ -19,8 +19,8 @@ with description('/images') as self:
         self.context = Context()
         current_app.es = Stub()
 
-    with after.each:
-        self.context.delete()
+    #with after.each:
+     #   self.context.delete()
 
     with description('/:id/tags'):
         with context('valid request'):
@@ -78,7 +78,7 @@ with description('/images') as self:
                 # sending a single tag is fine it will be parsed to an array with only one element
                 expect(self.response.json['errors']).to(have_key('object_id'))
 
-    with description("/:id/suggestions"):
+    with description("/tags/suggested"):
         with description("GET"):
             with context("there are tags with a high enough interestingness"):
                 with before.each:
@@ -94,7 +94,7 @@ with description('/images') as self:
 
                     current_app.es = elastic_mock
                     self.response = self.context.client().get(
-                        "/images/1/suggestions?tags=class diagram&tags=uml")
+                        "/tags/suggested?tags=class diagram&tags=uml")
 
                 with it("returns a 200 status code"):
                     expect(self.response.status_code).to(equal(200))
@@ -120,7 +120,7 @@ with description('/images') as self:
                                                   "size": 12}).returns(es_search_all_response())
 
                     current_app.es = elastic_mock
-                    self.response = self.context.client().get("/images/1/suggestions")
+                    self.response = self.context.client().get("/tags/suggested")
 
                 with it("returns a 200 status code"):
                     expect(self.response.status_code).to(equal(200))

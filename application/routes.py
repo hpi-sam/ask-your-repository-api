@@ -14,5 +14,5 @@ def create_routes(api):
     add_resource(api, '/images', ArtifactsController)
     add_method(api, '/images/<object_id>/tags', "add_tags",
                TagsController, method="post")
-    add_method(api, "/images/<object_id>/suggestions", "suggested_tags",
+    add_method(api, "/tags/suggested", "suggested_tags",
                TagsController, method="get")
