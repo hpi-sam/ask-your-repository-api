@@ -51,7 +51,7 @@ def es_search_all_response():
     return {"hits": {"total": 12, "max_score": 1.0, "hits": [
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 1,
          "_score": 1.0,
          "_source": {
              "created_at": "today",
@@ -61,7 +61,7 @@ def es_search_all_response():
              "file_date": "today"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 2,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -71,7 +71,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 3,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -81,7 +81,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 4,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -91,7 +91,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 5,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -101,7 +101,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
              {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 6,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -111,7 +111,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 7,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -121,7 +121,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 8,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -131,7 +131,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 9,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -141,7 +141,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 10,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -151,7 +151,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 11,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",
@@ -161,7 +161,7 @@ def es_search_all_response():
              "file_date": "yesterday"}},
         {"_index": "artifact",
          "_type": "image",
-         "_id": f"{get_uuid(0)}",
+         "_id": 12,
          "_score": 0.5,
          "_source": {
              "created_at": "yesterday",

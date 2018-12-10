@@ -7,9 +7,11 @@ import datetime
 import werkzeug
 from flask import current_app, request
 from webargs import fields, ValidationError
-from webargs.flaskparser import parser, abort
+from webargs.flaskparser import parser
 from application.errors import NotFound
+import application.controllers.error_handling.request_parsing # pylint: disable=W0611
 from application.models.artifact import Artifact
+from application.controllers.error_handling.es_connection import check_es_connection
 from .application_controller import ApplicationController
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -62,60 +64,16 @@ def delete_args():
         "id": fields.UUID(required=True, load_from='object_id', location='view_args')
     }
 
-def add_tags_args():
-    """Defines and validates params for add_tags"""
-    return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "tags": fields.List(fields.String(), missing=[]),
-    }
-
-def suggested_tags_args():
-    """ Defines and validates suggested tags params """
-    return {
-        "tags": fields.List(fields.String(), missing=[]),
-        "min_support": fields.Number(missing=0.25),
-        "limit": fields.Integer(missing=3)
-    }
-
 def allowed_file(filename):
     """checks if file extension is allowed"""
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def check_es(func):
-    """ Decorator that tests if elasticsearch is definded """
-    def func_wrapper(*args, **kwargs):
-        if not current_app.es:
-            return {"error": "search engine not available"}, 503
-        return func(*args, **kwargs)
-
-    return func_wrapper
-
-@parser.error_handler
-def handle_request_parsing_error(err, req, schema): # pylint: disable=unused-argument
-    """webargs error handler that uses Flask-RESTful's abort function to return
-    a JSON error response to the client.
-    """
-    abort(422, errors=err.messages)
-
-def most_frequent_tags(records, limit):
-    """returns the most frequently used tags in a given list of artifacts"""
-    tag_frequencies = {}
-    for record in records:
-        for tag in record["tags"]:
-            if tag in tag_frequencies.keys():
-                tag_frequencies[tag] += 1
-            else:
-                tag_frequencies[tag] = 1
-    sorted_frequencies = sorted(tag_frequencies.items(),
-                                key=lambda kv: kv[1], reverse=True)[:limit]
-    sorted_tags = [frequency[0] for frequency in sorted_frequencies]
-    return sorted_tags
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
-    method_decorators = [check_es]
+    method_decorators = [check_es_connection]
 
     def show(self, object_id):
         "Logic for getting a single artifact"
@@ -175,58 +133,3 @@ class ArtifactsController(ApplicationController):
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
-
-    def add_tags(self, object_id): # pylint: disable=unused-argument
-        """ Adds tags to an existing artifact """
-        params = parser.parse(add_tags_args(), request)
-        artifact_id = str(params.pop('id'))
-
-        try:
-            artifact = Artifact.find(artifact_id)
-            existing_tags = artifact.tags
-
-            new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
-
-            artifact.update({"tags": new_list})
-            return '', 204
-        except NotFound:
-            return {"error": "not found"}, 404
-
-    def suggested_tags(self, object_id):    # pylint: disable=unused-argument
-        """ Takes an array of tags and suggests tags based on that """
-        params = parser.parse(suggested_tags_args(), request)
-        current_tags = params.tags
-
-        # parameter validation
-        if params.min_support > 1:
-            return {"error": "min_support must be <= 1"}, 400
-        current_tags = [tag for tag in current_tags if tag != ""]
-
-        # all of this will be refactored in favor of a proper frequent
-        # itemset mining algorithm, probably charm
-        all_records = Artifact.all()
-        tag_frequencies = {}
-        current_tags_frequency = 0
-
-        for record in all_records:
-            if (set(current_tags).intersection(set(record["tags"]))
-                    and set(current_tags).difference(set(record["tags"]))):
-                current_tags_frequency += 1
-                for tag in set(record["tags"]).difference(set(current_tags)):
-                    if tag in tag_frequencies.keys():
-                        tag_frequencies[tag] += 1
-                    else:
-                        tag_frequencies[tag] = 1
-
-        min_support_frequencies = {key:value for (key, value) in tag_frequencies.items()
-                                   if value/current_tags_frequency >= params.min_support}
-
-        sorted_frequencies = sorted(min_support_frequencies.items(),
-                                    key=lambda kv: kv[1], reverse=True)[:params.limit]
-
-        sorted_tags = [frequency[0] for frequency in sorted_frequencies]
-        if not sorted_tags:
-            #raise Exception
-            return {"tags": most_frequent_tags(all_records, params.limit)}, 200
-        #raise NameError
-        return {"tags": sorted_tags}, 200

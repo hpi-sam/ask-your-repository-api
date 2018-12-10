@@ -29,7 +29,7 @@ class ESModel():
             index=cls.index,
             body={"from": 0, "size": size}
         )
-        return cls.parse_search_params(result)
+        return cls.parse_search_response(result)
 
     @classmethod
     def find(cls, object_id):
