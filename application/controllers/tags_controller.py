@@ -51,7 +51,7 @@ class TagsController(ApplicationController):
 
         try:
             artifact = Artifact.find(artifact_id)
-            existing_tags = artifact.tags
+            existing_tags = artifact.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
