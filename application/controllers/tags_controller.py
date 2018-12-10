@@ -60,7 +60,7 @@ class TagsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def suggested_tags(self, object_id):    # pylint: disable=unused-argument
+    def suggested_tags(self):    # pylint: disable=unused-argument
         """ Takes an array of tags and suggests tags based on that """
         params = parser.parse(suggested_tags_args(), request)
         current_tags = params['tags']
