@@ -20,7 +20,7 @@ def search_args():
     """Defines and validates params for index"""
     return {
         "search": fields.String(missing=""),
-        "types": fields.String(load_from="type", missing="artifact"),
+        "types": fields.String(load_from="type", missing="image"),
         "start_date": fields.DateTime(),
         "end_date": fields.DateTime(),
         "offset": fields.Integer(missing=0),
@@ -86,6 +86,7 @@ class ArtifactsController(ApplicationController):
     def index(self):
         "Logic for querying several artifacts"
         params = parser.parse(search_args(), request)
+        print(params)
 
         result = Artifact.search(params)
 
@@ -94,6 +95,8 @@ class ArtifactsController(ApplicationController):
     def create(self):
         "Logic for creating an artifact"
         params = parser.parse(create_args(), request)
+
+        print(params)
 
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
