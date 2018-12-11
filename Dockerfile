@@ -9,4 +9,4 @@ RUN pipenv install --system --deploy
 
 EXPOSE 5000
 
-CMD [ "gunicorn", "app:app", "-b", ":5000" ]
+CMD [ "gunicorn", "--worker-class", "eventlet", "-w", "4", "-b", ":5000", "app:app" ]
