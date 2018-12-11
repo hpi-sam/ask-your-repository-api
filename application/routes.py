@@ -9,9 +9,11 @@ def create_routes(api):
     from application.controllers.home_controller import HomeController
     from application.controllers.artifacts_controller import ArtifactsController
     from application.controllers.tags_controller import TagsController
+    from application.controllers.presentations_controller import PresentationsController
 
     add_method(api, '/', "show_status", HomeController, method="get")
     add_resource(api, '/images', ArtifactsController)
+    add_resource(api, '/presentations', PresentationsController, only="create")
     add_method(api, '/images/<object_id>/tags', "add_tags",
                TagsController, method="post")
     add_method(api, "/tags/suggested", "suggested_tags",

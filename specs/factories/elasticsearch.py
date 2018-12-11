@@ -112,7 +112,7 @@ def es_search_all_response():
              "file_url": "use_case_diagram.png",
              "tags": ["uml", "use case diagram", "tomato"],
              "file_date": "yesterday"}},
-             {"_index": "artifact",
+        {"_index": "artifact",
          "_type": "image",
          "_id": 6,
          "_score": 0.5,
@@ -182,3 +182,25 @@ def es_search_all_response():
              "file_url": "use_case_diagram.png",
              "tags": ["uml"],
              "file_date": "yesterday"}}]}}
+
+def es_find_all_response():
+    """ Creates an example body for a find_all request """
+    return {"docs": [
+        {"_index": "artifact",
+         "_type": "image",
+         "_id": f"{get_uuid(0)}",
+         "_source": {
+             "created_at": "today",
+             "updated_at": "today",
+             "file_url": "class_diagram.png",
+             "tags": ["uml", "class diagram"],
+             "file_date": "today"}},
+        {"_index": "artifact",
+         "_type": "image",
+         "_id": f"{get_uuid(0)}",
+         "_source": {
+             "created_at": "yesterday",
+             "updated_at": "yesterday",
+             "file_url": "use_case_diagram.png",
+             "tags": ["uml", "use case diagram"],
+             "file_date": "yesterday"}}]}

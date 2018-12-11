@@ -6,5 +6,5 @@ __pycache__
 .pytest_cache
 *.pyc
 .idea
-uploads
+uploads/
 htmlcov

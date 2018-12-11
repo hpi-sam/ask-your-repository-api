@@ -44,11 +44,12 @@ with description('/images') as self:
 
             with shared_context('responds with error') as self:
                 with before.each:
-                    self.response = self.context.client().get(f'{self.path}?{self.param}={self.value}')
+                    self.response = (self.context.client()
+                                     .get(f'{self.path}?{self.param}={self.value}'))
 
                 with it('returns a 422 status code'):
                     expect(self.response.status_code).to(equal(422))
-                
+
                 with it('returns a descriptive error message'):
                     expect(self.response.json).to(have_key("errors"))
                     expect(self.response.json["errors"]).to(have_key(f'{self.param}'))
@@ -59,8 +60,8 @@ with description('/images') as self:
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
-            
-            with context('invalid requests'):                
+
+            with context('invalid requests'):
                 with description('paramter: limit | value: asdf'):
                     with before.each:
                         self.param = 'limit'
@@ -193,15 +194,16 @@ with description('/images') as self:
             with context('invalid request'):
                 with before.each:
                     self.response = self.context.client().put("/images/asdf", json={
-                            "tags": "1234",
-                            "file_url": "nomnom"
-                        })
+                        "tags": "1234",
+                        "file_url": "nomnom"
+                    })
                 with it('responds with a 422'):
                     expect(self.response.status_code).to(equal(422))
-                
+
                 with it('responds with correct error messages'):
                     expect(self.response.json).to(have_key('errors'))
-                    # sending a single tag is fine it will be parsed to an array with only one element
+                    # sending a single tag is fine it will be
+                    # parsed to an array with only one element
                     expect(self.response.json['errors']).to(have_key('object_id'))
                     expect(self.response.json['errors']).to(have_key('file_url'))
 
@@ -238,14 +240,14 @@ with description('/images') as self:
 
                     with it('includes error message'):
                         expect(self.response.json).to(have_key("error"))
-                        
+
             with context('invalid request'):
                 with before.each:
                     self.response = self.context.client().delete("/images/asdf")
-                        
+
                 with it('responds with a 422'):
                     expect(self.response.status_code).to(equal(422))
-                
+
                 with it('responds with correct error messages'):
                     expect(self.response.json).to(have_key('errors'))
                     expect(self.response.json['errors']).to(have_key('object_id'))
