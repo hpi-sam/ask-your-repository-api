@@ -1,7 +1,7 @@
 """ Defines helpers for specs """
+
 from flask import Request
-from werkzeug import FileStorage
-from werkzeug.datastructures import MultiDict
+from werkzeug.datastructures import MultiDict, FileStorage
 from application import create_app
 
 class TestingFileStorage(FileStorage):
@@ -25,6 +25,8 @@ class TestingFileStorage(FileStorage):
     :param headers: Multipart headers as a `werkzeug.Headers`. The default is
                     ``None``.
     """
+
+    #pylint:disable=too-many-arguments, unused-argument
     def __init__(self, stream=None, filename=None, name=None,
                  content_type='application/octet-stream', content_length=-1,
                  headers=None):
@@ -47,7 +49,9 @@ class TestingFileStorage(FileStorage):
         else:
             self.saved = dst.name
 
-class TestingRequest(Request):
+    #pylint:enable=too-many-arguments, unused-argument
+
+class TestingRequest(Request): #pylint:disable=too-few-public-methods, too-many-ancestors
     """A testing request to use that will return a
     TestingFileStorage to test file uploading."""
     @property
