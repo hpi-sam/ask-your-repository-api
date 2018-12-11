@@ -11,6 +11,8 @@ python-dotenv = "*"
 gunicorn = "*"
 flask-cors = "*"
 webargs = "*"
+flask-socketio = "*"
+eventlet = "*"
 
 [dev-packages]
 coverage = "*"

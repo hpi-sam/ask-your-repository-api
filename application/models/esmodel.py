@@ -45,6 +45,24 @@ class ESModel():
             raise NotFound()
 
     @classmethod
+    def find_all(cls, image_ids=None):
+        """ Finds multiple objects by a list of ids """
+        try:
+            result = current_app.es.mget(
+                index=cls.index,
+                doc_type="_all",
+                body={
+                    "ids": image_ids
+                }
+            )
+            response = []
+            for doc in result["docs"]:
+                response.append(cls.from_es(doc))
+            return response
+        except NotFoundError:
+            raise NotFound()
+
+    @classmethod
     def search(cls, params):
         """ Finds multiple objects by params.  """
         result = current_app.es.search(

@@ -76,7 +76,7 @@ class ActionController:
         if index:
             methods["get"] = cls().index
 
-        collection_class = type("Collection", (Resource,), methods)
+        collection_class = type(cls.__name__ + "Collection", (Resource,), methods)
         return collection_class
 
     @classmethod
@@ -98,7 +98,7 @@ class ActionController:
         if delete:
             methods["delete"] = cls().delete
 
-        member_class = type("Member", (Resource,), methods)
+        member_class = type(cls.__name__ + "Member", (Resource,), methods)
         return member_class
 
     @classmethod
@@ -108,6 +108,6 @@ class ActionController:
         methods = {}
         methods["method_decorators"] = cls.method_decorators
         methods[method] = getattr(cls(), name)
-        new_class = type(name.capitalize(), (Resource,), methods)
+        new_class = type(cls.__name__ + name.capitalize(), (Resource,), methods)
 
         return new_class

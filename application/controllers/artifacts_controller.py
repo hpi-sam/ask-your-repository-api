@@ -95,7 +95,6 @@ class ArtifactsController(ApplicationController):
         "Logic for creating an artifact"
         params = parser.parse(create_args(), request)
 
-
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
         if not allowed_file(uploaded_file.filename):
