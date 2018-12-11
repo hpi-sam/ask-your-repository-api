@@ -76,7 +76,7 @@ class TagsController(ApplicationController):
 
         for record in all_records:
             if (set(current_tags).intersection(set(record["tags"]))
-                    and set(current_tags).difference(set(record["tags"]))):
+                    and set(record["tags"]).difference(set(current_tags))):
                 current_tags_frequency += 1
                 for tag in set(record["tags"]).difference(set(current_tags)):
                     if tag in tag_frequencies.keys():
@@ -86,11 +86,10 @@ class TagsController(ApplicationController):
 
         min_support_frequencies = {key:value for (key, value) in tag_frequencies.items()
                                    if value/current_tags_frequency >= params['min_support']}
-
         sorted_frequencies = sorted(min_support_frequencies.items(),
                                     key=lambda kv: kv[1], reverse=True)[:params['limit']]
-
         sorted_tags = [frequency[0] for frequency in sorted_frequencies]
+
         if not sorted_tags:
             #raise Exception
             return {"tags": most_frequent_tags(all_records, params['limit'])}, 200
