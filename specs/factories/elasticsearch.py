@@ -21,6 +21,19 @@ def es_get_untagged_image_response():
                         "file_url": "test.png",
                         "file_date": "today"}}
 
+def es_tags_equals_none_response():
+    """ An example body where tags are None for regression testing """
+    return {"_index": "artifact",
+            "_type": "image",
+            "_id": f"${get_uuid(0)}",
+            "_score": 0.5,
+            "_source": {
+                "created_at": "yesterday",
+                "updated_at": "yesterday",
+                "file_url": "use_case_diagram.png",
+                "tags": None,
+                "file_date": "yesterday"}}
+
 def es_search_response():
     """ Creates an example body for a search request """
     return {"hits": {"total": 12, "max_score": 1.0, "hits": [

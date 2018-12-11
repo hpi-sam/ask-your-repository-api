@@ -25,6 +25,13 @@ class Artifact(ESModel):
         return resource
 
     @classmethod
+    def parse_response(cls, params):
+        resource = super().parse_response(params)
+        if resource['tags'] is None:
+            resource['tags'] = []
+        return resource
+
+    @classmethod
     def search(cls, params):
         """ Finds multiple artifacts by params.  """
         date_range = {}
