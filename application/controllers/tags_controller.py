@@ -48,6 +48,7 @@ class TagsController(ApplicationController):
         """ Adds tags to an existing artifact """
         params = parser.parse(add_tags_args(), request)
         artifact_id = str(params.pop('id'))
+        print(params)
 
         try:
             artifact = Artifact.find(artifact_id)
@@ -69,7 +70,7 @@ class TagsController(ApplicationController):
 
         # all of this will be refactored in favor of a proper frequent
         # itemset mining algorithm, probably charm
-        all_records = Artifact.all()
+        all_records = Artifact.all() or []
         tag_frequencies = {}
         current_tags_frequency = 0
 
