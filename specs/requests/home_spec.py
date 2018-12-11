@@ -13,7 +13,10 @@ with description('/') as self:
         current_app.es = Stub()
 
     with after.each:
-        self.context.delete()
+        # If check to prevent tests from failing occasionally
+        # Needs to be inspected!
+        if hasattr(self, "context"):
+            self.context.delete()
 
     with context('database mocked'):
         with before.each:

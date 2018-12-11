@@ -19,8 +19,11 @@ with description('/images') as self:
         self.context = Context()
         current_app.es = Stub()
 
-    #with after.each:
-     #   self.context.delete()
+    with after.each:
+        # If check to prevent tests from failing occasionally
+        # Needs to be inspected!
+        if hasattr(self, "context"):
+            self.context.delete()
 
     with description('/:id/tags'):
         with context('valid request'):
@@ -69,10 +72,10 @@ with description('/images') as self:
                 self.response = self.context.client().post("/images/asdf/tags", json={
                     "tags": "1234"
                 })
-                    
+
             with it('responds with a 422'):
                 expect(self.response.status_code).to(equal(422))
-            
+
             with it('responds with correct error messages'):
                 expect(self.response.json).to(have_key('errors'))
                 # sending a single tag is fine it will be parsed to an array with only one element
