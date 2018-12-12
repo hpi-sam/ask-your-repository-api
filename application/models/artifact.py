@@ -50,9 +50,9 @@ class Artifact(ESModel):
     def search_body_helper(cls, search, daterange, limit=10, offset=0):
         """ Defines a common body for search function """
         if search:
-            search_query = { "match": {"tags": search}}
+            search_query = {"match": {"tags": search}}
         else:
-            search_query = { "match_all": {}}
+            search_query = {"match_all": {}}
 
         body = {
             "from": offset, "size": limit,
