@@ -19,7 +19,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 def search_args():
     """Defines and validates params for index"""
     return {
-        "search": fields.String(missing=""),
+        "search": fields.String(missing=None),
         "types": fields.String(load_from="type", missing="image"),
         "start_date": fields.DateTime(),
         "end_date": fields.DateTime(),
