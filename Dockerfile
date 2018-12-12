@@ -13,5 +13,5 @@ EXPOSE 5000
 CMD [ "gunicorn", \
     "--worker-class", "eventlet", \
     "--access-logfile", "-", \
-    "--log-level", "debug", \
+    "--log-level", "info", \
     "-w", "1", "-b", ":5000", "app:app" ]
