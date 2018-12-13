@@ -56,7 +56,6 @@ class TestingRequest(Request): #pylint:disable=too-few-public-methods, too-many-
     TestingFileStorage to test file uploading."""
     @property
     def files(self):
-        self._load_form_data()
         d = MultiDict()
         files = self.__dict__.get('files')
         for key, value in files.items(multi=True):

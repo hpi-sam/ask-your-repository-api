@@ -1,7 +1,41 @@
 """ Defines wrapper for Routes and Resources """
 
 from flask_restful import Resource
+from marshmallow import Schema, post_load, post_dump
 
+def output_decorator(decorator_function):
+    """
+    Decorator to define output transformation functions
+    that are only called in respond_with
+    """
+
+    @post_dump
+    def decorate(instance, data):
+        if instance.decorate:
+            return decorator_function(instance, data)
+        return data
+    return decorate
+
+class BaseSchema(Schema):
+    """ Initialize Schemas with Schema(Model) """
+    def __init__(self, model, decorate=False):
+        super().__init__()
+        self.model = model
+        self.decorate = decorate
+
+    @post_load
+    def make_resource(self, data):
+        """ Builds an instance of the Model on schema.load """
+        return self.model(data)
+
+def respond_with(resource):
+    """ Responds with a collection of - or single json """
+    if isinstance(resource, (list,)):
+        if resource:
+            return (resource[0].schema(resource.__class__, decorate=True)
+                    .dump(resource, many=True).data)
+        return []
+    return resource.schema(resource.__class__, decorate=True).dump(resource).data
 
 def add_resource(api, url, controller, only=None):
     """

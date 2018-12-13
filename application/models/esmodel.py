@@ -4,6 +4,7 @@ import uuid
 import datetime
 from flask import current_app
 from elasticsearch.exceptions import NotFoundError
+from marshmallow import Schema
 from application.errors import NotFound, NotInitialized
 
 
@@ -11,7 +12,7 @@ class ESModel:
     """ Handles saving and searching """
 
     index = None
-    members = []
+    schema = Schema
 
     @classmethod
     def all(cls):
@@ -29,7 +30,7 @@ class ESModel:
             index=cls.index,
             body={"from": 0, "size": size}
         )
-        return cls.parse_search_response(result)
+        return cls.create_multiple_objects_from_search(result)
 
     @classmethod
     def find(cls, object_id):
@@ -38,27 +39,25 @@ class ESModel:
             result = current_app.es.get(
                 index=cls.index,
                 doc_type="_all",
-                id=object_id
+                id=str(object_id)
             )
-            return cls.from_es(result)
+            return cls.create_from_es(result)
         except NotFoundError:
             raise NotFound()
 
     @classmethod
     def find_all(cls, image_ids=None):
         """ Finds multiple objects by a list of ids """
+        ids = [str(image_id) for image_id in image_ids]
         try:
             result = current_app.es.mget(
                 index=cls.index,
                 doc_type="_all",
                 body={
-                    "ids": image_ids
+                    "ids": ids
                 }
             )
-            response = []
-            for doc in result["docs"]:
-                response.append(cls.from_es(doc))
-            return response
+            return cls.create_multiple_objects_from_mget(result)
         except NotFoundError:
             raise NotFound()
 
@@ -72,16 +71,38 @@ class ESModel:
             index=cls.index,
             doc_type=params["types"],
             body=params["search_body"])
-        return cls.parse_search_response(result)
+        return cls.create_multiple_objects_from_search(result)
 
     @classmethod
-    def from_es(cls, es_response):
+    def create_multiple_objects_from_search(cls, es_response):
+        """
+        Creates multipe model objects from an
+        elasticsearch search query response
+        """
+
+        params = cls.parse_search_response(es_response)
+        result = cls.schema(cls).load(params, many=True).data
+        print(result)
+        return result
+
+    @classmethod
+    def create_multiple_objects_from_mget(cls, es_response):
+        """
+        Creates multipe model objects from an
+        elasticsearch mget query response
+        """
+
+        response = []
+        for doc in es_response["docs"]:
+            response.append(cls.parse_response(doc))
+
+        return cls.schema(cls).load(response, many=True).data
+
+    @classmethod
+    def create_from_es(cls, es_response):
         """ Create a Resource from elastic_search """
         params = cls.parse_response(es_response)
-        es_object = cls(params)
-        es_object.id = params["id"]
-        es_object.created_at = params["created_at"]
-        es_object.updated_at = params["updated_at"]
+        es_object = cls.schema(cls).load(params).data
         return es_object
 
     @classmethod
@@ -90,10 +111,8 @@ class ESModel:
         result = {}
         result["id"] = params["_id"]
         result["type"] = params["_type"]
-        result["created_at"] = params["_source"]["created_at"]
-        result["updated_at"] = params["_source"]["updated_at"]
-        for member in cls.members:
-            result[member] = params["_source"][member]
+        for (key, value) in params["_source"].items():
+            result[key] = value
 
         return result
 
@@ -115,26 +134,25 @@ class ESModel:
 
     def __init__(self, params):
         "Initialize model"
-        self.id = None
-        self.created_at = None
-        self.updated_at = None
-        self.type = params["type"]
-        for member in self.members:
-            setattr(self, member, params.get(member, None))
+        self.id = params.get("id", None)
+        self.created_at = params.get("created_at", None)
+        self.updated_at = params.get("updated_at", None)
+        self.type = params.get("type", None)
 
     def save(self):
         """ Save the Resource """
-        self.id = self.id or str(uuid.uuid4())
-        self.created_at = datetime.datetime.now().isoformat()
-        self.updated_at = datetime.datetime.now().isoformat()
-        body = vars(self).copy()
-        del body["id"]
-        del body["type"]
+        self.id = self.id or uuid.uuid4()
+        self.created_at = datetime.datetime.now()
+        self.updated_at = datetime.datetime.now()
+        body = self.schema(self.__class__).dump(self).data
+        print(body)
+        object_id = body.pop("id")
+        object_type = body.pop("type")
 
         current_app.es.index(
             index=self.index,
-            doc_type=self.type,
-            id=self.id,
+            doc_type=object_type,
+            id=object_id,
             body=body)
         return self, 201
 
@@ -143,7 +161,8 @@ class ESModel:
         if not self.id:
             raise NotInitialized()
 
-        self.updated_at = datetime.datetime.now().isoformat()
+        self.updated_at = datetime.datetime.now()
+        params["updated_at"] = self.updated_at.isoformat()
         current_app.es.update(
             index=self.index,
             doc_type=self.type,
