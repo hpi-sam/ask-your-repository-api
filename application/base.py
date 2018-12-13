@@ -1,6 +1,7 @@
 """ Defines wrapper for Routes and Resources """
 
 from flask_restful import Resource
+from flask import current_app
 from marshmallow import Schema, post_load, post_dump
 
 def output_decorator(decorator_function):
@@ -27,6 +28,18 @@ class BaseSchema(Schema):
     def make_resource(self, data):
         """ Builds an instance of the Model on schema.load """
         return self.model(data)
+
+@BaseSchema.error_handler
+def handle_errors(schema, errors, obj):
+    """
+    Logs errors that are caused when loading
+    objects from the database using schema.load.
+    Only happens if database is corrupted.
+    """
+    error_message = ("The following errors occured while loading data from the database: {}"
+                     .format(errors))
+    current_app.logger.error(error_message)
+    raise ValueError(error_message)
 
 def respond_with(resource):
     """ Responds with a collection of - or single json """

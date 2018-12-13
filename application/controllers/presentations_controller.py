@@ -7,7 +7,7 @@ from flask import current_app, request
 from webargs import fields
 from webargs.flaskparser import parser
 from application.models.artifact import Artifact
-from application.controllers.error_handling.es_connection import check_es_connection
+from application.error_handling.es_connection import check_es_connection
 from .application_controller import ApplicationController
 
 def create_args():
