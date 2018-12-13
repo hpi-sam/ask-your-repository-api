@@ -6,69 +6,12 @@ import uuid
 import datetime
 import werkzeug
 from flask import current_app, request
-from webargs import fields, ValidationError
-from webargs.flaskparser import parser
 from application.errors import NotFound
 import application.controllers.error_handling.request_parsing # pylint: disable=W0611
 from application.models.artifact import Artifact
 from application.controllers.error_handling.es_connection import check_es_connection
 from .application_controller import ApplicationController
-
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
-def search_args():
-    """Defines and validates params for index"""
-    return {
-        "search": fields.String(missing=None),
-        "types": fields.String(load_from="type", missing="image"),
-        "start_date": fields.DateTime(),
-        "end_date": fields.DateTime(),
-        "offset": fields.Integer(missing=0),
-        "limit": fields.Integer(missing=12)
-    }
-
-def create_args():
-    """Defines and validates params for create"""
-    return {
-        "type": fields.String(missing="image"),
-        "file": fields.Function(
-            deserialize=validate_image,
-            required=True,
-            location='files',
-            load_from='image'),
-        "tags": fields.List(fields.String())
-    }
-
-def validate_image(image):
-    """validator for uploaded files"""
-    validate_file_name(image.filename)
-    return image
-
-def update_args():
-    """Defines and validates params for update"""
-    return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "tags": fields.List(fields.String(), missing=[]),
-        "file_url": fields.Function(deserialize=validate_file_name)
-    }
-
-def validate_file_name(filename):
-    """validator for uploaded file names"""
-    if not allowed_file(filename):
-        raise ValidationError('Errornous file_url')
-    return filename
-
-def delete_args():
-    """Defines and validates params for delete"""
-    return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args')
-    }
-
-def allowed_file(filename):
-    """checks if file extension is allowed"""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+from application.validators import artifacts_validator
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -85,7 +28,7 @@ class ArtifactsController(ApplicationController):
 
     def index(self):
         "Logic for querying several artifacts"
-        params = parser.parse(search_args(), request)
+        params = artifacts_validator.search_args()
 
         result = Artifact.search(params)
 
@@ -93,13 +36,10 @@ class ArtifactsController(ApplicationController):
 
     def create(self):
         "Logic for creating an artifact"
-        params = parser.parse(create_args(), request)
+        params = artifacts_validator.create_args()
 
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
-        if not allowed_file(uploaded_file.filename):
-            return {"error": "file is not allowed"}, 422
-
         filename = str(uuid.uuid4()) + "_" + \
             werkzeug.utils.secure_filename(uploaded_file.filename)
         file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
@@ -112,7 +52,7 @@ class ArtifactsController(ApplicationController):
 
     def update(self, object_id): # pylint: disable=unused-argument
         "Logic for updating an artifact"
-        params = parser.parse(update_args(), request)
+        params = artifacts_validator.update_args()
         artifact_id = str(params.pop('id'))
         try:
             artifact = Artifact.find(artifact_id)
@@ -124,7 +64,7 @@ class ArtifactsController(ApplicationController):
     def delete(self, object_id): # pylint: disable=unused-argument
         "Logic for deleting an artifact"
 
-        params = parser.parse(delete_args(), request)
+        params = artifacts_validator.delete_args()
         artifact_id = str(params.pop('id'))
 
         try:
