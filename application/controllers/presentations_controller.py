@@ -13,7 +13,7 @@ from .application_controller import ApplicationController
 def create_args():
     """Defines and validates params for index"""
     return {
-        "file_ids": fields.List(fields.String(), load_from="image_ids")
+        "file_ids": fields.List(fields.UUID(), load_from="image_ids")
     }
 
 class PresentationsController(ApplicationController):

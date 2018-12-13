@@ -1,35 +1,21 @@
 """ Elastic search artifact model wraps api into crud methods"""
-from flask import current_app
+from application.schema import ArtifactSchema
 from .esmodel import ESModel
-
-def build_url(url):
-    """ Schema: fileserver/id_filename """
-    return current_app.config["FILE_SERVER"] + \
-            "/" + url
 
 class Artifact(ESModel):
     """ Handles saving and searching """
 
     index = "artifact"
-    members = [
-        "file_url",
-        "tags",
-        "file_date"
-    ]
+    schema = ArtifactSchema
 
-    @classmethod
-    def parse_single_search_response(cls, single_response):
-        """ Parses a single object from the elasticsearch response Array """
-        resource = super().parse_single_search_response(single_response)
-        resource["url"] = build_url(resource.pop("file_url"))
-        return resource
-
-    @classmethod
-    def parse_response(cls, params):
-        resource = super().parse_response(params)
-        if resource['tags'] is None:
-            resource['tags'] = []
-        return resource
+    def __init__(self, params):
+        """ Initializes the artifact """
+        super().__init__(params)
+        self.file_url = params.get("file_url", None)
+        self.tags = params.get("tags", [])
+        self.file_date = params.get("file_date", None)
+        if "score" in params:
+            self.score = params["score"]
 
     @classmethod
     def search(cls, params):
@@ -72,9 +58,3 @@ class Artifact(ESModel):
             }
         }
         return body
-
-    def to_json(self):
-        """ Parses the object to a dictionary """
-        result = vars(self).copy()
-        result["url"] = build_url(result.pop("file_url"))
-        return result

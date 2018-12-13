@@ -32,8 +32,7 @@ def update_args():
     """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "tags": fields.List(fields.String(), missing=[]),
-        "file_url": fields.Function(deserialize=validate_file_name)
+        "tags": fields.List(fields.String(), missing=[])
     }
 
 def delete_args():
