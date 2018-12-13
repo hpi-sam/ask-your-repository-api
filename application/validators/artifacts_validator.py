@@ -1,18 +1,10 @@
 """ Defines validators for artifact requests """
 
-from flask import request
 from webargs.flaskparser import parser
 from webargs import fields, ValidationError
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
-def validator(validator_fields):
-    """ Generator to create a function that validates the request """
-    def validate():
-        return parser.parse(validator_fields(), request)
-    return validate
-
-@validator
 def search_args():
     """Defines and validates params for index"""
     return {
@@ -24,7 +16,6 @@ def search_args():
         "limit": fields.Integer(missing=12)
     }
 
-@validator
 def create_args():
     """Defines and validates params for create"""
     return {
@@ -37,7 +28,6 @@ def create_args():
         "tags": fields.List(fields.String())
     }
 
-@validator
 def update_args():
     """Defines and validates params for update"""
     return {
@@ -46,7 +36,6 @@ def update_args():
         "file_url": fields.Function(deserialize=validate_file_name)
     }
 
-@validator
 def delete_args():
     """Defines and validates params for delete"""
     return {

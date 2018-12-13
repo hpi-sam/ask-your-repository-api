@@ -5,13 +5,14 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, request
+from flask import current_app
+from webargs.flaskparser import use_args
 from application.errors import NotFound
 import application.controllers.error_handling.request_parsing # pylint: disable=W0611
 from application.models.artifact import Artifact
 from application.controllers.error_handling.es_connection import check_es_connection
-from .application_controller import ApplicationController
 from application.validators import artifacts_validator
+from .application_controller import ApplicationController
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -26,7 +27,8 @@ class ArtifactsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def index(self):
+    @use_args(artifacts_validator.search_args())
+    def index(self, params):
         "Logic for querying several artifacts"
         params = artifacts_validator.search_args()
 
@@ -34,10 +36,9 @@ class ArtifactsController(ApplicationController):
 
         return {"images": result}, 200
 
-    def create(self):
+    @use_args(artifacts_validator.create_args())
+    def create(self, params):
         "Logic for creating an artifact"
-        params = artifacts_validator.create_args()
-
         params["file_date"] = datetime.datetime.now().isoformat()
         uploaded_file = params["file"]
         filename = str(uuid.uuid4()) + "_" + \
@@ -50,25 +51,23 @@ class ArtifactsController(ApplicationController):
         artifact.save()
         return vars(artifact), 200
 
-    def update(self, object_id): # pylint: disable=unused-argument
+    @use_args(artifacts_validator.update_args())
+    def update(self, params, object_id):
         "Logic for updating an artifact"
-        params = artifacts_validator.update_args()
-        artifact_id = str(params.pop('id'))
+        object_id = params.pop("id")
         try:
-            artifact = Artifact.find(artifact_id)
+            artifact = Artifact.find(str(object_id))
             artifact.update(params)
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
 
-    def delete(self, object_id): # pylint: disable=unused-argument
+    @use_args(artifacts_validator.delete_args())
+    def delete(self, params, object_id):
         "Logic for deleting an artifact"
-
-        params = artifacts_validator.delete_args()
-        artifact_id = str(params.pop('id'))
-
+        object_id = params["id"]
         try:
-            artifact = Artifact.find(artifact_id)
+            artifact = Artifact.find(str(object_id))
             artifact.delete()
             return '', 204
         except NotFound:
