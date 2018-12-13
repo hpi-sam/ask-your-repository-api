@@ -5,9 +5,9 @@ from flask import request
 from webargs import fields
 from webargs.flaskparser import parser
 from application.errors import NotFound
-import application.controllers.error_handling.request_parsing # pylint: disable=W0611
+import application.error_handling.request_parsing # pylint: disable=W0611
+from application.error_handling.es_connection import check_es_connection
 from application.models.artifact import Artifact
-from application.controllers.error_handling.es_connection import check_es_connection
 from .application_controller import ApplicationController
 
 def add_tags_args():
