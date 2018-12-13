@@ -66,6 +66,9 @@ class ESModel():
     def search(cls, params):
         """ Finds multiple objects by params.  """
         result = current_app.es.search(
+            # search_type is counteracting the sharding effect that messes with idf:
+            # https://www.compose.com/articles/how-scoring-works-in-elasticsearch/
+            search_type="dfs_query_then_fetch",
             index=cls.index,
             doc_type=params["types"],
             body=params["search_body"])
