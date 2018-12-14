@@ -6,9 +6,11 @@ from mamba import  description, context, before, after, it
 from expects import expect, equal, have_key, contain_only, be_below_or_equal
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub
+from hamcrest import matches_regexp
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_get_response, es_search_all_response
 from specs.factories.uuid_fixture import get_uuid
+from specs.factories.date_fixture import date_regex
 
 sys.path.insert(0, 'specs')
 
@@ -37,13 +39,14 @@ with description('/images') as self:
 
                             elastic_mock.update(
                                 doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                                body={'doc': {"tags": ["class_diagram", "", "new_tag"]}})
+                                body={'doc': {"updated_at": matches_regexp(date_regex()),
+                                              "tags": ["class_diagram", "", "new_tag"]}})
 
                         current_app.es = elastic_mock
                         self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
-                                                                json={"tags": [
-                                                                    "new_tag", "class_diagram"
-                                                                ]})
+                                                                   json={"tags": [
+                                                                       "new_tag", "class_diagram"
+                                                                   ]})
 
                     with it('returns a 204 status code'):
                         expect(self.response.status_code).to(equal(204))
@@ -57,9 +60,9 @@ with description('/images') as self:
                                 index='artifact').raises(NotFoundError)
                         current_app.es = elastic_mock
                         self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
-                                                                json={"tags": [
-                                                                    "new_tag", "class_diagram"
-                                                                ]})
+                                                                   json={"tags": [
+                                                                       "new_tag", "class_diagram"
+                                                                   ]})
 
                     with it('returns a 404 status code'):
                         expect(self.response.status_code).to(equal(404))
@@ -86,11 +89,11 @@ with description('/images') as self:
             with context("there are tags with a high enough interestingness"):
                 with before.each:
                     with Mock() as elastic_mock:
-                        elastic_mock.search(index="artifact").returns({
-                            "hits": {
-                                "total": 12
-                            }
-                        })
+                        elastic_mock.search(index="artifact",
+                                            body={"from": 0,
+                                                  "size": 1}).returns({
+                                                      "hits": {
+                                                          "total": 12}})
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 12}).returns(es_search_all_response())
@@ -113,11 +116,11 @@ with description('/images') as self:
             with context("no other tags with a high enough interestingness"):
                 with before.each:
                     with Mock() as elastic_mock:
-                        elastic_mock.search(index="artifact").returns({
-                            "hits": {
-                                "total": 12
-                            }
-                        })
+                        elastic_mock.search(index="artifact",
+                                            body={"from": 0,
+                                                  "size": 1}).returns({
+                                                      "hits": {
+                                                          "total": 12}})
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 12}).returns(es_search_all_response())

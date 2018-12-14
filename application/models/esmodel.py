@@ -4,7 +4,7 @@ import uuid
 import datetime
 from flask import current_app
 from elasticsearch.exceptions import NotFoundError
-from marshmallow import Schema
+from application.base import BaseSchema
 from application.errors import NotFound, NotInitialized
 
 
@@ -12,42 +12,56 @@ class ESModel:
     """ Handles saving and searching """
 
     index = None
-    schema = Schema
+    schema = BaseSchema
 
     @classmethod
-    def all(cls):
+    def all(cls, create_objects=True):
         """
-        Finds all es objects. Needs to fire two queries.
+        Find all es objects. Needs to fire two queries.
         One to get the number of objects and one two return the objects.
         Necessary because search has a default size value of 10.
+        :param bool create_objects: Boolean to define if a list of
+            model dictionaries or objects should be returned.
+        :returns: list of model dictionaries or objects
         """
 
         get_all = current_app.es.search(
             index=cls.index,
+            body={"from": 0, "size": 1}
         )
         size = get_all["hits"]["total"]
         result = current_app.es.search(
             index=cls.index,
             body={"from": 0, "size": size}
         )
-        return cls.create_multiple_objects_from_search(result)
+        return cls.create_multiple_from_search(result, create_objects=create_objects)
 
     @classmethod
-    def find(cls, object_id):
-        """ Finds object by id """
+    def find(cls, object_id, create_object=True):
+        """
+        Finds object by id
+        :param bool create_object: Boolean to define if a
+            model dictionary or objects should be returned.
+        :returns model object or dictionary
+        """
         try:
             result = current_app.es.get(
                 index=cls.index,
                 doc_type="_all",
                 id=str(object_id)
             )
-            return cls.create_from_es(result)
+            return cls.create_from_es(result, create_object=create_object)
         except NotFoundError:
             raise NotFound()
 
     @classmethod
-    def find_all(cls, image_ids=None):
-        """ Finds multiple objects by a list of ids """
+    def find_all(cls, image_ids=None, create_objects=True):
+        """
+        Find multiple objects by a list of ids
+        :param bool create_objects: Boolean to define if a list of
+            model dictionaries or objects should be returned.
+        :returns: list of model dictionaries or objects
+        """
         ids = [str(image_id) for image_id in image_ids]
         try:
             result = current_app.es.mget(
@@ -57,13 +71,18 @@ class ESModel:
                     "ids": ids
                 }
             )
-            return cls.create_multiple_objects_from_mget(result)
+            return cls.create_multiple_from_mget(result, create_objects=create_objects)
         except NotFoundError:
             raise NotFound()
 
     @classmethod
-    def search(cls, params):
-        """ Finds multiple objects by params.  """
+    def search(cls, params, create_objects=True):
+        """
+        Finds multiple objects by params.
+        :param bool create_objects: Boolean to define if a list of
+            model dictionaries or objects should be returned.
+        :returns: list of model dictionaries or objects
+        """
         result = current_app.es.search(
             # search_type is counteracting the sharding effect that messes with idf:
             # https://www.compose.com/articles/how-scoring-works-in-elasticsearch/
@@ -71,22 +90,21 @@ class ESModel:
             index=cls.index,
             doc_type=params["types"],
             body=params["search_body"])
-        return cls.create_multiple_objects_from_search(result)
+        return cls.create_multiple_from_search(result, create_objects=create_objects)
 
     @classmethod
-    def create_multiple_objects_from_search(cls, es_response):
+    def create_multiple_from_search(cls, es_response, create_objects=True):
         """
         Creates multipe model objects from an
         elasticsearch search query response
         """
 
         params = cls.parse_search_response(es_response)
-        result = cls.schema(cls).load(params, many=True).data
-        print(result)
+        result = cls.schema(cls, many=True, create_objects=create_objects).load(params).data
         return result
 
     @classmethod
-    def create_multiple_objects_from_mget(cls, es_response):
+    def create_multiple_from_mget(cls, es_response, create_objects=True):
         """
         Creates multipe model objects from an
         elasticsearch mget query response
@@ -96,13 +114,13 @@ class ESModel:
         for doc in es_response["docs"]:
             response.append(cls.parse_response(doc))
 
-        return cls.schema(cls).load(response, many=True).data
+        return cls.schema(cls, many=True, create_objects=create_objects).load(response).data
 
     @classmethod
-    def create_from_es(cls, es_response):
+    def create_from_es(cls, es_response, create_object=True):
         """ Create a Resource from elastic_search """
         params = cls.parse_response(es_response)
-        es_object = cls.schema(cls).load(params).data
+        es_object = cls.schema(cls, create_objects=create_object).load(params).data
         return es_object
 
     @classmethod
@@ -145,7 +163,6 @@ class ESModel:
         self.created_at = datetime.datetime.now()
         self.updated_at = datetime.datetime.now()
         body = self.schema(self.__class__).dump(self).data
-        print(body)
         object_id = body.pop("id")
         object_type = body.pop("type")
 
@@ -162,11 +179,12 @@ class ESModel:
             raise NotInitialized()
 
         self.updated_at = datetime.datetime.now()
-        params["updated_at"] = self.updated_at.isoformat()
+        db_params = self.schema(self.__class__, only=('id', 'type', 'updated_at')).dump(self).data
+        params["updated_at"] = db_params["updated_at"]
         current_app.es.update(
             index=self.index,
-            doc_type=self.type,
-            id=self.id,
+            doc_type=db_params["type"],
+            id=db_params["id"],
             body={
                 "doc": params
             })
@@ -174,7 +192,8 @@ class ESModel:
 
     def delete(self):
         """ Delete the Resource """
+        db_params = self.schema(self.__class__, only=('id', 'type')).dump(self).data
         current_app.es.delete(
             index=self.index,
-            doc_type=self.type,
-            id=self.id)
+            doc_type=db_params["type"],
+            id=db_params["id"],)

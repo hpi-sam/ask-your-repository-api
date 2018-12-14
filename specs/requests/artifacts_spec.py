@@ -5,11 +5,13 @@ from io import BytesIO
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from expects import expect, equal, have_key
+from hamcrest import matches_regexp
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
+from specs.factories.date_fixture import get_date, date_regex
 
 sys.path.insert(0, 'specs')
 
@@ -101,8 +103,16 @@ with description('/images') as self:
                 with it("returns an id"):
                     expect(self.response.json).to(have_key("id"))
 
-                with it("returns a file_url"):
-                    expect(self.response.json).to(have_key("file_url"))
+                with it("doesn't return a file_url"):
+                    # Regression test: Always return url
+                    expect(self.response.json).not_to(have_key("file_url"))
+
+                with it("returns a url"):
+                    expect(self.response.json).to(have_key("url"))
+
+                with it("returns an empty list for tags"):
+                    expect(self.response.json.get("tags")).to(equal([]))
+
 
             with context("without file attached"):
                 with before.each:
@@ -166,7 +176,7 @@ with description('/images') as self:
                             elastic_mock.update(
                                 doc_type='image', id=f'{get_uuid(0)}', index='artifact',
                                 body={'doc': {
-                                    'file_url': "test_updated.png",
+                                    "updated_at": matches_regexp(date_regex()),
                                     "tags": ["added", "tags"]}})
 
                         current_app.es = elastic_mock
@@ -197,8 +207,7 @@ with description('/images') as self:
             with context('invalid request'):
                 with before.each:
                     self.response = self.context.client().put("/images/asdf", json={
-                        "tags": "1234",
-                        "file_url": "nomnom"
+                        "tags": "1234"
                     })
                 with it('responds with a 422'):
                     expect(self.response.status_code).to(equal(422))
@@ -208,7 +217,6 @@ with description('/images') as self:
                     # sending a single tag is fine it will be
                     # parsed to an array with only one element
                     expect(self.response.json['errors']).to(have_key('object_id'))
-                    expect(self.response.json['errors']).to(have_key('file_url'))
 
         with description('DELETE'):
             with context("valid request"):

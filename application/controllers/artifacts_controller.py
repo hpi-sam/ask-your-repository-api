@@ -57,7 +57,7 @@ class ArtifactsController(ApplicationController):
         "Logic for updating an artifact"
         object_id = params.pop("id")
         try:
-            artifact = Artifact.find(str(object_id))
+            artifact = Artifact.find(object_id)
             artifact.update(params)
             return '', 204
         except NotFound:
@@ -68,7 +68,7 @@ class ArtifactsController(ApplicationController):
         "Logic for deleting an artifact"
         object_id = params["id"]
         try:
-            artifact = Artifact.find(str(object_id))
+            artifact = Artifact.find(object_id)
             artifact.delete()
             return '', 204
         except NotFound:

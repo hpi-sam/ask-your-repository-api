@@ -69,7 +69,7 @@ class TagsController(ApplicationController):
 
         # all of this will be refactored in favor of a proper frequent
         # itemset mining algorithm, probably charm
-        all_records = Artifact.all() or []
+        all_records = Artifact.all(create_objects=False) or []
         tag_frequencies = {}
         current_tags_frequency = 0
 
