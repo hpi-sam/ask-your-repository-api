@@ -29,21 +29,21 @@ with description('Artifact') as self:
                 elastic_mock.index(ANY_ARG)
 
             current_app.es = elastic_mock
-            self.es_model = Artifact({"type": "image"})
+            self.artifact = Artifact({"type": "image"})
 
         with it("raises NotInitialized error if it wasn't saved before"):
-            expect(lambda: self.es_model.update({})).to(raise_error(NotInitialized))
+            expect(lambda: self.artifact.update({})).to(raise_error(NotInitialized))
 
         with it("returns True if it was saved before"):
-            self.es_model.save()
-            expect(self.es_model.update({})).to(equal(True))
+            self.artifact.save()
+            expect(self.artifact.update({})).to(equal(True))
 
     with description('find'):
         with before.each:
             with Mock() as elastic_mock:
                 elastic_mock.get(ANY_ARG).returns(es_tags_equals_none_response())
             current_app.es = elastic_mock
-            self.artifact = Artifact.find(get_uuid(0))
 
-        with it('parses result so that tags is not None'):
-            expect(self.artifact.tags).not_to(equal(None))
+        with it('Raises value error when tags is None in database'):
+            expect(lambda: Artifact.find(get_uuid(0))).to(raise_error(ValueError))
+
