@@ -1,55 +1,25 @@
 """
 Handles all logic of the artefacts api
 """
-from flask import request
-from webargs import fields
-from webargs.flaskparser import parser
+from webargs.flaskparser import use_args
 from application.errors import NotFound
 from application.error_handling.es_connection import check_es_connection
 from application.models.artifact import Artifact
+from application.validators import tags_validator
 from .application_controller import ApplicationController
-
-def add_tags_args():
-    """Defines and validates params for add_tags"""
-    return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "tags": fields.List(fields.String(), missing=[]),
-    }
-
-def suggested_tags_args():
-    """ Defines and validates suggested tags params """
-    return {
-        "tags": fields.List(fields.String(), missing=[]),
-        "min_support": fields.Number(missing=0.25, validate=lambda val: val <= 1),
-        "limit": fields.Integer(missing=3)
-    }
-
-def most_frequent_tags(records, limit):
-    """returns the most frequently used tags in a given list of artifacts"""
-    tag_frequencies = {}
-    for record in records:
-        for tag in record["tags"]:
-            if tag in tag_frequencies.keys():
-                tag_frequencies[tag] += 1
-            else:
-                tag_frequencies[tag] = 1
-    sorted_frequencies = sorted(tag_frequencies.items(),
-                                key=lambda kv: kv[1], reverse=True)[:limit]
-    sorted_tags = [frequency[0] for frequency in sorted_frequencies]
-    return sorted_tags
 
 class TagsController(ApplicationController):
     """ Controller for Artifacts """
 
     method_decorators = [check_es_connection]
 
-    def add_tags(self, object_id): # pylint: disable=unused-argument
+    @use_args(tags_validator.add_tags_args())
+    def add_tags(self, params, object_id):
         """ Adds tags to an existing artifact """
-        params = parser.parse(add_tags_args(), request)
-        artifact_id = str(params.pop('id'))
+        object_id = str(params.pop('id'))
 
         try:
-            artifact = Artifact.find(artifact_id)
+            artifact = Artifact.find(object_id)
             existing_tags = artifact.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
@@ -59,9 +29,9 @@ class TagsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    def suggested_tags(self):    # pylint: disable=unused-argument
+    @use_args(tags_validator.suggested_tags_args())
+    def suggested_tags(self, params):
         """ Takes an array of tags and suggests tags based on that """
-        params = parser.parse(suggested_tags_args(), request)
         current_tags = params['tags']
 
         current_tags = [tag for tag in current_tags if tag != ""]
@@ -90,6 +60,21 @@ class TagsController(ApplicationController):
 
         if not sorted_tags:
             #raise Exception
-            return {"tags": most_frequent_tags(all_records, params['limit'])}, 200
+            return {"tags": self.most_frequent_tags(all_records, params['limit'])}, 200
         #raise NameError
         return {"tags": sorted_tags}, 200
+
+    @staticmethod
+    def most_frequent_tags(records, limit):
+        """returns the most frequently used tags in a given list of artifacts"""
+        tag_frequencies = {}
+        for record in records:
+            for tag in record["tags"]:
+                if tag in tag_frequencies.keys():
+                    tag_frequencies[tag] += 1
+                else:
+                    tag_frequencies[tag] = 1
+        sorted_frequencies = sorted(tag_frequencies.items(),
+                                    key=lambda kv: kv[1], reverse=True)[:limit]
+        sorted_tags = [frequency[0] for frequency in sorted_frequencies]
+        return sorted_tags
