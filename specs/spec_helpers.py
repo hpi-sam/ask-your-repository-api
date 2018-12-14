@@ -57,7 +57,10 @@ class TestingRequest(Request): #pylint:disable=too-few-public-methods, too-many-
     @property
     def files(self):
         d = MultiDict()
+        if not self.__dict__.get('files'):
+            self._load_form_data()
         files = self.__dict__.get('files')
+
         for key, value in files.items(multi=True):
             d.add(key, TestingFileStorage(filename=value.filename))
 
