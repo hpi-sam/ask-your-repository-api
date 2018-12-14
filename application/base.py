@@ -19,15 +19,18 @@ def output_decorator(decorator_function):
 
 class BaseSchema(Schema):
     """ Initialize Schemas with Schema(Model) """
-    def __init__(self, model, decorate=False):
-        super().__init__()
+    def __init__(self, model, *args, decorate=False, create_objects=True, **kwargs):
+        super().__init__(*args, **kwargs)
         self.model = model
         self.decorate = decorate
+        self.create_objects = create_objects
 
     @post_load
     def make_resource(self, data):
         """ Builds an instance of the Model on schema.load """
-        return self.model(data)
+        if self.create_objects:
+            return self.model(data)
+        return data
 
 @BaseSchema.error_handler
 def handle_errors(schema, errors, obj):
