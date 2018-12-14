@@ -7,7 +7,6 @@ from flask import current_app
 from webargs.flaskparser import use_args
 from application.models.artifact import Artifact
 from application.base import respond_with
-import application.error_handling.request_parsing # pylint: disable=W0611
 from application.error_handling.es_connection import check_es_connection
 from application.validators import presentations_validator
 from .application_controller import ApplicationController
