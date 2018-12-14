@@ -6,6 +6,7 @@ from mamba import description, before, after, it
 from expects import expect, equal
 from doublex import Mock, Stub, ANY_ARG
 from specs.spec_helpers import Context
+from specs.factories.uuid_fixture import get_uuid
 from specs.factories.elasticsearch import es_find_all_response
 
 sys.path.insert(0, 'specs')
@@ -28,7 +29,7 @@ with description('/presentations') as self:
             with before.each:
                 with Mock() as elastic_mock:
                     elastic_mock.mget(index="artifact", doc_type="_all", body={
-                        "ids": ["1", "2", "3"]
+                        "ids": [get_uuid(0), get_uuid(1), get_uuid(2)]
                     }).returns(es_find_all_response())
 
                     current_app.es = elastic_mock
@@ -37,8 +38,8 @@ with description('/presentations') as self:
                     socket_mock.emit(ANY_ARG)
                     current_app.socketio = socket_mock
 
-                self.response = self.context.client().post("/presentations", data={
-                    "file_ids": ["1", "2", "3"]
+                self.response = self.context.client().post("/presentations", json={
+                    "file_ids": [get_uuid(0), get_uuid(1), get_uuid(2)]
                 })
 
             with it('returns a 204 status code'):

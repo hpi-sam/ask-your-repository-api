@@ -1,6 +1,5 @@
 """ Defines validators for artifact requests """
 
-from webargs.flaskparser import parser
 from webargs import fields, ValidationError
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
