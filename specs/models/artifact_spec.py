@@ -5,7 +5,6 @@ from flask import current_app
 from mamba import description, before, after, it
 from expects import expect, equal, raise_error
 from doublex import Mock, Stub, ANY_ARG
-from application.models.esmodel import ESModel
 from application.models.artifact import Artifact
 from application.errors import NotInitialized
 from specs.spec_helpers import Context
@@ -14,7 +13,7 @@ from specs.factories.uuid_fixture import get_uuid
 
 sys.path.insert(0, 'specs')
 
-with description('ESModel') as self:
+with description('Artifact') as self:
 
     with before.each:
         self.context = Context()
@@ -30,8 +29,7 @@ with description('ESModel') as self:
                 elastic_mock.index(ANY_ARG)
 
             current_app.es = elastic_mock
-            self.es_model = ESModel({"type": "image"})
-            self.es_model.index = "artifact"
+            self.es_model = Artifact({"type": "image"})
 
         with it("raises NotInitialized error if it wasn't saved before"):
             expect(lambda: self.es_model.update({})).to(raise_error(NotInitialized))
