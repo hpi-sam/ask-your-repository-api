@@ -3,6 +3,7 @@
 from flask_restful import Resource
 from flask import current_app
 from marshmallow import Schema, post_load, post_dump
+import application.error_handling.request_parsing #pylint: disable=unused-import
 
 def output_decorator(decorator_function):
     """

@@ -8,7 +8,6 @@ import werkzeug
 from flask import current_app
 from webargs.flaskparser import use_args
 from application.errors import NotFound
-import application.error_handling.request_parsing # pylint: disable=unused-import
 from application.error_handling.es_connection import check_es_connection
 from application.base import respond_with
 from application.models.artifact import Artifact
