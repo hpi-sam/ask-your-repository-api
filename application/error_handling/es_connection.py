@@ -1,3 +1,4 @@
+""" Define error handling if elasticsearch is unavailable """
 
 from flask import current_app
 
