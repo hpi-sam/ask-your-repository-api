@@ -144,7 +144,7 @@ class ActionController:
             methods["get"] = cls().show
 
         if update:
-            methods["put"] = cls().update
+            methods["patch"] = cls().update
 
         if delete:
             methods["delete"] = cls().delete

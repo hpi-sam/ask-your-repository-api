@@ -5,7 +5,7 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app
+from flask import current_app, make_response
 from webargs.flaskparser import use_args
 from application.errors import NotFound
 from application.error_handling.es_connection import check_es_connection
@@ -13,6 +13,14 @@ from application.base import respond_with
 from application.models.artifact import Artifact
 from application.validators import artifacts_validator
 from .application_controller import ApplicationController
+
+def no_content():
+    """ Creates an empty response with
+    application/json mimetype """
+
+    response = make_response('', 204)
+    response.mimetype = 'application/json'
+    return response
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -58,7 +66,7 @@ class ArtifactsController(ApplicationController):
         try:
             artifact = Artifact.find(object_id)
             artifact.update(params)
-            return '', 204
+            return no_content()
         except NotFound:
             return {"error": "not found"}, 404
 
@@ -69,6 +77,6 @@ class ArtifactsController(ApplicationController):
         try:
             artifact = Artifact.find(object_id)
             artifact.delete()
-            return '', 204
+            return no_content()
         except NotFound:
             return {"error": "not found"}, 404

@@ -1,3 +1,5 @@
+""" Define costum error handling """
+
 from webargs.flaskparser import parser, abort
 
 @parser.error_handler
