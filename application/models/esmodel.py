@@ -7,7 +7,7 @@ from elasticsearch.exceptions import NotFoundError
 from application.errors import NotFound, NotInitialized
 
 
-class ESModel():
+class ESModel:
     """ Handles saving and searching """
 
     index = None

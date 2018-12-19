@@ -12,10 +12,25 @@
   - In project folder run `pipenv install`
 
 - Copy .env.example into new .env file
+- It's highly recommended you have docker installed it makes environment setup much easier: https://www.docker.com/get-started
+- Install Neo4j
+  - Neo4J is our GraphDB you can find more info on it here: https://neo4j.com/
+  - To simply run the application locally setup a docker container with neo4j with this command: 
+    ```
+    docker run \
+    --publish=7474:7474 --publish=7687:7687 \
+    --volume=$HOME/neo4j/data:/data \
+    --volume=$HOME/neo4j/logs:/logs \
+    neo4j:3.0
+    ```
 
 - Install Elasticsearch
   - [Setup Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/install-elasticsearch.html)
   - Don't forget to set JAVA_HOME path to the path of java jdk
+  - You can setup a local ES docker container with this command:
+    ```
+    docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:6.5.2
+    ```
 
 - Setup elasticsearch development and testing
   - Rename config directory to config.development in your elasticsearch installation directory
