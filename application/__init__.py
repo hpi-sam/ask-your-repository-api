@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 from flask_restful import Api
 from flask_cors import CORS
 from flask_socketio import SocketIO
+from py2neo import Graph
 from .routes import create_routes
 
 
@@ -25,6 +26,8 @@ def create_app(config_filename=None):
     app.config.from_pyfile(config_filename)
     app.es = (Elasticsearch(app.config['ELASTICSEARCH_URL'])
               if app.config['ELASTICSEARCH_URL'] else None)
+    app.graph = (Graph(app.config['NEO4J_URL'])
+              if app.config['NEO4J_URL'] else None)
     app.socketio = SocketIO(app)
     app.register_blueprint(api_bp)
     return app
