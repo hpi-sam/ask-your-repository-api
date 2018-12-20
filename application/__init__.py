@@ -27,7 +27,7 @@ def create_app(config_filename=None):
     app.es = (Elasticsearch(app.config['ELASTICSEARCH_URL'])
               if app.config['ELASTICSEARCH_URL'] else None)
     app.graph = (Graph(app.config['NEO4J_URL'])
-              if app.config['NEO4J_URL'] else None)
+                 if app.config['NEO4J_URL'] else None)
     app.socketio = SocketIO(app)
     app.register_blueprint(api_bp)
     return app
