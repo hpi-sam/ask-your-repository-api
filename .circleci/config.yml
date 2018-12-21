@@ -3,6 +3,9 @@ jobs:
   test:
     docker:
       - image: circleci/python:3.7
+      - image: neo4j:3.5
+        environment:
+          NEO4J_AUTH: none
     steps:
       - checkout
       - run: sudo pip install pipenv && pipenv install --dev

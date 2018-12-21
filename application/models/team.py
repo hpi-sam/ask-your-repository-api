@@ -58,9 +58,21 @@ class Team:
             f"MATCH (x:Team {{ id: '{self.id_}' }}) SET x.name='{self.name}'")
 
     def _create_node(self):
-        team_node = Node("Team", name=self.name, id_=str(self.id_))
+        # note that ID is passed as id not id_ here
+        # so in the database the field is still called id not id_
+        # python has its own internal member id()
+        # which we don't want to override so we use id_ throughout the program
+        team_node = Node("Team", name=self.name, id=str(self.id_))
         current_app.graph.create(team_node)
 
     def __init__(self, name, id_=None):
         self.id_ = id_ if id_ else uuid.uuid4()
         self.name = name
+
+    def delete(self):
+        if Team.exists(name=self.name):
+            self._delete_node()
+        return self
+
+    def _delete_node(self):
+        current_app.graph.run(f"MATCH (x:Team) WHERE x.id = '{self.id_}' DELETE x")
