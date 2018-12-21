@@ -48,7 +48,6 @@ class TagsController(ApplicationController):
         """ Adds tags to an existing artifact """
         params = parser.parse(add_tags_args(), request)
         artifact_id = str(params.pop('id'))
-        print(params)
 
         try:
             artifact = Artifact.find(artifact_id)
