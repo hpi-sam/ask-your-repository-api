@@ -1,0 +1,25 @@
+version: "3"
+services:
+  neo4j_testing:
+    image: neo4j:3.4.5
+    environment:
+      - NEO4J_AUTH=none
+    ports:
+     - "17687:7687"
+     - "17474:7474"
+  neo4j_dev:
+    image: neo4j:3.4.5
+    environment:
+      - NEO4J_AUTH=none
+    volumes:
+      - $HOME/neo4j/data:/data
+    ports:
+     - "7687:7687"
+     - "6479:6479"
+     - "7474:7474"
+  elija:
+    build: .
+    env_file:
+      - docker-compose.env
+    ports:
+      - "5000:5000"

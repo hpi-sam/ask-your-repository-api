@@ -12,15 +12,16 @@ with description('Team') as self:
     with before.each:
         self.context = Context()
 
-    with description('Constructor'):
-        with context('Default'):
+    with description('Constructing'):
+        with context('with Default Constructor'):
             with before.each:
                 self.team = Team(name='Blue')
             with it('has a name'):
                 expect(self.team.name).to(equal('Blue'))
             with it('has a uuid'):
                 expect(self.team.id_).to(be_uuid())
-        with context('with id'):
+
+        with context('with Constructor with an id'):
             with before.each:
                 self.team = Team(name='Blue', id_='asdf')
             with it('sets the id'):
