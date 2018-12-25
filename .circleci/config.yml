@@ -3,14 +3,17 @@ jobs:
   test:
     docker:
       - image: circleci/python:3.7
-      - image: neo4j:3.5
         environment:
-          NEO4J_AUTH: none
+          MAX_HEAP_SIZE: 2048m
+          HEAP_NEWSIZE: 512m
     steps:
       - checkout
-      - run: sudo pip install pipenv && pipenv install --dev
-      - run: pipenv run coverage run --source=application -m mamba.cli specs
-      - run: pipenv run coveralls
+      - setup_remote_docker
+      - run: docker-compose up -d
+      - run: docker-compose exec elija apk add --no-cache git
+      - run: docker-compose exec elija pipenv install --dev
+      - run: docker-compose exec elija pipenv run coverage run --source=application -m mamba.cli specs
+      - run: docker-compose exec -e COVERALLS_REPO_TOKEN -e COVERALLS_SERVICE_NAME elija pipenv run coveralls
   lint:
     docker:
       - image: circleci/python:3.7

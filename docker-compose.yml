@@ -21,5 +21,6 @@ services:
     build: .
     env_file:
       - docker-compose.env
+    command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
     ports:
       - "5000:5000"
