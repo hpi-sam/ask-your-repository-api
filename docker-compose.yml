@@ -17,10 +17,25 @@ services:
      - "7687:7687"
      - "6479:6479"
      - "7474:7474"
+  elasticsearc_dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+  # currently testing mocks es so this is not needed. Enable if needed
+  #elasticsearc_testing:
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+  #  environment:
+  #    - discovery.type=single-node
+  #  ports:
+  #    - "19300:9300"
+  #    - "19200:9200"
   elija:
     build: .
-    env_file:
-      - docker-compose.env
+    environment:
+      - USE_COMPOSE_ENV=TRUE
     command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
     ports:
       - "5000:5000"
