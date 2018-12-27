@@ -12,6 +12,9 @@ with description('Team') as self:
     with before.each:
         self.context = Context()
 
+    with after.each:
+        current_app.graph.delete_all()
+
     with description('Constructing'):
         with context('with Default Constructor'):
             with before.each:
