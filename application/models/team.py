@@ -50,7 +50,7 @@ class Team:
         self.save()
 
     def save(self):
-        self._update_node() if Team.exists(name=self.name) else self._create_node()
+        self._update_node() if Team.exists(id_=self.id_) else self._create_node()
         return self
 
     def _update_node(self):
@@ -66,7 +66,7 @@ class Team:
         current_app.graph.create(team_node)
 
     def __init__(self, name, id_=None):
-        self.id_ = id_ if id_ else uuid.uuid4()
+        self.id_ = uuid.UUID(id_) if id_ else uuid.uuid4()
         self.name = name
 
     def delete(self):
