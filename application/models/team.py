@@ -10,6 +10,7 @@ class Team:
 
     @classmethod
     def all(cls):
+        """ Returns all existing Team objects"""
         results = current_app.graph.run("MATCH (x:Team) RETURN x")
         return list(map(
             lambda result: Team(result['x']['name'], id_=result['x']['id']),
@@ -18,6 +19,7 @@ class Team:
 
     @classmethod
     def find_by(cls, force=False, id_='', name=''):
+        """" Find a team by attribute """
         team_node = cls._find_team_node(id_=id_, name=name)
         if team_node:
             return Team(team_node['name'], id_=team_node['id'])
@@ -25,6 +27,7 @@ class Team:
 
     @classmethod
     def exists(cls, id_='', name=''):
+        """ Check if a team exists by attribute """
         return bool(cls._find_team_node(id_=id_, name=name))
 
     @classmethod
@@ -41,16 +44,22 @@ class Team:
 
     @classmethod
     def create(cls, name):
+        """ Create a team object and save it in the database """
         new_team = Team(name)
         return new_team.save()
 
     def update(self, name=None):
+        """ Change an attribute and save it in the database """
         if name:
             self.name = name
         self.save()
 
     def save(self):
-        self._update_node() if Team.exists(id_=self.id_) else self._create_node()
+        """ Save the team object to the database"""
+        if Team.exists(id_=self.id_):
+            self._update_node()
+        else:
+            self._create_node()
         return self
 
     def _update_node(self):
@@ -70,6 +79,7 @@ class Team:
         self.name = name
 
     def delete(self):
+        """ Delete this team object from the database if it is saved """
         if Team.exists(name=self.name):
             self._delete_node()
         return self
