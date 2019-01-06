@@ -14,8 +14,9 @@
 - Copy .env.example into new .env file
 - It's highly recommended you have docker installed it makes environment setup much easier: https://www.docker.com/get-started
 - Install Neo4j
-  - Neo4J is our GraphDB you can find more info on it here: https://neo4j.com/
-  - To simply run the application locally setup a docker container with neo4j with this command: 
+  - Neo4J is our GraphDB you can find more info and an install guide on it here: https://neo4j.com/
+  - To run tests you need a neo4j installation on the ports specified in .env.testing
+  - To simply run the application locally I recommend seting up a docker container with neo4j with this command: 
     ```
     docker run \
     --publish=7474:7474 --publish=7687:7687 \
