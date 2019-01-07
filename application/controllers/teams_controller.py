@@ -3,12 +3,10 @@ Handles all logic of the artefacts api
 """
 from webargs.flaskparser import use_args
 from application.errors import NotFound
-from application.error_handling.es_connection import check_es_connection
-from application.models.artifact import Artifact
 from application.validators import teams_validator
-from .application_controller import ApplicationController
 from application.models.team import Team
 from application.base import respond_with
+from .application_controller import ApplicationController
 
 
 class TeamsController(ApplicationController):
@@ -21,7 +19,7 @@ class TeamsController(ApplicationController):
             return {"error": "not found"}, 404
 
     @use_args(teams_validator.get_args())
-    def index(self, params):
+    def index(self, params):  # pylint: disable=W0613
         """Logic for querying several teams"""
         teams = Team.all()
         return {"teams": respond_with(teams)}, 200
