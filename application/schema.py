@@ -3,6 +3,7 @@ from flask import current_app
 from marshmallow import fields
 from application.base import BaseSchema, output_decorator
 
+
 class ArtifactSchema(BaseSchema):
     """ Schema for importing and exporting Artifact objects """
     id = fields.UUID(missing=None)
@@ -24,3 +25,15 @@ class ArtifactSchema(BaseSchema):
         """ Schema: fileserver/id_filename """
         return current_app.config["FILE_SERVER"] + \
                 "/" + file_url
+
+
+class TeamSchema(BaseSchema):
+    """ Schema for importing and exporting Artifact objects """
+    id_ = fields.UUID(missing=None)
+    name = fields.String()
+
+    @output_decorator
+    def transform_fields(self, data):
+        """ Transforms field for output """
+        print(data)
+        return data

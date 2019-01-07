@@ -3,10 +3,12 @@ import uuid
 from flask import current_app
 from py2neo import Node
 from application.errors import NotFound
+from application.schema import TeamSchema
 
 
 class Team:
     """" Program representation of Team nodes in Neo4J """
+    schema = TeamSchema
 
     @classmethod
     def all(cls):
