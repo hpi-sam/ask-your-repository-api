@@ -145,6 +145,7 @@ class ActionController:
 
         if update:
             methods["patch"] = cls().update
+            methods["put"] = cls().update
 
         if delete:
             methods["delete"] = cls().delete
