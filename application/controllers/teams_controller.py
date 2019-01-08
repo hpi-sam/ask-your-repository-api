@@ -19,7 +19,7 @@ class TeamsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
-    @use_args(teams_validator.get_args())
+    @use_args(teams_validator.index_args())
     def index(self, params):  # pylint: disable=W0613
         """Logic for querying several teams"""
         teams = Team.all()

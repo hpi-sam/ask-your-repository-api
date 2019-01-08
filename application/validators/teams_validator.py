@@ -3,7 +3,7 @@
 from webargs import fields, ValidationError
 
 
-def get_args():
+def index_args():
     """Defines and validates params for index"""
     return {}
 
