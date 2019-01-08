@@ -36,5 +36,4 @@ class TeamSchema(BaseSchema):
     def transform_fields(self, data):
         """ Transforms field for output """
         data['id'] = data.pop('id_')
-        print(data)
         return data

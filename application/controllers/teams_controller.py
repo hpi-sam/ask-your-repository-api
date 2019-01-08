@@ -14,7 +14,8 @@ class TeamsController(ApplicationController):
 
     def show(self, object_id):
         try:
-            return respond_with(Team.find_by(force=True, id_=object_id)), 200
+            team = Team.find_by(force=True, id_=object_id)
+            return respond_with(team), 200
         except NotFound:
             return {"error": "not found"}, 404
 
@@ -29,3 +30,13 @@ class TeamsController(ApplicationController):
         """Logic for creating a team"""
         team = Team.create(name=params["name"])
         return respond_with(team), 200
+
+    @use_args(teams_validator.update_args())
+    def update(self, params, object_id):
+        """Logic for updating a team"""
+        try:
+            team = Team.find_by(force=True, id_=object_id)
+            team.update(name=params["name"])
+            return respond_with(team), 200
+        except NotFound:
+            return {"error": "not found"}, 404
