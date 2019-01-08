@@ -47,11 +47,13 @@ with description('/teams') as self:
                     })
             with it('responds with 200'):
                 expect(self.response.status_code).to(equal(200))
+
             with it('responds with correct team'):
                 expect(self.response.json).to(have_key("name", "My Team"))
-                expect(self.response.json).to(have_key("id_"))
+                expect(self.response.json).to(have_key("id"))
+
             with it('saves the team'):
-                expect(Team.exists(id_=self.response.json["id_"], name="My Name")).to(be(True))
+                expect(Team.exists(id_=self.response.json["id"], name="My Name")).to(be(True))
 
         with description('invalid request'):
             with before.each:
@@ -61,8 +63,10 @@ with description('/teams') as self:
                     data={
                         "name": ""
                     })
+
             with it('declines empty name'):
                 expect(self.response.status_code).to(equal(422))
+
             with it('does not save invalid teams'):
                 expect(Team.all()).to(be_empty)
 
@@ -72,16 +76,20 @@ with description('/teams') as self:
                 with before.each:
                     self.team = Team.create(name='Blue')
                     self.response = self.context.client().get(f"/teams/{self.team.id_}")
+
                 with it('returns 200 ok'):
                     expect(self.response.status_code).to(equal(200))
+
                 with it('returns the correct image'):
                     expect(self.response.json).to(have_key("name", "Blue"))
-                    expect(self.response.json).to(have_key("id_", self.team.id_.urn[9:]))
+                    expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
+
             with description('invalid id'):
                 with before.each:
-                    team0 = Team.create(name='Blue')
-                    team1 = Team.create(name="Orange")
-                    team1.delete()
-                    self.response = self.context.client().get(f"/teams/{team1.id_}")
+                    team_blue = Team.create(name='Blue')
+                    team_orange = Team.create(name="Orange")
+                    team_orange.delete()
+                    self.response = self.context.client().get(f"/teams/{team_orange.id_}")
+
                 with it('responds error 404'):
                     expect(self.response.status_code).to(equal(404))
