@@ -41,10 +41,8 @@ with description('/teams') as self:
             with before.each:
                 self.response = self.context.client().post(
                     "/teams",
-                    content_type='multipart/form-data',
-                    data={
-                        "name": "My Team"
-                    })
+                    data={"name": "My Team"})
+
             with it('responds with 200'):
                 expect(self.response.status_code).to(equal(200))
 
@@ -59,10 +57,7 @@ with description('/teams') as self:
             with before.each:
                 self.response = self.context.client().post(
                     "/teams",
-                    content_type='application/json',
-                    data={
-                        "name": ""
-                    })
+                    data={"name": ""})
 
             with it('declines empty name'):
                 expect(self.response.status_code).to(equal(422))
@@ -77,19 +72,58 @@ with description('/teams') as self:
                     self.team = Team.create(name='Blue')
                     self.response = self.context.client().get(f"/teams/{self.team.id_}")
 
-                with it('returns 200 ok'):
+                with it('responds with 200'):
                     expect(self.response.status_code).to(equal(200))
 
-                with it('returns the correct image'):
+                with it('responds with the correct team'):
                     expect(self.response.json).to(have_key("name", "Blue"))
                     expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
 
             with description('invalid id'):
                 with before.each:
-                    team_blue = Team.create(name='Blue')
-                    team_orange = Team.create(name="Orange")
-                    team_orange.delete()
-                    self.response = self.context.client().get(f"/teams/{team_orange.id_}")
+                    team = Team.create(name='Blue')
+                    team.delete()
+                    self.response = self.context.client().get(f"/teams/{team.id_}")
 
                 with it('responds error 404'):
                     expect(self.response.status_code).to(equal(404))
+
+        with description('PUT'):
+            with description('valid id'):
+                with before.each:
+                    self.team = Team.create(name='Blue')
+                    self.response = self.context.client().put(
+                        f"/teams/{self.team.id_}",
+                        data={"name": "Red"})
+
+                with it('responds with 200'):
+                    expect(self.response.status_code).to(equal(200))
+
+                with it('updates the team correctly'):
+                    fresh_team = Team.find_by(id_=self.team.id_)
+                    expect(fresh_team.name).to(equal("Red"))
+
+                with it('responds with the updated team'):
+                    expect(self.response.json).to(have_key("name", "Red"))
+                    expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
+
+            with description('invalid id'):
+                with before.each:
+                    team = Team.create(name="Red")
+                    team.delete()
+                    self.response = self.context.client().put(
+                        f"/teams/{team.id_}",
+                        data={"name": "Blue"})
+
+                with it('responds error 404'):
+                    expect(self.response.status_code).to(equal(404))
+
+            with description('invalid request'):
+                with before.each:
+                    team = Team.create(name="Red")
+                    self.response = self.context.client().put(
+                        f"/teams/{team.id_}",
+                        data={"name": ""})
+
+                with it('responds with 422 invalid request'):
+                    expect(self.response.status_code).to(equal(422))

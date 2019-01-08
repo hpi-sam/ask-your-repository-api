@@ -14,7 +14,6 @@ def test_index_without_elasticsearch(test_client):
     """ Test home index json if elasticsearch not defined """
 
     response = test_client.get("/")
-    print(response.data)
     assert response.status_code == 200
     assert response.json == {
         "service name": "artefact service", "database status": "off"}
@@ -29,7 +28,6 @@ def test_index_with_elasticsearch(test_client):
     current_app.es = Elasticsearch(os.environ.get('ES_TEST_URL'))
 
     response = test_client.get("/")
-    print(response.data)
     assert response.status_code == 200
     assert response.json == {
         "service name": "artefact service", "database status": "on"}
