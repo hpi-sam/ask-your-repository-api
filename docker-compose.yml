@@ -2,41 +2,59 @@ version: "3"
 services:
   neo4j_testing:
     image: neo4j:3.4.5
+    deploy:
+      resources:
+        limits:
+          memory: 300M
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_connector_bolt_advertised__address=localhost:17687
+      - NEO4J_dbms_memory_pagecache_size=200M
     ports:
      - "17687:7687"
      - "16479:6479"
      - "17474:7474"
   neo4j_dev:
     image: neo4j:3.4.5
+    deploy:
+      resources:
+        limits:
+          memory: 300M
     environment:
       - NEO4J_AUTH=none
+      - NEO4J_dbms_memory_pagecache_size=200M
     volumes:
       - $HOME/neo4j/data:/data
     ports:
      - "7687:7687"
      - "6479:6479"
      - "7474:7474"
-  elasticsearc_dev:
+#  elasticsearc_dev:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+#    environment:
+#      - discovery.type=single-node
+#      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+#    ports:
+#      - "9300:9300"
+#      - "9200:9200"
+  elasticsearch_testing:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    deploy:
+      resources:
+        limits:
+          memory: 300M
     environment:
       - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - "9300:9300"
-      - "9200:9200"
-  elasticsearc_testing:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ES_JAVA_OPTS=-Xms200m -Xmx200m
     ports:
       - "19300:9300"
       - "19200:9200"
   elija:
     build: .
+    deploy:
+      resources:
+        limits:
+          memory: 300M
     environment:
       - USE_COMPOSE_ENV=TRUE
     command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
