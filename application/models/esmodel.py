@@ -194,6 +194,7 @@ class ESModel:
         """ Delete the Resource """
         db_params = self.schema(self.__class__, only=('id', 'type')).dump(self).data
         current_app.es.delete(
+            refresh='wait_for',
             index=self.index,
             doc_type=db_params["type"],
             id=db_params["id"],)

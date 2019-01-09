@@ -27,15 +27,8 @@ with description('/images') as self:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
         if current_app.es:
-            print(Artifact.all(create_objects=True))
             for artifact in Artifact.all(create_objects=True):
-                try:
-                    #print(artifact.id)
-                    #print(artifact)
-                    artifact.delete()
-                except:
-                    pass
-                    #print('caught some exception')
+                artifact.delete()
         if hasattr(self, "context"):
             self.context.delete()
 
@@ -65,7 +58,6 @@ with description('/images') as self:
                     self.response = self.context.client().get("/images")
 
                 with it('returns a 200 status code'):
-                    print(self.response.json)
                     expect(self.response.status_code).to(equal(200))
 
             with shared_context('responds with error') as self:
