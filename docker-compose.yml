@@ -19,22 +19,22 @@ services:
      - "7687:7687"
      - "6479:6479"
      - "7474:7474"
-  # Running elasticsearch in ci kills the memory limit on circleci so this is commented out atm.
-  #elasticsearc_dev:
-  #    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-  #    environment:
-  #      - discovery.type=single-node
-  #    ports:
-  #      - "9300:9300"
-  #      - "9200:9200"
-  # Currently all tests are mocking elasticsearch so this is not needed. Enable it once it is needed
-  #elasticsearc_testing:
-  #  image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-  #  environment:
-  #    - discovery.type=single-node
-  #  ports:
-  #    - "19300:9300"
-  #    - "19200:9200"
+  elasticsearc_dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+  elasticsearc_testing:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "19300:9300"
+      - "19200:9200"
   elija:
     build: .
     environment:

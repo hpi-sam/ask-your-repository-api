@@ -1,6 +1,7 @@
 """ Tests for artifacts """
 
 import sys
+import datetime
 from io import BytesIO
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
@@ -12,6 +13,7 @@ from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date, date_regex
+from application.models.artifact import Artifact
 
 sys.path.insert(0, 'specs')
 
@@ -20,7 +22,7 @@ with description('/images') as self:
 
     with before.each:
         self.context = Context()
-        current_app.es = Stub()
+        #current_app.es = Stub()
 
     with after.each:
         # If check to prevent tests from failing occasionally
@@ -42,10 +44,7 @@ with description('/images') as self:
 
         with description('GET'):
             with before.each:
-                with Mock() as elastic_mock:
-                    elastic_mock.search(ANY_ARG).returns(es_search_response())
-
-                    current_app.es = elastic_mock
+                Artifact({'file_url': 'asdf', 'file_date': datetime.datetime.now(), 'type': 'image'}).save()
 
             with shared_context('responds with error') as self:
                 with before.each:
@@ -64,6 +63,7 @@ with description('/images') as self:
                     self.response = self.context.client().get("/images")
 
                 with it('returns a 200 status code'):
+                    print(self.response.json)
                     expect(self.response.status_code).to(equal(200))
 
             with context('invalid requests'):
