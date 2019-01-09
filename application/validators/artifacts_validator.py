@@ -8,6 +8,7 @@ def search_args():
     """Defines and validates params for index"""
     return {
         "search": fields.String(missing=None),
+        "team_id": fields.UUID(missing=None),
         "types": fields.String(load_from="type", missing="image"),
         "start_date": fields.DateTime(),
         "end_date": fields.DateTime(),
@@ -24,6 +25,7 @@ def create_args():
             required=True,
             location='files',
             load_from='image'),
+        "team_id": fields.UUID(missing=None),
         "tags": fields.List(fields.String())
     }
 
