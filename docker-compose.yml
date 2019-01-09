@@ -2,11 +2,6 @@ version: "3"
 services:
   neo4j_testing:
     image: neo4j:3.4.5
-    deploy:
-      resources:
-        limits:
-          memory: 150M
-          cpus: '0.50'
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_connector_bolt_advertised__address=localhost:17687
@@ -17,14 +12,8 @@ services:
      - "17474:7474"
   neo4j_dev:
     image: neo4j:3.4.5
-    deploy:
-      resources:
-        limits:
-          memory: 150M
-          cpus: '0.50'
     environment:
       - NEO4J_AUTH=none
-      - NEO4J_dbms_memory_pagecache_size=100M
     volumes:
       - $HOME/neo4j/data:/data
     ports:
@@ -39,26 +28,16 @@ services:
 #    ports:
 #      - "9300:9300"
 #      - "9200:9200"
-  elasticsearch_testing:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-    deploy:
-      resources:
-        limits:
-          memory: 1500M
-          cpus: '0.50'
-    environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms100m -Xmx100m
-    ports:
-      - "19300:9300"
-      - "19200:9200"
+#  elasticsearch_testing:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+#    environment:
+#      - discovery.type=single-node
+#      - ES_JAVA_OPTS=-Xms100m -Xmx100m
+#    ports:
+#      - "19300:9300"
+#      - "19200:9200"
   elija:
     build: .
-    deploy:
-      resources:
-        limits:
-          memory: 300M
-          cpus: '0.50'
     environment:
       - USE_COMPOSE_ENV=TRUE
     command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
