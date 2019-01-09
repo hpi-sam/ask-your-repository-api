@@ -17,7 +17,6 @@ sys.path.insert(0, 'specs')
 with description('/teams') as self:
     with before.each:
         self.context = Context()
-        current_app.es = Stub()
 
     with after.each:
         current_app.graph.delete_all()
@@ -81,8 +80,7 @@ with description('/teams') as self:
 
             with description('invalid id'):
                 with before.each:
-                    team = Team.create(name='Blue')
-                    team.delete()
+                    team = Team(name='Blue') # Creating but not saving team so that id is invalid
                     self.response = self.context.client().get(f"/teams/{team.id_}")
 
                 with it('responds error 404'):
@@ -99,13 +97,16 @@ with description('/teams') as self:
                 with it('responds with 200'):
                     expect(self.response.status_code).to(equal(200))
 
-                with it('updates the team correctly'):
-                    fresh_team = Team.find_by(id_=self.team.id_)
-                    expect(fresh_team.name).to(equal("Red"))
-
                 with it('responds with the updated team'):
                     expect(self.response.json).to(have_key("name", "Red"))
                     expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
+
+                with description('Team object'):
+                    with before.each:
+                        self.fresh_team = Team.find_by(id_=self.team.id_)
+
+                    with it('is updated correctly'):
+                        expect(self.fresh_team.name).to(equal("Red"))
 
             with description('invalid id'):
                 with before.each:
