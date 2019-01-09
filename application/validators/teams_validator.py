@@ -1,6 +1,6 @@
 """ Defines validators for team requests """
 
-from webargs import fields, ValidationError
+from webargs import fields, ValidationError, validate
 
 
 def index_args():
@@ -19,7 +19,7 @@ def update_args():
     """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "name": fields.Function(deserialize=validate_team_name)
+        "name": fields.String(required=True, validate=validate.Length(min=1))
     }
 
 def validate_team_name(team_name):
