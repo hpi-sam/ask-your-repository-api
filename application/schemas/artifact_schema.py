@@ -11,6 +11,7 @@ class ArtifactSchema(BaseSchema):
     created_at = fields.DateTime(missing=None)
     updated_at = fields.DateTime(missing=None)
     file_url = fields.String(missing=None)
+    team_id = fields.UUID(missing=None)
     tags = fields.List(fields.String(), missing=[], default=[])
     file_date = fields.DateTime(missing=None)
     score = fields.Integer()

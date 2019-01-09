@@ -14,6 +14,7 @@ from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date, date_regex
 from application.models.artifact import Artifact
+from application.models.team import Team
 
 sys.path.insert(0, 'specs')
 
@@ -26,6 +27,7 @@ with description('/images') as self:
     with after.each:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
+        current_app.graph.delete_all()
         if current_app.es:
             for artifact in Artifact.all(create_objects=True):
                 artifact.delete()
@@ -55,7 +57,7 @@ with description('/images') as self:
 
             with context('valid request'):
                 with before.each:
-                    self.response = self.context.client().get("/images")
+                    self.response = self.context.client().get('/images')
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
