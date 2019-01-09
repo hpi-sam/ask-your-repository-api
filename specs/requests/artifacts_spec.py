@@ -22,13 +22,23 @@ with description('/images') as self:
 
     with before.each:
         self.context = Context()
-        #current_app.es = Stub()
 
     with after.each:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
+        if current_app.es:
+            print(Artifact.all(create_objects=True))
+            for artifact in Artifact.all(create_objects=True):
+                try:
+                    #print(artifact.id)
+                    #print(artifact)
+                    artifact.delete()
+                except:
+                    pass
+                    #print('caught some exception')
         if hasattr(self, "context"):
             self.context.delete()
+
 
     with description('/'):
         with before.each:
@@ -36,8 +46,12 @@ with description('/images') as self:
 
         with description('GET without database'):
             with before.each:
+                self.es = current_app.es
                 current_app.es = None
                 self.response = self.context.client().get(self.path)
+
+            with after.each:
+                current_app.es = self.es
 
             with it('returns a 503 status code'):
                 expect(self.response.status_code).to(equal(503))
@@ -45,6 +59,14 @@ with description('/images') as self:
         with description('GET'):
             with before.each:
                 Artifact({'file_url': 'asdf', 'file_date': datetime.datetime.now(), 'type': 'image'}).save()
+
+            with context('valid request'):
+                with before.each:
+                    self.response = self.context.client().get("/images")
+
+                with it('returns a 200 status code'):
+                    print(self.response.json)
+                    expect(self.response.status_code).to(equal(200))
 
             with shared_context('responds with error') as self:
                 with before.each:
@@ -57,14 +79,6 @@ with description('/images') as self:
                 with it('returns a descriptive error message'):
                     expect(self.response.json).to(have_key("errors"))
                     expect(self.response.json["errors"]).to(have_key(f'{self.param}'))
-
-            with context('valid request'):
-                with before.each:
-                    self.response = self.context.client().get("/images")
-
-                with it('returns a 200 status code'):
-                    print(self.response.json)
-                    expect(self.response.status_code).to(equal(200))
 
             with context('invalid requests'):
                 with description('paramter: limit | value: asdf'):
@@ -84,11 +98,6 @@ with description('/images') as self:
                         pass
 
         with description('POST'):
-            with before.each:
-                with Mock() as elastic_mock:
-                    elastic_mock.index(ANY_ARG).returns({})
-                current_app.es = elastic_mock
-
             with context("with file attached"):
                 with before.each:
                     self.response = self.context.client().post(
@@ -138,12 +147,9 @@ with description('/images') as self:
         with description('GET'):
             with context("the resource exists"):
                 with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').returns(es_get_response())
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().get(f"/images/{get_uuid(0)}")
+                    image = Artifact({'file_url': 'asdf', 'file_date': datetime.datetime.now(), 'type': 'image'})
+                    image.save()
+                    self.response = self.context.client().get(f"/images/{image.id}")
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
@@ -151,11 +157,6 @@ with description('/images') as self:
             with context("the resource doesn't exists"):
 
                 with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').raises(NotFoundError)
-                    current_app.es = elastic_mock
                     self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 404 status code'):
@@ -168,19 +169,9 @@ with description('/images') as self:
             with context('valid request'):
                 with context("the resource exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response())
-
-                            elastic_mock.update(
-                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                                body={'doc': {
-                                    "updated_at": matches_regexp(date_regex()),
-                                    "tags": ["added", "tags"]}})
-
-                        current_app.es = elastic_mock
-                        self.response = self.context.client().put(f"/images/{get_uuid(0)}", json={
+                        image = Artifact({'file_url': 'asdf', 'file_date': datetime.datetime.now(), 'type': 'image'})
+                        image.save()
+                        self.response = self.context.client().put(f"/images/{image.id}", json={
                             "tags": ["added", "tags"],
                             "file_url": "test_updated.png"
                         })
@@ -191,11 +182,6 @@ with description('/images') as self:
                 with context("the resource doesn't exists"):
 
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().put(f"/images/{get_uuid(0)}")
 
                     with it('returns a 404 status code'):
@@ -222,16 +208,9 @@ with description('/images') as self:
             with context("valid request"):
                 with context("the resource exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response())
-
-                            elastic_mock.delete(
-                                doc_type='image', id=f'{get_uuid(0)}', index='artifact')
-
-                        current_app.es = elastic_mock
-                        self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+                        image = Artifact({'file_url': 'asdf', 'file_date': datetime.datetime.now(), 'type': 'image'})
+                        image.save()
+                        self.response = self.context.client().delete(f"/images/{image.id}")
 
                     with it('returns a 204 status code'):
                         expect(self.response.status_code).to(equal(204))
@@ -239,11 +218,6 @@ with description('/images') as self:
                 with context("the resource doesn't exists"):
 
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                     with it('returns a 404 status code'):
