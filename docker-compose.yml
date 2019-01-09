@@ -5,11 +5,12 @@ services:
     deploy:
       resources:
         limits:
-          memory: 300M
+          memory: 150M
+          cpus: '0.50'
     environment:
       - NEO4J_AUTH=none
       - NEO4J_dbms_connector_bolt_advertised__address=localhost:17687
-      - NEO4J_dbms_memory_pagecache_size=200M
+      - NEO4J_dbms_memory_pagecache_size=100M
     ports:
      - "17687:7687"
      - "16479:6479"
@@ -19,10 +20,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 300M
+          memory: 150M
+          cpus: '0.50'
     environment:
       - NEO4J_AUTH=none
-      - NEO4J_dbms_memory_pagecache_size=200M
+      - NEO4J_dbms_memory_pagecache_size=100M
     volumes:
       - $HOME/neo4j/data:/data
     ports:
@@ -42,10 +44,11 @@ services:
     deploy:
       resources:
         limits:
-          memory: 300M
+          memory: 1500M
+          cpus: '0.50'
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms200m -Xmx200m
+      - ES_JAVA_OPTS=-Xms100m -Xmx100m
     ports:
       - "19300:9300"
       - "19200:9200"
@@ -55,6 +58,7 @@ services:
       resources:
         limits:
           memory: 300M
+          cpus: '0.50'
     environment:
       - USE_COMPOSE_ENV=TRUE
     command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
