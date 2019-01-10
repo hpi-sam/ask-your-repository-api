@@ -12,6 +12,7 @@ from application.error_handling.es_connection import check_es_connection
 from application.base import respond_with
 from application.models.artifact import Artifact
 from application.validators import artifacts_validator
+from application.recognition.image_recognition import recognize_image
 from .application_controller import ApplicationController
 
 
@@ -52,14 +53,14 @@ class ArtifactsController(ApplicationController):
         params["file_date"] = datetime.datetime.now()
         uploaded_file = params["file"]
         filename = str(uuid.uuid4()) + "_" + \
-            werkzeug.utils.secure_filename(uploaded_file.filename)
+                   werkzeug.utils.secure_filename(uploaded_file.filename)
         file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
         uploaded_file.save(file_url)
-        
         params["file_url"] = filename
         artifact = Artifact(params)
 
         artifact.save()
+        recognize_image(file_url, artifact)
         return respond_with(artifact), 200
 
     @use_args(artifacts_validator.update_args())

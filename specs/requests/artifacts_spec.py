@@ -15,9 +15,7 @@ from specs.factories.date_fixture import get_date, date_regex
 
 sys.path.insert(0, 'specs')
 
-
 with description('/images') as self:
-
     with before.each:
         self.context = Context()
         current_app.es = Stub()
@@ -113,7 +111,6 @@ with description('/images') as self:
                 with it("returns an empty list for tags"):
                     expect(self.response.json.get("tags")).to(equal([]))
 
-
             with context("without file attached"):
                 with before.each:
                     self.response = self.context.client().post(
@@ -149,7 +146,6 @@ with description('/images') as self:
                     expect(self.response.status_code).to(equal(200))
 
             with context("the resource doesn't exists"):
-
                 with before.each:
                     with Mock() as elastic_mock:
                         elastic_mock.get(
@@ -189,7 +185,6 @@ with description('/images') as self:
                         expect(self.response.status_code).to(equal(204))
 
                 with context("the resource doesn't exists"):
-
                     with before.each:
                         with Mock() as elastic_mock:
                             elastic_mock.get(
@@ -237,7 +232,6 @@ with description('/images') as self:
                         expect(self.response.status_code).to(equal(204))
 
                 with context("the resource doesn't exists"):
-
                     with before.each:
                         with Mock() as elastic_mock:
                             elastic_mock.get(
