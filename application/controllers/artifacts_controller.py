@@ -14,6 +14,7 @@ from application.models.artifact import Artifact
 from application.validators import artifacts_validator
 from .application_controller import ApplicationController
 
+
 def no_content():
     """ Creates an empty response with
     application/json mimetype """
@@ -21,6 +22,7 @@ def no_content():
     response = make_response('', 204)
     response.mimetype = 'application/json'
     return response
+
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -53,6 +55,7 @@ class ArtifactsController(ApplicationController):
             werkzeug.utils.secure_filename(uploaded_file.filename)
         file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
         uploaded_file.save(file_url)
+        
         params["file_url"] = filename
         artifact = Artifact(params)
 
