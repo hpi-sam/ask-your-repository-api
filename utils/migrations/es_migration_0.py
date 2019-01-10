@@ -30,7 +30,7 @@ def setup_indices():
         }
     }
     es.indices.create(index="new_artifact", ignore=400, body=new_index_body)
-    es.reindex(body={
+    es.reindex(refresh=True, body={
         "source": {
             "index": "artifact"
         },
@@ -39,7 +39,7 @@ def setup_indices():
         }})
     es.indices.delete(index="artifact")
     es.indices.create(index="artifact", ignore=400, body=new_index_body)
-    es.reindex(body={
+    es.reindex(refresh=True, body={
         "source": {
             "index": "new_artifact"
         },
