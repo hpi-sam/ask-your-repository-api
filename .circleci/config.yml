@@ -27,6 +27,13 @@ jobs:
       - checkout
       - run: sudo pip install pipenv && pipenv install --dev
       - run: pipenv run pylint application/ specs/
+  e2e:
+    machine:
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - run: docker-compose -f .circleci/docker-compose.ci.yml up -d
+      - run: docker-compose -f .circleci/docker-compose.ci.yml exec jona yarn cypress run
   build:
     docker:
       - image: circleci/python:3.7
@@ -48,10 +55,12 @@ workflows:
     jobs:
       - test
       - lint
+      - e2e
       - build:
           requires:
             - test
             - lint
+            - e2e
           filters:
             branches:
               only: master

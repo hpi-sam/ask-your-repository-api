@@ -1,0 +1,32 @@
+version: "3"
+services:
+  neo4j_dev:
+    image: neo4j:3.4.5
+    environment:
+      - NEO4J_AUTH=none
+    volumes:
+      - $HOME/neo4j/data:/data
+    ports:
+     - "7687:7687"
+     - "7474:7474"
+  elasticsearch_dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+  elija:
+    build: ..
+    environment:
+      - USE_COMPOSE_ENV=TRUE
+    command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
+    ports:
+      - "5000:5000"
+  jona:
+    image: bp2018hg1/jona_dev:master
+    environment:
+      - REACT_APP_API_URL=http://elija:5000
+    ports:
+      - "3000:3000"
