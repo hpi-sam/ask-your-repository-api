@@ -20,14 +20,14 @@ services:
      - "7687:7687"
      - "6479:6479"
      - "7474:7474"
-#  elasticsearch_dev:
-#    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
-#    environment:
-#      - discovery.type=single-node
-#      - ES_JAVA_OPTS=-Xms512m -Xmx512m
-#    ports:
-#      - "9300:9300"
-#      - "9200:9200"
+  elasticsearch_dev:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9300:9300"
+      - "9200:9200"
 #  elasticsearch_testing:
 #    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
 #    environment:
