@@ -12,6 +12,7 @@ from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date, date_regex
+from specs.factories.image_recognition import mock_image_recognition
 
 sys.path.insert(0, 'specs')
 
@@ -89,11 +90,12 @@ with description('/images') as self:
 
             with context("with file attached"):
                 with before.each:
-                    self.response = self.context.client().post(
-                        "/images", content_type='multipart/form-data', data={
-                            "image": (BytesIO(b'oof'), 'helloworld.jpg'),
-                            "tags": []
-                        })
+                    with mock_image_recognition:
+                        self.response = self.context.client().post(
+                            "/images", content_type='multipart/form-data', data={
+                                "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                                "tags": []
+                            })
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
