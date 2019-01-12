@@ -15,7 +15,6 @@ flask-socketio = "*"
 eventlet = "*"
 py2neo = "*"
 requests = "*"
-pyyaml = ">=4.2b1"
 
 [dev-packages]
 coverage = "*"
