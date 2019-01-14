@@ -2,7 +2,6 @@
 from flask import current_app
 from marshmallow import fields
 from application.base import BaseSchema, output_decorator
-from application.helpers.artifact_helper import build_url
 
 
 class ArtifactSchema(BaseSchema):
@@ -20,5 +19,11 @@ class ArtifactSchema(BaseSchema):
     @output_decorator
     def transform_fields(self, data):
         """ Transforms field for output """
-        data["url"] = build_url(data.pop("file_url"))
+        data["url"] = self.build_url(data.pop("file_url"))
         return data
+
+    @staticmethod
+    def build_url(file_url):
+        """ Schema: fileserver/id_filename """
+        return current_app.config["FILE_SERVER"] + \
+               "/" + file_url
