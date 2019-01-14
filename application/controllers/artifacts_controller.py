@@ -81,6 +81,7 @@ class ArtifactsController(ApplicationController):
 
     @staticmethod
     def upload_file(params):
+        """Saves an artifact to the file server and returns new params for artifact creation."""
         uploaded_file = params["file"]
         filename = str(uuid.uuid4()) + "_" + \
                    werkzeug.utils.secure_filename(uploaded_file.filename)
