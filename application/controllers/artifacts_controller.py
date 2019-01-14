@@ -12,7 +12,7 @@ from application.error_handling.es_connection import check_es_connection
 from application.base import respond_with
 from application.models.artifact import Artifact
 from application.validators import artifacts_validator
-from application.recognition.image_recognition import recognize_image
+from application.recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController
 
 
@@ -50,17 +50,11 @@ class ArtifactsController(ApplicationController):
     @use_args(artifacts_validator.create_args())
     def create(self, params):
         """Logic for creating an artifact"""
-        params["file_date"] = datetime.datetime.now()
-        uploaded_file = params["file"]
-        filename = str(uuid.uuid4()) + "_" + \
-                   werkzeug.utils.secure_filename(uploaded_file.filename)
-        file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
-        uploaded_file.save(file_url)
-        params["file_url"] = filename
+        params = self.upload_file(params)
         artifact = Artifact(params)
 
         artifact.save()
-        recognize_image(file_url, artifact)
+        ImageRecognizer.auto_add_tags(artifact)
         return respond_with(artifact), 200
 
     @use_args(artifacts_validator.update_args())
@@ -84,3 +78,14 @@ class ArtifactsController(ApplicationController):
             return no_content()
         except NotFound:
             return {"error": "not found"}, 404
+
+    @staticmethod
+    def upload_file(params):
+        uploaded_file = params["file"]
+        filename = str(uuid.uuid4()) + "_" + \
+                   werkzeug.utils.secure_filename(uploaded_file.filename)
+        file_url = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
+        uploaded_file.save(file_url)
+        params["file_url"] = filename
+        params["file_date"] = datetime.datetime.now()
+        return params
