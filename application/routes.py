@@ -10,8 +10,8 @@ def create_routes(api):
     from .controllers.artifacts_controller import ArtifactsController
     from .controllers.tags_controller import TagsController
     from .controllers.dialogflow_artifacts_controller import DialogflowArtifactsController
-    from application.controllers.presentations_controller import PresentationsController
-    from application.controllers.teams_controller import TeamsController
+    from .controllers.presentations_controller import PresentationsController
+    from .controllers.teams_controller import TeamsController
 
     add_method(api, '/', "show_status", HomeController, method="get")
     add_resource(api, '/images', ArtifactsController)

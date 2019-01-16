@@ -17,8 +17,8 @@ class DialogflowArtifactsController(ApplicationController):
     def index(self, params):
         "Logic for querying several artifacts"
 
-        team = Team.find_by(name=params.pop('image_name'))
-        params["image_id"] = team.id_
+        team = Team.find_by(name=params.pop('team_name'))
+        params["team_id"] = team.id_
         artifacts = Artifact.search(params)
 
         socketio.emit('START_PRESENTATION',

@@ -4,7 +4,7 @@ import sys
 from io import BytesIO
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
-from expects import expect, equal, have_key
+from expects import expect, equal, have_key, have_keys
 from hamcrest import matches_regexp
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
@@ -14,6 +14,7 @@ from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date, date_regex
 from specs.factories.image_recognition import mock_image_recognition
+from specs.factories.request_generatory import build_request
 
 sys.path.insert(0, 'specs')
 
@@ -50,14 +51,14 @@ with description('/images') as self:
             with shared_context('responds with error') as self:
                 with before.each:
                     self.response = (self.context.client()
-                                     .get(f'{self.path}?{self.param}={self.value}'))
+                                     .get(build_request(self.path, self.params)))
 
                 with it('returns a 422 status code'):
                     expect(self.response.status_code).to(equal(422))
 
                 with it('returns a descriptive error message'):
                     expect(self.response.json).to(have_key("errors"))
-                    expect(self.response.json["errors"]).to(have_key(f'{self.param}'))
+                    expect(self.response.json["errors"]).to(have_keys(*self.params.keys()))
 
             with context('valid request'):
                 with before.each:
@@ -69,16 +70,14 @@ with description('/images') as self:
             with context('invalid requests'):
                 with description('paramter: limit | value: asdf'):
                     with before.each:
-                        self.param = 'limit'
-                        self.value = 'asdf'
+                        self.params = {'limit': 'asdf'}
 
                     with included_context('responds with error'):
                         pass
 
                 with description('paramter: offset | value: asdf'):
                     with before.each:
-                        self.param = 'offset'
-                        self.value = 'asdf'
+                        self.params = {'offset': 'asdf'}
 
                     with included_context('responds with error'):
                         pass

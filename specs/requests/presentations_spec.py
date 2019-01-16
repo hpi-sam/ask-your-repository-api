@@ -34,9 +34,9 @@ with description('/presentations') as self:
 
                     current_app.es = elastic_mock
 
-                with Mock() as socket_mock:
-                    socket_mock.emit(ANY_ARG)
-                    current_app.socketio = socket_mock
+                #with Mock() as socket_mock:
+                 #   socket_mock.emit(ANY_ARG)
+                  #  socketio = socket_mock
 
                 self.response = self.context.client().post("/presentations", json={
                     "file_ids": [get_uuid(0), get_uuid(1), get_uuid(2)]
