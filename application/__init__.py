@@ -15,7 +15,7 @@ from .routes import create_routes
 
 def create_app(config_filename=None):
     """
-    Creates the app using the specifig config file of that environment.
+    Creates the app using the specific config file of that environment.
     See instance directory.
     """
     app = Flask(__name__, instance_relative_config=True)
@@ -30,4 +30,8 @@ def create_app(config_filename=None):
                  if app.config['NEO4J_URL'] else None)
     app.socketio = SocketIO(app)
     app.register_blueprint(api_bp)
+
+    if not os.path.isdir(app.config['UPLOAD_FOLDER']):
+        os.mkdir(app.config['UPLOAD_FOLDER'])
+
     return app
