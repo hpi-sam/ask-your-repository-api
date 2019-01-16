@@ -1,5 +1,5 @@
 """ Elastic search artifact model wraps api into crud methods"""
-from application.schemas.artifact_schema import ArtifactSchema
+from ..schemas.artifact_schema import ArtifactSchema
 from .esmodel import ESModel
 
 

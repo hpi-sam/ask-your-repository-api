@@ -1,6 +1,6 @@
 """ Defines schema for database Team objects """
 from marshmallow import fields
-from application.base import BaseSchema, output_decorator
+from ..base import BaseSchema, output_decorator
 
 
 class TeamSchema(BaseSchema):
