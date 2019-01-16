@@ -38,8 +38,11 @@ services:
 #      - "19200:9200"
   elija:
     build: .
+    depends_on:
+      - neo4j_dev
+      - elasticsearch_dev
     environment:
       - USE_COMPOSE_ENV=TRUE
-    command: sh -c "apk add --no-cache bash && ./wait_for_it.sh neo4j_dev:7474 -- gunicorn --worker-class eventlet --access-logfile - --log-level info -w 1 -b :5000 app:app"
+    command: ./wait-for.sh neo4j_dev:7474 --timeout=30 -- ./start-gunicorn.sh
     ports:
       - "5000:5000"
