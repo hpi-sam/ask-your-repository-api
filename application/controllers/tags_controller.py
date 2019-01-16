@@ -2,10 +2,10 @@
 Handles all logic of the artefacts api
 """
 from webargs.flaskparser import use_args
-from application.errors import NotFound
-from application.error_handling.es_connection import check_es_connection
-from application.models.artifact import Artifact
-from application.validators import tags_validator
+from ..errors import NotFound
+from ..error_handling.es_connection import check_es_connection
+from ..models.artifact import Artifact
+from ..validators import tags_validator
 from .application_controller import ApplicationController
 
 class TagsController(ApplicationController):

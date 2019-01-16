@@ -12,6 +12,7 @@ from flask_socketio import SocketIO
 from py2neo import Database
 from .routes import create_routes
 
+socketio = SocketIO() #pylint: disable=invalid-name
 
 def create_app(config_filename=None):
     """
@@ -28,10 +29,13 @@ def create_app(config_filename=None):
               if app.config['ELASTICSEARCH_URL'] else None)
     app.graph = (Database(app.config['NEO4J_URL']).default_graph
                  if app.config['NEO4J_URL'] else None)
-    app.socketio = SocketIO(app)
     app.register_blueprint(api_bp)
+<<<<<<< HEAD
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
+=======
+    socketio.init_app(app)
+>>>>>>> Refactor socket io and add extra route for dialogflow controller
     return app

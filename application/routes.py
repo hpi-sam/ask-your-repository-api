@@ -6,9 +6,10 @@ from .base import add_resource, add_method
 def create_routes(api):
     """ Creates Routes. Called in __init__ """
 
-    from application.controllers.home_controller import HomeController
-    from application.controllers.artifacts_controller import ArtifactsController
-    from application.controllers.tags_controller import TagsController
+    from .controllers.home_controller import HomeController
+    from .controllers.artifacts_controller import ArtifactsController
+    from .controllers.tags_controller import TagsController
+    from .controllers.dialogflow_artifacts_controller import DialogflowArtifactsController
     from application.controllers.presentations_controller import PresentationsController
     from application.controllers.teams_controller import TeamsController
 
@@ -16,6 +17,7 @@ def create_routes(api):
     add_resource(api, '/images', ArtifactsController)
     add_method(api, '/images', "update_many", ArtifactsController, method="patch")
     add_resource(api, '/teams', TeamsController)
+    add_resource(api, '/dialogflow_images', DialogflowArtifactsController, only="index")
     add_resource(api, '/presentations', PresentationsController, only="create")
     add_method(api, '/images/<object_id>/tags', "add_tags",
                TagsController, method="post")

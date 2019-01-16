@@ -1,6 +1,6 @@
 """ Entry point for our application """
 import logging
-from application import create_app
+from application import create_app, socketio
 
 # Call the Application Factory function to construct a Flask application instance
 # using the standard configuration defined in /instance/flask.cfg
@@ -12,4 +12,4 @@ if __name__ != "__main__":
     app.logger.setLevel(gunicorn_logger.level) #pylint: disable=no-member
 
 if __name__ == "__main__":
-    app.socketio.run(host='0.0.0.0') #pylint: disable=no-value-for-parameter
+    socketio.run(host='0.0.0.0') #pylint: disable=no-value-for-parameter
