@@ -66,7 +66,7 @@ with description('/dialogflow_images') as self:
                     self.response = self.context.client().get(build_request(self.path, self.params))
 
                 with it('returns a 200 status code'):
-                    expect(self.response.status_code).to(equal(204))
+                    expect(self.response.status_code).to(equal(200))
 
             with context('invalid requests'):
                 with description('team_name missing'):

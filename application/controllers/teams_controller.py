@@ -1,10 +1,9 @@
 """
 Handles all logic of the artefacts api
 """
-from flask import current_app
 from flask_socketio import join_room, leave_room
 from webargs.flaskparser import use_args
-from .. import socketio
+from ..extensions import socketio
 from ..errors import NotFound
 from ..validators import teams_validator
 from ..models.team import Team

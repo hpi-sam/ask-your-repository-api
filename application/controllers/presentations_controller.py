@@ -3,9 +3,8 @@ Handles logic for presentation http requests.
 Uses socket.io to communicate with the frontend
 """
 
-from flask import current_app
 from webargs.flaskparser import use_args
-from .. import socketio
+from ..extensions import socketio
 from ..models.artifact import Artifact
 from ..responders import respond_with, no_content
 from ..error_handling.es_connection import check_es_connection

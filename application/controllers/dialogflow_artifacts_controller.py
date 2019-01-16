@@ -1,7 +1,10 @@
-from flask import current_app
+"""
+Handles all logic of the dialogflow_artefacts api
+"""
+
 from webargs.flaskparser import use_args
-from .. import socketio
-from ..responders import no_content, respond_with
+from ..extensions import socketio
+from ..responders import respond_with
 from ..error_handling.es_connection import check_es_connection
 from ..models.artifact import Artifact
 from ..models.team import Team
@@ -25,4 +28,4 @@ class DialogflowArtifactsController(ApplicationController):
                       room=str(params["team_id"]),
                       data=respond_with(artifacts)
                       )
-        return no_content()
+        return respond_with(artifacts)
