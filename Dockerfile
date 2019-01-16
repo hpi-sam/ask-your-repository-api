@@ -10,8 +10,4 @@ RUN pipenv install --system --deploy
 
 EXPOSE 5000
 
-CMD [ "gunicorn", \
-    "--worker-class", "eventlet", \
-    "--access-logfile", "-", \
-    "--log-level", "info", \
-    "-w", "1", "-b", ":5000", "app:app" ]
+CMD [ "./start-gunicorn.sh" ]
