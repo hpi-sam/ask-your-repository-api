@@ -1,5 +1,5 @@
 """Rails like wrapper for routes"""
-from application.base import ActionController
+from ..base import ActionController
 
 
 class ApplicationController(ActionController):

@@ -8,7 +8,7 @@ import application.error_handling.request_parsing #pylint: disable=unused-import
 def output_decorator(decorator_function):
     """
     Decorator to define output transformation functions
-    that are only called in respond_with
+    that are only called in respond_with (application.responders)
     """
 
     @post_dump
@@ -44,15 +44,6 @@ def handle_errors(schema, errors, obj):
                      .format(errors))
     current_app.logger.error(error_message)
     raise ValueError(error_message)
-
-def respond_with(resource):
-    """ Responds with a collection of - or single json """
-    if isinstance(resource, (list,)):
-        if resource:
-            return (resource[0].schema(resource.__class__, decorate=True)
-                    .dump(resource, many=True).data)
-        return []
-    return resource.schema(resource.__class__, decorate=True).dump(resource).data
 
 def add_resource(api, url, controller, only=None):
     """

@@ -4,8 +4,8 @@ import uuid
 import datetime
 from flask import current_app
 from elasticsearch.exceptions import NotFoundError
-from application.base import BaseSchema
-from application.errors import NotFound, NotInitialized
+from ..base import BaseSchema
+from ..errors import NotFound, NotInitialized
 
 
 class ESModel:

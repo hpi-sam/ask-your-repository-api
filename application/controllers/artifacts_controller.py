@@ -5,25 +5,15 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, make_response
+from flask import current_app
 from webargs.flaskparser import use_args
-from application.errors import NotFound
-from application.error_handling.es_connection import check_es_connection
-from application.base import respond_with
-from application.models.artifact import Artifact
-from application.validators import artifacts_validator
-from application.recognition.image_recognition import ImageRecognizer
+from ..responders import no_content, respond_with
+from ..errors import NotFound
+from ..error_handling.es_connection import check_es_connection
+from ..models.artifact import Artifact
+from ..validators import artifacts_validator
+from ..recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController
-
-
-def no_content():
-    """ Creates an empty response with
-    application/json mimetype """
-
-    response = make_response('', 204)
-    response.mimetype = 'application/json'
-    return response
-
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """

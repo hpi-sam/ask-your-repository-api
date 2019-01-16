@@ -2,8 +2,8 @@
 import uuid
 from flask import current_app
 from py2neo import Node
-from application.errors import NotFound
-from application.schemas.team_schema import TeamSchema
+from ..errors import NotFound
+from ..schemas.team_schema import TeamSchema
 
 
 class Team:

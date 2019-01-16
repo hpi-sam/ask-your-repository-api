@@ -11,7 +11,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO
 from py2neo import Database
 from .routes import create_routes
-
+from .extensions import socketio
 
 def create_app(config_filename=None):
     """
@@ -28,10 +28,14 @@ def create_app(config_filename=None):
               if app.config['ELASTICSEARCH_URL'] else None)
     app.graph = (Database(app.config['NEO4J_URL']).default_graph
                  if app.config['NEO4J_URL'] else None)
-    app.socketio = SocketIO(app)
     app.register_blueprint(api_bp)
+    register_extensions(app)
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
     return app
+
+def register_extensions(app):
+    """ Registers all flask extensions """
+    socketio.init_app(app)
