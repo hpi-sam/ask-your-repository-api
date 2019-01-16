@@ -5,13 +5,14 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, make_response
+from flask import current_app
 from webargs.flaskparser import use_args
 from ..responders import no_content, respond_with
 from ..errors import NotFound
 from ..error_handling.es_connection import check_es_connection
 from ..models.artifact import Artifact
 from ..validators import artifacts_validator
+from ..recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController
 
 class ArtifactsController(ApplicationController):
