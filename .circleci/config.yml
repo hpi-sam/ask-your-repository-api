@@ -30,10 +30,15 @@ jobs:
   e2e:
     machine:
       docker_layer_caching: true
+    environment:
+      COMPOSE_FILE: .circleci/docker-compose.ci.yml
     steps:
       - checkout
-      - run: docker-compose -f .circleci/docker-compose.ci.yml up -d
-      - run: docker-compose -f .circleci/docker-compose.ci.yml exec jona yarn cypress run
+      - run: docker-compose pull jona
+      - run: docker-compose build elija
+      - run: docker-compose up -d
+      - run: docker-compose exec jona dockerize -wait http://elija:5000 -timeout 1m
+      - run: docker-compose exec jona yarn cypress run
   build:
     docker:
       - image: circleci/python:3.7
