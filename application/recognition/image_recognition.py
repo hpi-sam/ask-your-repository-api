@@ -9,6 +9,7 @@ class ImageRecognizer():
     @staticmethod
     def auto_add_tags(artifact):
         """Called by classes """
+        current_app.logger.info('spawn_n called')
         spawn_n(ImageRecognizer._work_asynchronously, artifact)
 
     @staticmethod
@@ -16,6 +17,7 @@ class ImageRecognizer():
         """Does API call to could vision api"""
         api_url = current_app.config.get('CLOUD_VISION_API_URL')
         api_key = current_app.config.get('CLOUD_VISION_API_KEY')
+        current_app.logger.info('configs loaded. ULR:  ' + api_url + ' Key: ' + api_key)
         r = post(url=api_url,
                  data={
                      "requests": [
@@ -36,12 +38,14 @@ class ImageRecognizer():
     @staticmethod
     def _work_asynchronously(artifact):
         """Private method called asynchronously for image recognition."""
+        current_app.logger.info('Thread created')
         image_url = ArtifactSchema.build_url(artifact.file_url)
         res = ImageRecognizer._call_google_api(image_url)
         new_tags = ImageRecognizer._extract_tags(res)
         existing_tags = artifact.tags or []
         tags = existing_tags + new_tags
         artifact.update({"tags": tags})
+        current_app.logger.info('artifact updated with: ' + str(tags))
 
     @staticmethod
     def _extract_tags(response):
