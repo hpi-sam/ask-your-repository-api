@@ -1,60 +1,70 @@
 """Image Recognition"""
 from eventlet import spawn_n
-from requests import post
+import requests
 from application.schemas.artifact_schema import ArtifactSchema
+from flask import copy_current_request_context
 from flask import current_app
 
 
-class ImageRecognizer():
-    @staticmethod
-    def auto_add_tags(artifact):
+class ImageRecognizer:
+    @classmethod
+    def auto_add_tags(cls, artifact):
         """Called by classes """
-        current_app.logger.info('spawn_n called')
-        spawn_n(ImageRecognizer._work_asynchronously, artifact)
+        temp = copy_current_request_context(cls._work_asynchronously)
+        spawn_n(temp, artifact)
 
-    @staticmethod
-    def _call_google_api(url):
+    @classmethod
+    def _work_asynchronously(cls, artifact):
+        """Private method called asynchronously for image recognition."""
+        res = cls._call_google_api(artifact)
+        new_tags = cls._extract_tags(res)
+        cls.add_tags_artifact(artifact, new_tags)
+
+    @classmethod
+    def _call_google_api(cls, artifact):
         """Does API call to could vision api"""
         api_url = current_app.config.get('CLOUD_VISION_API_URL')
         api_key = current_app.config.get('CLOUD_VISION_API_KEY')
-        current_app.logger.info('configs loaded. ULR:  ' + api_url + ' Key: ' + api_key)
-        r = post(url=api_url,
-                 data={
-                     "requests": [
-                         {
-                             "features": [
-                                 {"type": "LABEL_DETECTION"},
-                                 {"type": "TEXT_DETECTION"}
-                             ],
-                             "image": {
-                                 "source": {"imageUri": url}
-                             }
-                         }
-                     ]
-                 },
-                 params={'key': api_key})
-        return r.json()
+        file_url = ArtifactSchema.build_url(artifact.file_url)
 
-    @staticmethod
-    def _work_asynchronously(artifact):
-        """Private method called asynchronously for image recognition."""
-        current_app.logger.info('Thread created')
-        image_url = ArtifactSchema.build_url(artifact.file_url)
-        res = ImageRecognizer._call_google_api(image_url)
-        new_tags = ImageRecognizer._extract_tags(res)
+        querystring = {"key": api_key}
+        payload = '''{
+     "requests": [
+         {
+             "features": [
+                 {"type": "LABEL_DETECTION"},
+                 {"type": "TEXT_DETECTION"}
+             ],
+             "image": {
+                 "source": {"imageUri": "''' + file_url + '''"}
+             }
+         }
+     ]
+ }'''
+        headers = {
+            'Content-Type': "application/json"
+        }
+        response = requests.request("POST", api_url, data=payload, headers=headers, params=querystring)
+        return response.json()
+
+    @classmethod
+    def _extract_tags(cls, response):
+        """Private method to extract new tags from Google api response."""
+        tags = []
+        if 'responses' in response:
+            res_one = response['responses'][0]
+            if 'labelAnnotations' in res_one:
+                labels = res_one['labelAnnotations']
+                for label in labels:
+                    tags.append(label['description'])
+            if 'textAnnotations' in res_one:
+                texts = res_one['textAnnotations']
+                for text in texts:
+                    tags.append(text['description'])
+        return tags
+
+    @classmethod
+    def add_tags_artifact(cls, artifact, new_tags):
         existing_tags = artifact.tags or []
         tags = existing_tags + new_tags
         artifact.update({"tags": tags})
-        current_app.logger.info('artifact updated with: ' + str(tags))
-
-    @staticmethod
-    def _extract_tags(response):
-        """Private method to extract new tags from Google api response."""
-        tags = []
-        labels = response['responses'][0]['labelAnnotations']
-        for label in labels:
-            tags.append(label['description'])
-        texts = response['responses'][0]['textAnnotations']
-        for text in texts:
-            tags.append(text['description'])
-        return tags
