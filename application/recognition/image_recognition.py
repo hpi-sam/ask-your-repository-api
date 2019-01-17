@@ -17,8 +17,10 @@ class ImageRecognizer:
     def _work_asynchronously(cls, artifact):
         """Private method called asynchronously for image recognition."""
         res = cls._call_google_api(artifact)
+        current_app.logger.info('Google Response: ' + str(res))
         new_tags = cls._extract_tags(res)
         cls.add_tags_artifact(artifact, new_tags)
+        current_app.logger.info('ML added the Tags: ' + str(new_tags))
 
     @classmethod
     def _call_google_api(cls, artifact):
