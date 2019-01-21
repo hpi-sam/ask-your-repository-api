@@ -16,7 +16,6 @@ def create_routes(api):
     add_resource(api, '/images', ArtifactsController)
     add_resource(api, '/teams', TeamsController)
     add_resource(api, '/presentations', PresentationsController, only="create")
-    add_method(api, '/images/<object_id>/tags', "add_tags",
-               TagsController, method="post")
-    add_method(api, "/tags/suggested", "suggested_tags",
-               TagsController, method="get")
+    add_method(api, '/images/<object_id>/tags', "add_tags", TagsController, method="post")
+    add_method(api, '/tags', "multi_tagging", TagsController, method="post")
+    add_method(api, "/tags/suggested", "suggested_tags", TagsController, method="get")

@@ -13,6 +13,32 @@ class TagsController(ApplicationController):
 
     method_decorators = [check_es_connection]
 
+    @use_args(tags_validator.multi_tagging_args())
+    def multi_tagging(self, params):
+        """ Add tags to multiple artifacts """
+
+        new_multi_tags = list(params["tags"])
+        existing_multi_tags = []
+        artifacts = []
+
+        for object_id in set(params["ids"]):
+            try:
+                artifact = Artifact.find(object_id)
+                artifacts.append(artifact)
+
+                if not existing_multi_tags:
+                    existing_multi_tags = artifact.tags
+                else:
+                    existing_multi_tags = list(set(existing_multi_tags) & set(artifact.tags))
+            except NotFound:
+                return {"error": f"{object_id} not found"}, 404
+
+        for artifact in artifacts:
+            artifact.tags = list(set(artifact.tags) - set(existing_multi_tags)) + new_multi_tags
+            artifact.save()
+
+        return '', 204
+
     @use_args(tags_validator.add_tags_args())
     def add_tags(self, params, object_id):
         """ Adds tags to an existing artifact """

@@ -2,8 +2,16 @@
 
 from webargs import fields
 
+def multi_tagging_args():
+    """ Defines and validates params for multi_tagging """
+    return {
+        "ids": fields.List(fields.UUID(), required=True),
+        "tags": fields.List(fields.String(), missing=[]),
+    }
+
+
 def add_tags_args():
-    """Defines and validates params for add_tags"""
+    """ Defines and validates params for add_tags """
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
         "tags": fields.List(fields.String(), missing=[]),
