@@ -16,6 +16,7 @@ eventlet = "*"
 py2neo = "*"
 requests = "*"
 shovel = "*"
+textblob = "*"
 
 [dev-packages]
 coverage = "*"

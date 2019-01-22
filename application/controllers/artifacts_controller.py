@@ -1,11 +1,14 @@
 """
 Handles all logic of the artifacts api
 """
+
+#!/mnt/c/Users/Luise/OneDrive/Uni/HPI/0-Bachelorprojekt/ask-your-repository-api
+
 import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app
+from flask import current_app, make_response
 from webargs.flaskparser import use_args
 from ..responders import no_content, respond_with
 from ..errors import NotFound
@@ -14,6 +17,7 @@ from ..models.artifact import Artifact
 from ..validators import artifacts_validator
 from ..recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController
+from textblob import Word
 
 
 class ArtifactsController(ApplicationController):
@@ -32,6 +36,10 @@ class ArtifactsController(ApplicationController):
     @use_args(artifacts_validator.search_args())
     def index(self, params):
         """Logic for querying several artifacts"""
+
+        search_args = params.get('search')
+        if search_args is not None:
+            params['search'] = self.get_synonyms(search_args)
 
         artifacts = Artifact.search(params)
 
