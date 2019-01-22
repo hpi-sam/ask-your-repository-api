@@ -14,6 +14,7 @@ def create_routes(api):
 
     add_method(api, '/', "show_status", HomeController, method="get")
     add_resource(api, '/images', ArtifactsController)
+    add_method(api, '/images', "update_many", ArtifactsController, method="patch")
     add_resource(api, '/teams', TeamsController)
     add_resource(api, '/presentations', PresentationsController, only="create")
     add_method(api, '/images/<object_id>/tags', "add_tags",

@@ -36,6 +36,15 @@ def update_args():
         "tags": fields.List(fields.String(), missing=[])
     }
 
+def update_many_args():
+    """Defines and validates params for update many"""
+    return {
+        "artifacts": fields.List(fields.Nested({
+            "id": fields.UUID(required=True),
+            "tags": fields.List(fields.String(), required=True)
+        }))
+    }
+
 def delete_args():
     """Defines and validates params for delete"""
     return {

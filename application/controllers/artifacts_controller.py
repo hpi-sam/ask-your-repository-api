@@ -68,6 +68,20 @@ class ArtifactsController(ApplicationController):
         except NotFound:
             return {"error": "not found"}, 404
 
+    @use_args(artifacts_validator.update_many_args())
+    def update_many(self, params):
+        """ Logic for updating multiple artifacts at once """
+
+        for update_data in params["artifacts"]:
+            object_id = update_data.pop("id")
+            try:
+                artifact = Artifact.find(object_id)
+                artifact.update(update_data)
+            except NotFound:
+                return {"error": f"failed at <{object_id}>: not found"}, 404
+
+        return no_content()
+
     @use_args(artifacts_validator.delete_args())
     def delete(self, params, object_id):
         """Logic for deleting an artifact"""

@@ -2,15 +2,15 @@
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date
 
-def es_get_response():
+def es_get_response(index=0):
     """ Creates an example body for a get request """
-    return {"_id": f"{get_uuid(0)}",
+    return {"_id": f"{get_uuid(index)}",
             "_type": "image",
             "_source": {"tags": ["class_diagram", ""],
-                        "created_at": get_date(0),
-                        "updated_at": get_date(0),
+                        "created_at": get_date(index),
+                        "updated_at": get_date(index),
                         "file_url": "test.png",
-                        "file_date": get_date(0)}}
+                        "file_date": get_date(index)}}
 
 def es_get_untagged_image_response():
     """ Creates an example body for a get request """
