@@ -29,7 +29,7 @@ def create_app(config_filename=None):
     app.graph = (Database(app.config['NEO4J_URL']).default_graph
                  if app.config['NEO4J_URL'] else None)
     app.register_blueprint(api_bp)
-	register_extensions(app)
+    register_extensions(app)
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
         os.mkdir(app.config['UPLOAD_FOLDER'])
