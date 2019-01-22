@@ -8,6 +8,7 @@ from expects import expect, equal, have_key
 from hamcrest import matches_regexp
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
+from doublex_expects import have_been_satisfied
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
@@ -132,6 +133,78 @@ with description('/images') as self:
 
                 with it('returns a 422 status code'):
                     expect(self.response.status_code).to(equal(422))
+
+        with description('UPDATE MANY'):
+            with context('valid request'):
+                with context("all the resources exist"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').returns(es_get_response(0))
+                            elastic_mock.update(
+                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
+                                body={'doc': {
+                                    "updated_at": matches_regexp(date_regex()),
+                                    "tags": ["blue", "red"]}})
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(1)}',
+                                index='artifact').returns(es_get_response(1))
+                            elastic_mock.update(
+                                doc_type='image', id=f'{get_uuid(1)}', index='artifact',
+                                body={'doc': {
+                                    "updated_at": matches_regexp(date_regex()),
+                                    "tags": ["blue", "green"]}})
+
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().patch(f"/images", json={
+                            "artifacts": [
+                                {
+                                    "id": get_uuid(0),
+                                    "tags": ["blue", "red"]
+                                },
+                                {
+                                    "id": get_uuid(1),
+                                    "tags": ["blue", "green"]
+                                }
+                            ]
+                        })
+
+                    with it('calls all mocks'):
+                        expect(current_app.es).to(have_been_satisfied)
+
+                    with it('returns a 204 status code'):
+                        expect(self.response.status_code).to(equal(204))
+
+                with context("a resource does not exists"):
+                    with before.each:
+                        with Mock() as elastic_mock:
+                            elastic_mock.get(
+                                doc_type='_all', id=f'{get_uuid(0)}',
+                                index='artifact').raises(NotFoundError)
+                        current_app.es = elastic_mock
+                        self.response = self.context.client().patch(f"/images", json={
+                            "artifacts": [{ "id": get_uuid(0), "tags": ["blue", "red"]}]
+                        })
+
+                    with it('returns a 404 status code'):
+                        expect(self.response.status_code).to(equal(404))
+
+                    with it('includes error message'):
+                        expect(self.response.json).to(have_key("error"))
+
+            with context('invalid request'):
+                with before.each:
+                    self.response = self.context.client().patch("/images", json={
+                        "artifacts": [{}]
+                    })
+
+                with it('responds with a 422'):
+                    expect(self.response.status_code).to(equal(422))
+
+                with it('responds with correct error messages'):
+                    expect(self.response.json).to(have_key('errors'))
+                    expect(self.response.json['errors']).to(have_key('artifacts'))
 
     with description('/:id'):
         with description('GET'):
