@@ -1,5 +1,5 @@
 """
-Handles all logic of the dialogflow_artefacts api
+Handles all logic of the dialogflow_artifacts api
 """
 
 from webargs.flaskparser import use_args

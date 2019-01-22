@@ -7,7 +7,7 @@ from expects import expect, equal, have_key, have_keys
 from doublex import Mock, Stub, ANY_ARG
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response
-from specs.factories.request_generatory import build_request
+from specs.factories.request_generator import build_request
 from application.models.team import Team
 
 sys.path.insert(0, 'specs')

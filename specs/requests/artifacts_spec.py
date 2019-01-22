@@ -12,9 +12,9 @@ from doublex_expects import have_been_satisfied
 from specs.spec_helpers import Context
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.uuid_fixture import get_uuid
-from specs.factories.date_fixture import get_date, date_regex
+from specs.factories.date_fixture import date_regex
 from specs.factories.image_recognition import mock_image_recognition
-from specs.factories.request_generatory import build_request
+from specs.factories.request_generator import build_request
 
 sys.path.insert(0, 'specs')
 
