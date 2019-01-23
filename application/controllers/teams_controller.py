@@ -28,7 +28,7 @@ class TeamsController(ApplicationController):
 
     def show(self, object_id):
         try:
-            team = Team.find_by(force=True, id_=object_id)
+            team = Team.find_by(force=True, id=object_id)
             return respond_with(team), 200
         except NotFound:
             return {"error": "not found"}, 404
@@ -49,7 +49,7 @@ class TeamsController(ApplicationController):
     def update(self, params, object_id):
         """Logic for updating a team"""
         try:
-            team = Team.find_by(force=True, id_=object_id)
+            team = Team.find_by(force=True, id=object_id)
             team.update(name=params["name"])
             return respond_with(team), 200
         except NotFound:
