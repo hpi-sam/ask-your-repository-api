@@ -21,7 +21,7 @@ class DialogflowArtifactsController(ApplicationController):
         "Logic for querying several artifacts"
 
         team = Team.find_by(name=params.pop('team_name'))
-        params["team_id"] = team.id_
+        params["team_id"] = team.id
         artifacts = Artifact.search(params)
 
         socketio.emit('START_PRESENTATION',

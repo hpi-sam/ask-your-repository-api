@@ -1,13 +1,11 @@
-from flask import current_app
 from mamba import description, before, after, it, context
 from expects import expect, equal, raise_error
 import uuid
-from doublex import Mock, Stub, ANY_ARG
 from application.models.team import Team
 from specs.spec_helpers import Context
 from specs.models.custom_matcher import be_uuid, have_node
 from flask import current_app
-from py2neo import Node, NodeMatcher
+from py2neo import Node
 from application.errors import NotFound
 
 with description('Team') as self:
@@ -24,14 +22,14 @@ with description('Team') as self:
             with it('has a name'):
                 expect(self.team.name).to(equal('Blue'))
             with it('has a uuid'):
-                expect(self.team.id_).to(be_uuid())
+                expect(self.team.id).to(be_uuid())
 
         with context('with Constructor with an id'):
             with before.each:
                 self.blues_id = uuid.uuid4()
-                self.team = Team(name='Blue', id_=str(self.blues_id))
+                self.team = Team(name='Blue', id=str(self.blues_id))
             with it('sets the id'):
-                expect(self.team.id_).to(equal(self.blues_id))
+                expect(self.team.id).to(equal(self.blues_id))
 
     with description('saving'):
         with context('Creating new node'):
@@ -79,24 +77,24 @@ with description('Team') as self:
 
             with it('finds blue'):
                 expect(self.found_blue.name).to(equal(self.blue.name))
-                expect(self.found_blue.id_).to(equal(self.blue.id_))
+                expect(self.found_blue.id).to(equal(self.blue.id))
 
             with it('finds red'):
                 expect(self.found_red.name).to(equal(self.red.name))
-                expect(self.found_red.id_).to(equal(self.red.id_))
+                expect(self.found_red.id).to(equal(self.red.id))
 
         with context('Finding Team by id'):
             with before.each:
-                self.found_red = Team.find_by(id_=str(self.red.id_))
-                self.found_blue = Team.find_by(id_=str(self.blue.id_))
+                self.found_red = Team.find_by(id=str(self.red.id))
+                self.found_blue = Team.find_by(id=str(self.blue.id))
 
             with it('finds blue'):
                 expect(self.found_blue.name).to(equal(self.blue.name))
-                expect(self.found_blue.id_).to(equal(self.blue.id_))
+                expect(self.found_blue.id).to(equal(self.blue.id))
 
             with it('finds red'):
                 expect(self.found_red.name).to(equal(self.red.name))
-                expect(self.found_red.id_).to(equal(self.red.id_))
+                expect(self.found_red.id).to(equal(self.red.id))
 
         with description('Not Found'):
             with it('returns None with force false'):
@@ -132,7 +130,7 @@ with description('Team') as self:
 
     with description('delete'):
         with before.each:
-            self.team = Team.create("Blue")
+            self.team = Team.create(name="Blue")
             self.team.delete()
 
         with it('deletes team'):

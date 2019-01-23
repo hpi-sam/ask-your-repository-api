@@ -43,7 +43,7 @@ with description('/teams') as self:
                 expect(self.response.json).to(have_key("id"))
 
             with it('saves the team'):
-                expect(Team.exists(id_=self.response.json["id"], name="My Name")).to(be(True))
+                expect(Team.exists(id=self.response.json["id"], name="My Team")).to(be(True))
 
         with description('invalid request'):
             with before.each:
@@ -62,19 +62,19 @@ with description('/teams') as self:
             with description('valid id'):
                 with before.each:
                     self.team = Team.create(name='Blue')
-                    self.response = self.context.client().get(f"/teams/{self.team.id_}")
+                    self.response = self.context.client().get(f"/teams/{self.team.id}")
 
                 with it('responds with 200'):
                     expect(self.response.status_code).to(equal(200))
 
                 with it('responds with the correct team'):
                     expect(self.response.json).to(have_key("name", "Blue"))
-                    expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
+                    expect(self.response.json).to(have_key("id", self.team.id.urn[9:]))
 
             with description('invalid id'):
                 with before.each:
-                    team = Team(name='Blue') # Creating but not saving team so that id is invalid
-                    self.response = self.context.client().get(f"/teams/{team.id_}")
+                    team = Team(name='Blue')  # Creating but not saving team so that id is invalid
+                    self.response = self.context.client().get(f"/teams/{team.id}")
 
                 with it('responds error 404'):
                     expect(self.response.status_code).to(equal(404))
@@ -84,7 +84,7 @@ with description('/teams') as self:
                 with before.each:
                     self.team = Team.create(name='Blue')
                     self.response = self.context.client().put(
-                        f"/teams/{self.team.id_}",
+                        f"/teams/{self.team.id}",
                         data={"name": "Red"})
 
                 with it('responds with 200'):
@@ -92,11 +92,11 @@ with description('/teams') as self:
 
                 with it('responds with the updated team'):
                     expect(self.response.json).to(have_key("name", "Red"))
-                    expect(self.response.json).to(have_key("id", self.team.id_.urn[9:]))
+                    expect(self.response.json).to(have_key("id", self.team.id.urn[9:]))
 
                 with description('Team object'):
                     with before.each:
-                        self.fresh_team = Team.find_by(id_=self.team.id_)
+                        self.fresh_team = Team.find_by(id=self.team.id)
 
                     with it('is updated correctly'):
                         expect(self.fresh_team.name).to(equal("Red"))
@@ -106,7 +106,7 @@ with description('/teams') as self:
                     team = Team.create(name="Red")
                     team.delete()
                     self.response = self.context.client().put(
-                        f"/teams/{team.id_}",
+                        f"/teams/{team.id}",
                         data={"name": "Blue"})
 
                 with it('responds error 404'):
@@ -116,7 +116,7 @@ with description('/teams') as self:
                 with before.each:
                     team = Team.create(name="Red")
                     self.response = self.context.client().put(
-                        f"/teams/{team.id_}",
+                        f"/teams/{team.id}",
                         data={"name": ""})
 
                 with it('responds with 422 invalid request'):
