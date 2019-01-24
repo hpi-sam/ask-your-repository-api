@@ -17,6 +17,7 @@ py2neo = "*"
 requests = "*"
 shovel = "*"
 textblob = "*"
+nltk = "*"
 
 [dev-packages]
 coverage = "*"
