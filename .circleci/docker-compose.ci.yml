@@ -28,6 +28,7 @@ services:
     ports:
       - "5000:5000"
   jona:
+    ipc: host # https://github.com/cypress-io/cypress/issues/350#issuecomment-267704772
     image: bp2018hg1/jona_dev:master
     depends_on:
       - elija
