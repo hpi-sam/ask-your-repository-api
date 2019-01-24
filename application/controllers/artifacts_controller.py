@@ -17,7 +17,7 @@ from ..models.artifact import Artifact
 from ..validators import artifacts_validator
 from ..recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController
-from textblob import Word
+from ..synonyms.synonyms import SynonymGenerator
 
 
 class ArtifactsController(ApplicationController):
@@ -39,7 +39,7 @@ class ArtifactsController(ApplicationController):
 
         search_args = params.get('search')
         if search_args is not None:
-            params['search'] = self.get_synonyms(search_args)
+            params['search'] = SynonymGenerator.get_synonyms(search_args)
 
         artifacts = Artifact.search(params)
 
