@@ -1,7 +1,8 @@
 """ Tests for artifacts """
 
 import sys
-from io import BytesIO
+import os
+from PIL import Image
 
 from doublex import Stub
 from expects import expect, equal, have_key, have_keys
@@ -12,6 +13,7 @@ from application.artifacts.artifact import Artifact
 
 from specs.factories.artifact_factory import ArtifactFactory
 from specs.factories.user_factory import UserFactory
+from specs.factories.image_factory import ImageFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
 from specs.factories.uuid_fixture import get_uuid
@@ -19,12 +21,20 @@ from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
+def clear_upload_dir():
+    upload_dir = current_app.config["UPLOAD_FOLDER"]
+    for file_name in os.listdir(upload_dir):
+        file_path = os.path.join(upload_dir, file_name)
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+
 with description('/images') as self:
     with before.each:
         self.context = Context()
         current_app.es = Stub()
 
     with after.each:
+        clear_upload_dir()
         db.cypher_query("MATCH (a) DETACH DELETE a")
         if hasattr(self, "context"):
             self.context.delete()
@@ -82,7 +92,7 @@ with description('/images') as self:
                     with mock_image_recognition:
                         self.response = self.context.client().post(
                             "/images", content_type='multipart/form-data', data={
-                                "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                                "image": (ImageFactory.load_fixture('goat.jpg'), 'goat.jpg'),
                                 "tags": []
                             })
 
@@ -102,6 +112,32 @@ with description('/images') as self:
                 with it("returns an empty list for tags"):
                     expect(self.response.json.get("tags")).to(equal([]))
 
+                with it("saves the image to the configured uploads directory"):
+                    file_name = self.response.json.get("url").split("/")[-1]
+                    file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], file_name)
+                    expect(os.path.isfile(file_path)).to(equal(True))
+
+                with description("resized image versions"):
+                    with before.each:
+                        self.widths = [320, 480, 640, 750, 1080]
+
+                        original_file_name = self.response.json.get("url").split("/")[-1]
+                        [self.prefix, self.suffix] = original_file_name.rsplit('.', 1)
+
+                    with it("saves resized versions of the image to the configured uploads directory"):
+                        for width in self.widths:
+                            file_name = f"{self.prefix}_{width}w.{self.suffix}"
+                            file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], file_name)
+                            expect(os.path.isfile(file_path)).to(equal(True))
+
+                    with it("saves resized versions with correct widths"):
+                        for width in self.widths:
+                            file_name = f"{self.prefix}_{width}w.{self.suffix}"
+                            file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], file_name)
+                            image = Image.open(file_path)
+                            expect(image.width).to(equal(width))
+                            image.close()
+
             with context("without file attached"):
                 with before.each:
                     self.response = self.context.client().post(
@@ -116,7 +152,7 @@ with description('/images') as self:
                 with before.each:
                     self.response = self.context.client().post(
                         "/images", content_type='multipart/form-data', data={
-                            "image": (BytesIO(b'oof'), 'malicious_file.exe')
+                            "image": (ImageFactory.load_fixture('goat.jpg'), 'malicious_file.exe')
                         })
 
                 with it('returns a 422 status code'):
@@ -126,10 +162,11 @@ with description('/images') as self:
                 with before.each:
                     self.user = UserFactory.create_user()
                     self.context.client().login(self.user)
+
                     with mock_image_recognition:
                         self.response = self.context.client().post(
                             "/images", content_type='multipart/form-data', data={
-                                "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                                "image": (ImageFactory.load_fixture('goat.jpg'), 'goat.jpg'),
                                 "tags": []
                             })
 
