@@ -5,8 +5,10 @@ from webargs.flaskparser import use_args
 from ..errors import NotFound
 from ..error_handling.es_connection import check_es_connection
 from ..models.artifact import Artifact
+from ..models.elastic_artifact import ElasticArtifact
 from ..validators import tags_validator
 from .application_controller import ApplicationController
+
 
 class TagsController(ApplicationController):
     """ Controller for Artifacts """
@@ -20,11 +22,11 @@ class TagsController(ApplicationController):
 
         try:
             artifact = Artifact.find(object_id)
-            existing_tags = artifact.tags or []
+            existing_tags = artifact.elastic.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
-            artifact.update({"tags": new_list})
+            artifact.update(tags=new_list)
             return '', 204
         except NotFound:
             return {"error": "not found"}, 404
@@ -38,7 +40,7 @@ class TagsController(ApplicationController):
 
         # all of this will be refactored in favor of a proper frequent
         # itemset mining algorithm, probably charm
-        all_records = Artifact.all(create_objects=False) or []
+        all_records = ElasticArtifact.all(create_objects=False) or []
         tag_frequencies = {}
         current_tags_frequency = 0
 
@@ -59,9 +61,7 @@ class TagsController(ApplicationController):
         sorted_tags = [frequency[0] for frequency in sorted_frequencies]
 
         if not sorted_tags:
-            #raise Exception
             return {"tags": self.most_frequent_tags(all_records, params['limit'])}, 200
-        #raise NameError
         return {"tags": sorted_tags}, 200
 
     @staticmethod

@@ -4,6 +4,7 @@ from flask import Request
 from werkzeug.datastructures import MultiDict, FileStorage
 from application import create_app
 
+
 class TestingFileStorage(FileStorage):
     """
     Taken from: http://www.prschmid.com/2013/05/unit-testing-flask-file-uploads-without.html
@@ -26,7 +27,7 @@ class TestingFileStorage(FileStorage):
                     ``None``.
     """
 
-    #pylint:disable=too-many-arguments, unused-argument
+    # pylint:disable=too-many-arguments, unused-argument
     def __init__(self, stream=None, filename=None, name=None,
                  content_type='application/octet-stream', content_length=-1,
                  headers=None):
@@ -49,9 +50,10 @@ class TestingFileStorage(FileStorage):
         else:
             self.saved = dst.name
 
-    #pylint:enable=too-many-arguments, unused-argument
+    # pylint:enable=too-many-arguments, unused-argument
 
-class TestingRequest(Request): #pylint:disable=too-few-public-methods, too-many-ancestors
+
+class TestingRequest(Request): # pylint:disable=too-few-public-methods, too-many-ancestors
     """A testing request to use that will return a
     TestingFileStorage to test file uploading."""
     @property
@@ -65,6 +67,7 @@ class TestingRequest(Request): #pylint:disable=too-few-public-methods, too-many-
             d.add(key, TestingFileStorage(filename=value.filename))
 
         return d
+
 
 class Context:
     """ Setup the testing app, testing context and client for all tests. """

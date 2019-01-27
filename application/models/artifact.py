@@ -1,66 +1,57 @@
-""" Elastic search artifact model wraps api into crud methods"""
-from ..schemas.artifact_schema import ArtifactSchema
-from .esmodel import ESModel
+""" Abstracting Sync of Neo and Elastic"""
+from .elastic_artifact import ElasticArtifact
+from .neo_artifact import NeoArtifact
+from .neo_tag import NeoTag
 
 
-class Artifact(ESModel):
-    """ Handles saving and searching """
+class Artifact:
+    """ This class abstracts syncing of Neo and Elastic """
 
-    index = "artifact"
-    schema = ArtifactSchema
+    def __init__(self, **properties):
+        self.neo = NeoArtifact(url=properties.get('file_url', ''))
+        properties['id'] = self.neo.id
+        if 'tags' in properties:
+            self._add_tags_to_neo(properties['tags'])
 
-    def __init__(self, params):
-        """ Initializes the artifact """
-        super().__init__(params)
-        self.file_url = params.get("file_url", None)
-        self.tags = params.get("tags", [])
-        self.file_date = params.get("file_date", None)
-        self.team_id = params.get("team_id", None)
-        if "score" in params:
-            self.score = params["score"]
+        self.elastic = ElasticArtifact(properties)
+
+    def save(self):
+        """Save both models"""
+        self.neo.save()
+        self.elastic.save()
+
+    def _add_tags_to_neo(self, tags):
+        for tag in tags:
+            self.neo.tags.add(NeoTag.find_or_create_by(name=tag))
+
+    def update(self, **properties):
+        """Update both models"""
+        if 'file_url' in properties:
+            self.neo.update(url=properties['file_url'])
+        if 'tags' in properties:
+            self._add_tags_to_neo(properties['tags'])
+        self.neo.save()
+        self.elastic.update(properties)
 
     @classmethod
-    def search(cls, params):
-        """ Finds multiple artifacts by params.  """
-        date_range = {}
-        if "start_date" in params:
-            date_range["gte"] = params["start_date"]
-        if "end_date" in params:
-            date_range["lte"] = params["end_date"]
+    def search(cls, search_params):
+        """Search for artifact in Elastic"""
+        return ElasticArtifact.search(search_params)
 
-        body = cls.search_body_helper(params["search"], date_range,
-                                      params["limit"], params["offset"], params['team_id'])
-
-        return super(Artifact, cls).search(
-            {"types": params["types"], "search_body": body})
+    def delete(self):
+        """Delete both models"""
+        self.elastic.delete()
+        self.neo.delete()
 
     @classmethod
-    def search_body_helper(cls, search, daterange, limit=10, offset=0, team_id=None): # pylint: disable=too-many-arguments
-        """ Defines a common body for search function """
-        if search:
-            search_query = {"match": {"tags": search}}
+    def find(cls, id, force=True): # pylint: disable= invalid-name
+        """Finds Artifact and creates instances"""
+        artifact = Artifact()
+        artifact.elastic = ElasticArtifact.find(id)
+        if NeoArtifact.exists(id=id):
+            artifact.neo = NeoArtifact.find_by(id=id, force=force)
         else:
-            search_query = {"match_all": {}}
-
-
-        team_filter = {"team_id": str(team_id)}
-
-        body = {
-            "from": offset, "size": limit,
-            "sort": [
-                "_score",
-                {"created_at": {"order": "desc"}}
-            ],
-            "query": {
-                "bool": {
-                    "filter": [
-                        {"range": {
-                            "created_at": daterange
-                        }},
-                        {"term": team_filter}
-                    ],
-                    "should": search_query
-                }
-            }
-        }
-        return body
+            artifact.neo = NeoArtifact(url=artifact.elastic.file_url, id=str(artifact.elastic.id))
+            artifact._add_tags_to_neo(artifact.elastic.tags) # pylint: disable= protected-access
+            artifact.neo.save()
+        return artifact

@@ -6,8 +6,7 @@ from specs.models.custom_matcher import be_uuid, have_node, have_relationship
 from flask import current_app
 from py2neo import Node
 
-node_name = "NeoArtifact"
-with description('NeoArtifact') as self:
+with description('NeoTag') as self:
     with before.each:
         self.context = Context()
 
