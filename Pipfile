@@ -27,6 +27,7 @@ doublex-expects = "*"
 pep8 = "*"
 autopep8 = "*"
 rope = "*"
+PyHamcrest = "*"
 
 [requires]
 python_version = "3.7"

@@ -3,7 +3,7 @@ from flask import current_app
 from mamba import description, before, after, it
 from expects import *
 from specs.spec_helpers import Context
-from application.models.team import Team
+from application.models.team import NeoTeam
 
 sys.path.insert(0, 'specs')
 
@@ -16,8 +16,8 @@ with description('/teams') as self:
 
     with description('GET'):
         with before.each:
-            Team.create(name='Blue')
-            Team.create(name='Red')
+            NeoTeam.create(name='Blue')
+            NeoTeam.create(name='Red')
             self.response = self.context.client().get("/teams")
 
         with it('responds with all teams'):
@@ -43,7 +43,7 @@ with description('/teams') as self:
                 expect(self.response.json).to(have_key("id"))
 
             with it('saves the team'):
-                expect(Team.exists(id=self.response.json["id"], name="My Team")).to(be(True))
+                expect(NeoTeam.exists(id=self.response.json["id"], name="My Team")).to(be(True))
 
         with description('invalid request'):
             with before.each:
@@ -55,13 +55,13 @@ with description('/teams') as self:
                 expect(self.response.status_code).to(equal(422))
 
             with it('does not save invalid teams'):
-                expect(Team.all()).to(be_empty)
+                expect(NeoTeam.all()).to(be_empty)
 
     with description('/:id'):
         with description('GET'):
             with description('valid id'):
                 with before.each:
-                    self.team = Team.create(name='Blue')
+                    self.team = NeoTeam.create(name='Blue')
                     self.response = self.context.client().get(f"/teams/{self.team.id}")
 
                 with it('responds with 200'):
@@ -73,7 +73,7 @@ with description('/teams') as self:
 
             with description('invalid id'):
                 with before.each:
-                    team = Team(name='Blue')  # Creating but not saving team so that id is invalid
+                    team = NeoTeam(name='Blue')  # Creating but not saving team so that id is invalid
                     self.response = self.context.client().get(f"/teams/{team.id}")
 
                 with it('responds error 404'):
@@ -82,7 +82,7 @@ with description('/teams') as self:
         with description('PUT'):
             with description('valid id'):
                 with before.each:
-                    self.team = Team.create(name='Blue')
+                    self.team = NeoTeam.create(name='Blue')
                     self.response = self.context.client().put(
                         f"/teams/{self.team.id}",
                         data={"name": "Red"})
@@ -96,14 +96,14 @@ with description('/teams') as self:
 
                 with description('Team object'):
                     with before.each:
-                        self.fresh_team = Team.find_by(id=self.team.id)
+                        self.fresh_team = NeoTeam.find_by(id=self.team.id)
 
                     with it('is updated correctly'):
                         expect(self.fresh_team.name).to(equal("Red"))
 
             with description('invalid id'):
                 with before.each:
-                    team = Team.create(name="Red")
+                    team = NeoTeam.create(name="Red")
                     team.delete()
                     self.response = self.context.client().put(
                         f"/teams/{team.id}",
@@ -114,7 +114,7 @@ with description('/teams') as self:
 
             with description('invalid request'):
                 with before.each:
-                    team = Team.create(name="Red")
+                    team = NeoTeam.create(name="Red")
                     self.response = self.context.client().put(
                         f"/teams/{team.id}",
                         data={"name": ""})

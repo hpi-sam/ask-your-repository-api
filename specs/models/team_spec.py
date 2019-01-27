@@ -1,7 +1,7 @@
 from mamba import description, before, after, it, context
 from expects import expect, equal, raise_error
 import uuid
-from application.models.team import Team
+from application.models.team import NeoTeam
 from specs.spec_helpers import Context
 from specs.models.custom_matcher import be_uuid, have_node
 from flask import current_app
@@ -18,7 +18,7 @@ with description('Team') as self:
     with description('Constructing'):
         with context('with Default Constructor'):
             with before.each:
-                self.team = Team(name='Blue')
+                self.team = NeoTeam(name='Blue')
             with it('has a name'):
                 expect(self.team.name).to(equal('Blue'))
             with it('has a uuid'):
@@ -27,21 +27,21 @@ with description('Team') as self:
         with context('with Constructor with an id'):
             with before.each:
                 self.blues_id = uuid.uuid4()
-                self.team = Team(name='Blue', id=str(self.blues_id))
+                self.team = NeoTeam(name='Blue', id=str(self.blues_id))
             with it('sets the id'):
                 expect(self.team.id).to(equal(self.blues_id))
 
     with description('saving'):
         with context('Creating new node'):
             with before.each:
-                self.team = Team(name='Blue')
+                self.team = NeoTeam(name='Blue')
                 self.team.save()
             with it('creates a new node'):
                 expect(current_app.graph).to(have_node(Node("Team", name='Blue')))
 
         with context('Changing existing node'):
             with before.each:
-                self.team = Team(name='Blue')
+                self.team = NeoTeam(name='Blue')
                 self.team.save()
                 self.team.name='Red'
                 self.team.save()
@@ -52,9 +52,9 @@ with description('Team') as self:
 
     with description('List Teams'):
         with before.each:
-            Team(name='Blue').save()
-            Team(name='Red').save()
-            self.teams = Team.all()
+            NeoTeam(name='Blue').save()
+            NeoTeam(name='Red').save()
+            self.teams = NeoTeam.all()
 
         with it('returns list of 2'):
             expect(len(self.teams)).to(equal(2))
@@ -65,15 +65,15 @@ with description('Team') as self:
 
     with description('Finding teams'):
         with before.each:
-            self.blue = Team(name='Blue')
+            self.blue = NeoTeam(name='Blue')
             self.blue.save()
-            self.red = Team(name='Red')
+            self.red = NeoTeam(name='Red')
             self.red.save()
 
         with context('Finding Team by name'):
             with before.each:
-                self.found_red = Team.find_by(name='Red')
-                self.found_blue = Team.find_by(name='Blue')
+                self.found_red = NeoTeam.find_by(name='Red')
+                self.found_blue = NeoTeam.find_by(name='Blue')
 
             with it('finds blue'):
                 expect(self.found_blue.name).to(equal(self.blue.name))
@@ -85,8 +85,8 @@ with description('Team') as self:
 
         with context('Finding Team by id'):
             with before.each:
-                self.found_red = Team.find_by(id=str(self.red.id))
-                self.found_blue = Team.find_by(id=str(self.blue.id))
+                self.found_red = NeoTeam.find_by(id=str(self.red.id))
+                self.found_blue = NeoTeam.find_by(id=str(self.blue.id))
 
             with it('finds blue'):
                 expect(self.found_blue.name).to(equal(self.blue.name))
@@ -98,40 +98,40 @@ with description('Team') as self:
 
         with description('Not Found'):
             with it('returns None with force false'):
-                expect(Team.find_by(name='asdf')).to(equal(None))
+                expect(NeoTeam.find_by(name='asdf')).to(equal(None))
             with it('throws exception with force true'):
-                expect(lambda: Team.find_by(name='asdf', force=True)).to(raise_error(NotFound))
+                expect(lambda: NeoTeam.find_by(name='asdf', force=True)).to(raise_error(NotFound))
 
     with description('exists'):
         with before.each:
-            Team(name='Blue').save()
+            NeoTeam(name='Blue').save()
 
         with it('Returns true if team exists'):
-            expect(Team.exists(name='Blue')).to(equal(True))
+            expect(NeoTeam.exists(name='Blue')).to(equal(True))
 
         with it('Returns false if team does not exist'):
-            expect(Team.exists(name='Red')).to(equal(False))
+            expect(NeoTeam.exists(name='Red')).to(equal(False))
 
     with description('create'):
         with before.each:
-            self.team = Team.create(name='Blue')
+            self.team = NeoTeam.create(name='Blue')
 
         with it('creates new node'):
             expect(current_app.graph).to(have_node(Node("Team", name='Blue')))
 
     with description('update'):
         with before.each:
-            self.team = Team.create(name="Blue")
+            self.team = NeoTeam.create(name="Blue")
             self.team.update(name="Red")
 
         with it('saves new attributes'):
-            expect(Team.exists(name="Red")).to(equal(True))
-            expect(Team.exists(name="Blue")).to(equal(False))
+            expect(NeoTeam.exists(name="Red")).to(equal(True))
+            expect(NeoTeam.exists(name="Blue")).to(equal(False))
 
     with description('delete'):
         with before.each:
-            self.team = Team.create(name="Blue")
+            self.team = NeoTeam.create(name="Blue")
             self.team.delete()
 
         with it('deletes team'):
-            expect(Team.exists(name='Blue')).to(equal(False))
+            expect(NeoTeam.exists(name='Blue')).to(equal(False))

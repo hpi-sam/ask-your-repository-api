@@ -15,6 +15,7 @@ from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import date_regex
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
+from application.models.neo_artifact import NeoArtifact
 
 sys.path.insert(0, 'specs')
 
@@ -26,6 +27,7 @@ with description('/images') as self:
     with after.each:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
+        current_app.graph.delete_all()
         if hasattr(self, "context"):
             self.context.delete()
 
@@ -239,6 +241,7 @@ with description('/images') as self:
                 with context("the resource exists"):
                     with before.each:
                         with Mock() as elastic_mock:
+                            NeoArtifact(id=get_uuid(0)).save()
                             elastic_mock.get(
                                 doc_type='_all', id=f'{get_uuid(0)}',
                                 index='artifact').returns(es_get_response())

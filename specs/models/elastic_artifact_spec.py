@@ -3,13 +3,12 @@
 import sys
 from flask import current_app
 from mamba import description, before, after, it
-from expects import expect, equal, raise_error
+from expects import expect, equal, raise_error, have_key, contain, have_len, be_above
+from hamcrest import has_length, greater_than, contains, has_key, anything
 from doublex import Mock, Stub, ANY_ARG
-from application.models.artifact import Artifact
+from application.models.elastic_artifact import ElasticArtifact
 from application.errors import NotInitialized
 from specs.spec_helpers import Context
-from specs.factories.elasticsearch import es_tags_equals_none_response
-from specs.factories.uuid_fixture import get_uuid
 
 sys.path.insert(0, 'specs')
 
@@ -20,16 +19,17 @@ with description('Artifact') as self:
         current_app.es = Stub()
 
     with after.each:
-        self.context.delete()
+        if hasattr(self, "context"):
+            self.context.delete()
 
     with description('update'):
         with before.each:
             with Mock() as elastic_mock:
-                elastic_mock.update(ANY_ARG)
-                elastic_mock.index(ANY_ARG)
+                elastic_mock.index(body=anything(), doc_type=anything(), id=anything(), index='artifact')
+                elastic_mock.update(body=anything(), doc_type=anything(), id=anything(), index='artifact')
 
+            self.artifact = ElasticArtifact({"type": "image"})
             current_app.es = elastic_mock
-            self.artifact = Artifact({"type": "image"})
 
         with it("raises NotInitialized error if it wasn't saved before"):
             expect(lambda: self.artifact.update({})).to(raise_error(NotInitialized))

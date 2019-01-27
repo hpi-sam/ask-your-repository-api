@@ -14,6 +14,7 @@ with description('NeoArtifact') as self:
 
     with after.each:
         current_app.graph.delete_all()
+        self.context.delete()
 
     with description('Constructing'):
         with context('with Default Constructor'):
@@ -50,6 +51,12 @@ with description('NeoArtifact') as self:
                 expect(current_app.graph).not_to(have_node(Node(node_name, url='https://i.redd.it/dsv32vpi0m821.jpg')))
 
     with description('tags'):
+        with context('tag list'):
+            with it('returns list of tag names as array'):
+                artifact = NeoArtifact(url='https://i.redd.it/dsv32vpi0m821.jpg')
+                artifact.tags.add(NeoTag(name='reddit'))
+                expect(artifact.tag_list()).to(equal(['reddit']))
+
         with it('are empty at the start'):
             artifact = NeoArtifact(url='https://i.redd.it/dsv32vpi0m821.jpg')
             expect(list(artifact.tags)).to(equal([]))
