@@ -32,7 +32,7 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - files:/files
+      - ./${UPLOAD_FOLDER}:/files
     ports:
       - "8080:80"
   elija:
@@ -44,9 +44,6 @@ services:
       - USE_COMPOSE_ENV=TRUE
     command: ./wait-for.sh neo4j_dev:7474 --timeout=30 -- ./start-gunicorn.sh
     volumes:
-      - files:/src/uploads
+      - ./${UPLOAD_FOLDER}:/src/uploads
     ports:
       - "5000:5000"
-
-volumes:
-  files:
