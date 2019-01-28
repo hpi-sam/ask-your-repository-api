@@ -15,6 +15,7 @@ flask-socketio = "*"
 eventlet = "*"
 py2neo = "*"
 requests = "*"
+shovel = "*"
 
 [dev-packages]
 coverage = "*"

@@ -1,9 +1,10 @@
 import os
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+from shovel import task
 load_dotenv()
 
-
+@task
 def setup_indices():
     es = Elasticsearch(os.environ.get('ES_URL'))
     es.indices.create(index="artifact", ignore=400, body={
