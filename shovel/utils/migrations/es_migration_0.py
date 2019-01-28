@@ -1,10 +1,12 @@
 import os
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+from shovel import task
 load_dotenv()
 
 
-def setup_indices():
+@task
+def migrate_indices_0():
     es = Elasticsearch(os.environ.get('ES_URL'))
     new_index_body = {
         "mappings": {
@@ -49,7 +51,6 @@ def setup_indices():
     es.indices.delete(index="new_artifact")
 
 
-
 if __name__ == '__main__':
-    setup_indices()
+    migrate_indices_0()
     print('lmao success')
