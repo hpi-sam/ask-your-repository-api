@@ -1,6 +1,7 @@
 """
 Handles all logic of the artefacts api
 """
+from flask import current_app
 from flask_socketio import join_room, leave_room
 from webargs.flaskparser import use_args
 
@@ -15,14 +16,14 @@ from ..validators import teams_validator
 @socketio.on("join_team")
 def on_team_join(data):
     """ Logic for connecting to a Team with socketio """
-    print("Join Room: " + data["team_id"])
+    current_app.logger.info("Join Room: " + data["team_id"])
     join_room(str(data["team_id"]))
 
 
 @socketio.on("leave_team")
 def on_team_leave(data):
     """ Logic for leaving a Team with socketio """
-    print("Leave Room: " + data["team_id"])
+    current_app.logger.info("Leave Room: " + data["team_id"])
     leave_room(str(data["team_id"]))
 
 

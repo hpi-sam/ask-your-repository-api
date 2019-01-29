@@ -14,7 +14,8 @@ def search_args():
         "start_date": fields.DateTime(),
         "end_date": fields.DateTime(),
         "offset": fields.Integer(missing=0),
-        "limit": fields.Integer(missing=12)
+        "limit": fields.Integer(missing=12),
+        "notify_clients": fields.Boolean(missing=False)
     }
 
 
