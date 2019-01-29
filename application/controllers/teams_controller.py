@@ -12,15 +12,13 @@ from ..models.team import NeoTeam
 from ..responders import respond_with
 from ..validators import teams_validator
 
-
-@socketio.on("join_team")
+@socketio.on("JOIN_TEAM")
 def on_team_join(data):
     """ Logic for connecting to a Team with socketio """
     current_app.logger.info("Join Room: " + data["team_id"])
     join_room(str(data["team_id"]))
 
-
-@socketio.on("leave_team")
+@socketio.on("LEAVE_TEAM")
 def on_team_leave(data):
     """ Logic for leaving a Team with socketio """
     current_app.logger.info("Leave Room: " + data["team_id"])
