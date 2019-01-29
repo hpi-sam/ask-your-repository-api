@@ -79,4 +79,14 @@ class TeamsView(MethodResource):
         team = Team(**params).save()
         user = User.find_by(id_=get_jwt_identity())
         team.members.connect(user)  # pylint:disable=no-member
+        self.__notify_of_team_creation(team)
         return team
+
+    def __notify_of_team_creation(self, team):
+    """Notify registered services of Team creation"""
+    if current_app.config['DIALOGFLOW_NOTIFY']:
+        try:
+            service_url = os.environ.get('DIALOGFLOW_ADAPTER') + '/teams'
+            requests.post(service_url, data={'id': str(team.id_), 'name': team.name})
+        except requests.ConnectionError:
+            current_app.logger.info("Couldn't connect to tobito!")

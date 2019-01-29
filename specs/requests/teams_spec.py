@@ -1,8 +1,10 @@
 import uuid
+import os
 
 import sys
 from expects import expect, have_key, have_len, contain_only, equal, be, be_empty, contain
 from mamba import description, before, after, it
+import responses
 from neomodel import db
 
 from application.teams.team import Team
@@ -53,7 +55,6 @@ with description('/teams') as self:
                 self.response = self.context.client().post(
                     "/teams",
                     data={"name": "My Team"})
-
             with it('responds with 200'):
                 expect(self.response.status_code).to(equal(200))
 
@@ -67,6 +68,27 @@ with description('/teams') as self:
             with it('adds logged in user as member'):
                 team = Team.nodes.get_or_none(id_=self.response.json["id"], name="My Team")
                 expect(list(team.members)).to(contain(self.user))
+        with description('notify dialogflow adapter'):
+            with before.each:
+                current_app.config['DIALOGFLOW_NOTIFY'] = True
+                self.DIALOGFLOW_URL = os.environ.get('DIALOGFLOW_ADAPTER') + '/teams'
+                self.response_mock = responses.RequestsMock()
+                self.response_mock.__enter__() # starts the mocking context
+
+                self.response_mock.add(responses.POST, self.DIALOGFLOW_URL, json={'blub': 'blub'}, status=200)
+                self.response = self.context.client().post(
+                    "/teams",
+                    data={"name": "My Team"})
+
+            with after.each:
+                # ends the mocking context (basically the same as with ...)
+                self.response_mock.__exit__(None, None, None)
+                current_app.config['DIALOGFLOW_NOTIFY'] = False
+
+            with it('notifies dialogflow adapter of team creation'):
+                expect(len(self.response_mock.calls)).to(equal(1))
+                expect(self.response_mock.calls[0].request.url).to(equal(self.DIALOGFLOW_URL))
+                expect(self.response_mock.calls[0].response.status_code).to(equal(200))
 
         with description('invalid request'):
             with before.each:
