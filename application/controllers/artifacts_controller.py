@@ -7,9 +7,12 @@ import uuid
 
 import werkzeug
 from flask import current_app
+from flask_socketio import emit
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
+from ..extensions import socketio
+from ..responders import no_content, respond_with
 from ..error_handling.es_connection import check_es_connection
 from ..errors import NotFound
 from ..models.artifact import Artifact
@@ -18,6 +21,23 @@ from ..responders import no_content, respond_with
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
 
+@socketio.on("SYNCHRONIZED_SEARCH")
+def synchronized_search(params):
+    """ Called from client when presentation mode is on """
+
+    # Creating params necessary because webargs only works for flask requests
+    params["team_id"] = params.get("team_id", None)
+    params["offset"] = 0
+    params["limit"] = 10
+    params["types"] = "image"
+
+    artifacts = Artifact.search(params)
+
+    emit('START_PRESENTATION',
+         respond_with(artifacts),
+         room=str(params["team_id"]),
+         broadcast=True
+        )
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -40,6 +60,12 @@ class ArtifactsController(ApplicationController):
             params['search'] = SynonymGenerator(search_args).get_synonyms()
 
         artifacts = Artifact.search(params)
+
+        if params['notify_clients']:
+            socketio.emit('START_PRESENTATION',
+                          room=str(params["team_id"]),
+                          data=respond_with(artifacts)
+                         )
 
         return {"images": respond_with(artifacts)}, 200
 

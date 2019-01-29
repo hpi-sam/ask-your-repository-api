@@ -25,6 +25,8 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - $HOME/elasticsearch/data:/data
     ports:
       - "9300:9300"
       - "9200:9200"
