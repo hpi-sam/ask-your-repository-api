@@ -45,7 +45,8 @@ class ElasticArtifact(ESModel):
     ):  # pylint: disable=too-many-arguments
         """ Defines a common body for search function """
         if search:
-            search_query = {"match": {"tags": search}}
+            search_query = {"multi_match": {"query": search,
+                                            "fields:": ["tags^2", "*_annotations"]}}
         else:
             search_query = {"match_all": {}}
 

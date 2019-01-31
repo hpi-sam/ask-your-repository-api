@@ -11,7 +11,11 @@ class NeoTag(NeoModel):
 
     name = Property()
 
-    images = RelatedFrom("NeoArtifact", "TAGGED_WITH")
+    tagged_images = RelatedFrom("NeoArtifact", "TAGGED_WITH")
+    label_annotated_images = RelatedFrom("NeoArtifact", "ANNOTATED_WITH_LABEL")
+    text_annotated_images = RelatedFrom("NeoArtifact", "ANNOTATED_WITH_TEXT")
+
+
 
     def __init__(self, name='', id=None):
         super().__init__(id=id)

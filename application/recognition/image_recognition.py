@@ -10,7 +10,8 @@ from application.schemas.artifact_schema import ArtifactSchema
 class ImageRecognizer:
     @classmethod
     def auto_add_tags(cls, artifact):
-        """Called by classes """
+        """Adds automatically generated tags to the artifact.
+        Returns nothing and will not raise exceptions or errors encountered during the process"""
         temp = copy_current_request_context(cls._work_asynchronously)
         spawn_n(temp, artifact)
 
@@ -19,13 +20,15 @@ class ImageRecognizer:
         """Private method called asynchronously for image recognition."""
         res = cls._call_google_api(artifact)
         current_app.logger.info('Google Response: ' + str(res))
-        new_tags = cls._extract_tags(res)
-        cls.add_tags_artifact(artifact, new_tags)
-        current_app.logger.info('ML added the Tags: ' + str(new_tags))
+        label_annotations, text_annotations = cls._extract_tags(res)
+        cls.add_tags_artifact(artifact, label_annotations, text_annotations)
+        current_app.logger.info(
+            'ML added the labels: ' + str(label_annotations) +
+            ' Extracted text was: ' + str(text_annotations))
 
     @classmethod
     def _call_google_api(cls, artifact):
-        """Does API call to could vision api"""
+        """Does API call to could vision api and returns the response body"""
         api_url = current_app.config.get('CLOUD_VISION_API_URL')
         api_key = current_app.config.get('CLOUD_VISION_API_KEY')
         file_url = ArtifactSchema.build_url(artifact.file_url)
@@ -52,22 +55,22 @@ class ImageRecognizer:
 
     @classmethod
     def _extract_tags(cls, response):
-        """Private method to extract new tags from Google api response."""
-        tags = []
+        """Returns new label and text annotations extracted from Google api response body"""
+        label_annotations = []
+        text_annotations = []
         if 'responses' in response:
             res_one = response['responses'][0]
             if 'labelAnnotations' in res_one:
                 labels = res_one['labelAnnotations']
                 for label in labels:
-                    tags.append(label['description'])
+                    label_annotations.append(label['description'])
             if 'textAnnotations' in res_one:
                 texts = res_one['textAnnotations']
                 for text in texts:
-                    tags.append(text['description'])
-        return tags
+                    text_annotations.append(text['description'])
+        return label_annotations, text_annotations
 
     @classmethod
-    def add_tags_artifact(cls, artifact, new_tags):
-        existing_tags = artifact.tags or []
-        tags = existing_tags + new_tags
-        artifact.update({"tags": tags})
+    def add_tags_artifact(cls, artifact, label_annotations, text_annotations):
+        artifact.update({'label_annotations': label_annotations,
+                         'text_annotations': text_annotations})
