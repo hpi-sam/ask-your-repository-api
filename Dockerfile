@@ -1,12 +1,12 @@
 FROM python:3.7-alpine
 
 RUN apk add build-base
-RUN pip install pipenv
+RUN pip install poetry
 
 COPY . /src
 WORKDIR /src
-
-RUN pipenv install --system --deploy
+RUN poetry config settings.virtualenvs.create false
+RUN poetry install --no-dev
 
 EXPOSE 5000
 

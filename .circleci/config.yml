@@ -11,22 +11,16 @@ jobs:
           NEO4J_dbms_memory_pagecache_size: 100M
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "Pipfile.lock" }}
-      - run: pipenv install --dev
-      - save_cache:
-          key: dependency-cache-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.cache/pip
-      - run: pipenv run coverage run --source=application -m mamba.cli specs
-      - run: pipenv run coveralls
+      - run: sudo pip install poetry && poetry install
+      - run: poetry run coverage run --source=application -m mamba.cli specs
+      - run: poetry run coveralls
   lint:
     docker:
       - image: circleci/python:3.7
     steps:
       - checkout
-      - run: sudo pip install pipenv && pipenv install --dev
-      - run: pipenv run pylint application/ specs/
+      - run: sudo pip install poetry && poetry install
+      - run: poetry run pylint application/ specs/
   e2e:
     machine:
       docker_layer_caching: true

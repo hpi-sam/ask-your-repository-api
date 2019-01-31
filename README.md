@@ -6,8 +6,15 @@
   - Click: Add path
   - At the end of installation allow usage of paths longer than 260 characters
   - See: [Setup Python](https://docs.python.org/3/using/windows.html)
+- Highly recommended to use [pyenv](https://github.com/pyenv/pyenv#installation) instead for this as it makes swapping python versions much easier.  
+You can use the installer from [here](https://github.com/pyenv/pyenv-installer) for easy installation.
 
-- Setup Pipenv and flask:
+Installing dependencies:
+- Way 1 Setup Poetry:
+  - [Install Poetry](https://poetry.eustace.io/docs/#system-requirements)
+  - Install dependencies via: `poetry install`
+  
+- Way 2 Setup Pipenv:
   - [Install Pipenv](https://pipenv.readthedocs.io/en/latest/)
   - In project folder run `pipenv install`
 
@@ -47,8 +54,12 @@
   - Unfortunately sometimes a service crashes, then you neet to run both commands again
 
 # Install dependencies
-- Run: `pipenv install`
-- And run: `pipenv install --dev`
+- With Poetry:
+    - Run: `poetry install`
+    
+- With Pipenv:
+    - Run: `pipenv install`
+    - And run: `pipenv install --dev`
 
 # Setup database
 - Run: `pipenv run python utils/setup_elasticsearch.py`

@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "Elija"
+version = "0.1.0"
+description = "https://github.com/hpi-sam/ask-your-repository-api"
+authors = ["Jascha Beste <jascha.beste@student.hpi.de>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+Flask = "==1.0.2"
+flask-restful = "*"
+elasticsearch = "*"
+python-dotenv = "*"
+gunicorn = "*"
+flask-cors = "*"
+webargs = "*"
+flask-socketio = "*"
+eventlet = "*"
+py2neo = "*"
+requests = "*"
+
+[tool.poetry.dev-dependencies]
+coverage = "*"
+python-coveralls = "*"
+pylint = "*"
+mamba = "*"
+expects = "*"
+doublex = "*"
+doublex-expects = "*"
+pep8 = "*"
+autopep8 = "*"
+rope = "*"
+PyHamcrest = "*"
