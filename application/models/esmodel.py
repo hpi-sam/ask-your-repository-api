@@ -4,8 +4,8 @@ import datetime
 import uuid
 
 from flask import current_app
-from elasticsearch.exceptions import NotFoundError  # noqa
 
+from elasticsearch.exceptions import NotFoundError  # noqa
 from ..base import BaseSchema
 from ..errors import NotFound, NotInitialized
 

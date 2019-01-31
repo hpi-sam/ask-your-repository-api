@@ -7,7 +7,6 @@ from application import create_app
 
 
 class TestingFileStorage(FileStorage):
-
     """Taken from: http://www.prschmid.com/2013/05/unit-testing-flask-file-uploads-without.html
     This is a helper for testing upload behavior in your application. You
     can manually create it, and its save method is overloaded to set `saved`

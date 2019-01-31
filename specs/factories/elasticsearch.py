@@ -64,6 +64,7 @@ def es_search_response():
              "tags": ["uml", "use case diagram"],
              "file_date": get_date(1)}}]}}
 
+
 def es_search_response_synonyms():
     """ Creates an example body for a search request """
     return {"hits": {"total": 12, "max_score": 1.0, "hits": [

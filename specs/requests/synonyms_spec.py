@@ -1,13 +1,14 @@
 """ Tests for artifacts with synonyms"""
 
-from flask import current_app
-from mamba import description, context, before, after, it
-from expects import expect, equal
-from hamcrest import anything, has_key, has_entries, contains_string
 from doublex import Mock
 from doublex_expects import have_been_satisfied
-from specs.spec_helpers import Context
+from expects import expect, equal
+from flask import current_app
+from hamcrest import anything, has_entries, contains_string
+from mamba import description, before, after, it
+
 from specs.factories.elasticsearch import es_search_response_synonyms
+from specs.spec_helpers import Context
 
 with description('/images') as self:
     with before.each:
@@ -22,11 +23,14 @@ with description('/images') as self:
 
     with description('Synonyms'):
         def contains_tag(self, tag):
-            return has_entries(query= has_entries(bool=has_entries(should=has_entries(match=has_entries(tags = contains_string(tag))))))
+            return has_entries(
+                query=has_entries(bool=has_entries(should=has_entries(match=has_entries(tags=contains_string(tag))))))
+
 
         with before.each:
             with Mock() as elastic_mock:
-                elastic_mock.search(body=self.contains_tag("group"), doc_type='image', index='artifact', search_type=anything()).returns(es_search_response_synonyms())
+                elastic_mock.search(body=self.contains_tag("group"), doc_type='image', index='artifact',
+                                    search_type=anything()).returns(es_search_response_synonyms())
                 current_app.es = elastic_mock
 
             self.response = self.context.client().get("/images?search=team")

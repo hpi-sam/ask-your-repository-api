@@ -1,5 +1,5 @@
-import nltk
 from textblob import Word
+
 
 class SynonymGenerator:
 
@@ -25,15 +25,16 @@ class SynonymGenerator:
         self.synset_relations = self._get_synset_relations(self.synsets)
         self.synset_synonyms = self._get_synset_synonyms(self.synsets)
 
-    def _get_synset_synonyms(self,superset):
+    def _get_synset_synonyms(self, superset):
         synonyms_list = self._parse_synsets_to_string(superset)
         synset_synonyms = self._get_word_synsets(synonyms_list)
         return synset_synonyms
 
-    def _get_synset_relations(self,synsets):
+    def _get_synset_relations(self, synsets):
         synset_relations = []
         for synset in synsets:
-            synset_relations.extend(synset.hypernyms() + synset.hyponyms() + synset.member_holonyms() + synset.part_meronyms())
+            synset_relations.extend(
+                synset.hypernyms() + synset.hyponyms() + synset.member_holonyms() + synset.part_meronyms())
         return synset_relations
 
     def _get_word_synsets(self, words):
@@ -44,14 +45,14 @@ class SynonymGenerator:
             word_synsets.extend(word.synsets)
         return word_synsets
 
-    def _get_lemma_names(self,synsets):
+    def _get_lemma_names(self, synsets):
         lemmas = []
         for synset in synsets:
             lemma = synset.lemma_names()
             lemmas.extend(lemma)
         return lemmas
 
-    def _parse_synsets_to_string(self,synsets):
+    def _parse_synsets_to_string(self, synsets):
         lemmas = self._get_lemma_names(synsets)
         return ' '.join(set(lemmas))
 
