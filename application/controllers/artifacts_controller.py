@@ -12,6 +12,7 @@ from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
 from ..extensions import socketio
+from ..socketio_parser import use_args as socketio_args
 from ..responders import no_content, respond_with
 from ..error_handling.es_connection import check_es_connection
 from ..errors import NotFound
@@ -22,15 +23,9 @@ from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
 
 @socketio.on("SYNCHRONIZED_SEARCH")
+@socketio_args(artifacts_validator.search_args())
 def synchronized_search(params):
     """ Called from client when presentation mode is on """
-
-    # Creating params necessary because webargs only works for flask requests
-    params["team_id"] = params.get("team_id", None)
-    params["offset"] = 0
-    params["limit"] = 10
-    params["types"] = "image"
-
     artifacts = Artifact.search(params)
 
     emit('START_PRESENTATION',
