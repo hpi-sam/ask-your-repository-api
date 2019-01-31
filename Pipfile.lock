@@ -1,11 +1,7 @@
 {
     "_meta": {
         "hash": {
-<<<<<<< HEAD
-            "sha256": "ddd49792f491577bb840caa1edc2ae4ced9130feccdb0b14d9c2588c5b1b9242"
-=======
-            "sha256": "3a01fa007c1e004b691ac5b73f3d9704ecb82f50b8495667fcb6bebe29301b1c"
->>>>>>> 670b600... Make linter happy
+            "sha256": "3bb57f665eb41021a14feaa92efbdcbdade3376bc02c232969f0f69d5fa0ad8e"
         },
         "pipfile-spec": 6,
         "requires": {

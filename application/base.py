@@ -3,6 +3,7 @@
 from flask import current_app
 from flask_restful import Resource
 from marshmallow import Schema, post_load, post_dump
+from webargs.flaskparser import parser, abort
 
 
 def output_decorator(decorator_function):
@@ -38,7 +39,7 @@ class BaseSchema(Schema):
 
 
 @BaseSchema.error_handler
-def handle_errors(schema, errors, obj):
+def handle_errors(schema, errors, obj):  # noqa
     """
     Logs errors that are caused when loading
     objects from the database using schema.load.
@@ -48,6 +49,14 @@ def handle_errors(schema, errors, obj):
                      .format(errors))
     current_app.logger.error(error_message)
     raise ValueError(error_message)
+
+
+@parser.error_handler
+def handle_request_parsing_error(err, req, schema, status_code, headers):  # pylint: disable=unused-argument
+    """webargs error handler that uses Flask-RESTful's abort function to return
+    a JSON error response to the client.
+    """
+    abort(422, errors=err.messages)
 
 
 def add_resource(api, url, controller, only=None):

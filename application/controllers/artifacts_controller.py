@@ -15,10 +15,8 @@ from ..errors import NotFound
 from ..models.artifact import Artifact
 from ..recognition.image_recognition import ImageRecognizer
 from ..responders import no_content, respond_with
-from ..validators import artifacts_validator
-from ..recognition.image_recognition import ImageRecognizer
-from .application_controller import ApplicationController
 from ..synonyms.synonyms import SynonymGenerator
+from ..validators import artifacts_validator
 
 
 class ArtifactsController(ApplicationController):
