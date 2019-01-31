@@ -8,7 +8,7 @@ import os
 import uuid
 import datetime
 import werkzeug
-from flask import current_app, make_response
+from flask import current_app
 from webargs.flaskparser import use_args
 from ..responders import no_content, respond_with
 from ..errors import NotFound
