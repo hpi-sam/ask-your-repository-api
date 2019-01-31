@@ -5,12 +5,12 @@ from io import BytesIO
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from expects import expect, equal, have_key, have_keys
-from hamcrest import matches_regexp
+from hamcrest import matches_regexp, anything, has_key, has_entries, contains_string
 from elasticsearch.exceptions import NotFoundError
 from doublex import Mock, Stub, ANY_ARG
 from doublex_expects import have_been_satisfied
 from specs.spec_helpers import Context
-from specs.factories.elasticsearch import es_search_response, es_get_response
+from specs.factories.elasticsearch import es_search_response, es_get_response, es_search_response_synonyms
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import date_regex
 from specs.factories.image_recognition import mock_image_recognition
