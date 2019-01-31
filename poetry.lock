@@ -360,6 +360,18 @@ pytz = "*"
 six = "*"
 
 [[package]]
+category = "main"
+description = "Natural Language Toolkit"
+name = "nltk"
+optional = false
+python-versions = "*"
+version = "3.4"
+
+[package.dependencies]
+singledispatch = "*"
+six = "*"
+
+[[package]]
 category = "dev"
 description = "Python style guide checker"
 name = "pep8"
@@ -558,11 +570,41 @@ version = "0.11.0"
 
 [[package]]
 category = "main"
+description = "Not Rake, but Shovel"
+name = "shovel"
+optional = false
+python-versions = "*"
+version = "0.4.0"
+
+[[package]]
+category = "main"
+description = "This library brings functools.singledispatch from Python 3.4 to Python 2.6-3.3."
+name = "singledispatch"
+optional = false
+python-versions = "*"
+version = "3.4.0.3"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
+category = "main"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "1.12.0"
+
+[[package]]
+category = "main"
+description = "Simple, Pythonic text processing. Sentiment analysis, part-of-speech tagging, noun phrase parsing, and more."
+name = "textblob"
+optional = false
+python-versions = "*"
+version = "0.15.2"
+
+[package.dependencies]
+nltk = ">=3.1"
 
 [[package]]
 category = "main"
@@ -586,7 +628,7 @@ description = "Declarative parsing and validation of HTTP request objects, with 
 name = "webargs"
 optional = false
 python-versions = "*"
-version = "5.1.1"
+version = "5.1.1.post0"
 
 [package.dependencies]
 marshmallow = ">=2.15.2"
@@ -608,7 +650,7 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "413c20a60488186d72e18a11367023080c8e90d8e78b7b6975110d0cf2da2839"
+content-hash = "e3a35ef52ee6d89189a78a6308200f4812bf0b6df6e0fafca704447bf9ff0510"
 python-versions = ">=3.7"
 
 [metadata.hashes]
@@ -649,6 +691,7 @@ monotonic = ["23953d55076df038541e648a53676fb24980f7a1be290cdda21300b3bc21dfb0",
 more-itertools = ["38a936c0a6d98a38bcc2d03fdaaedaba9f412879461dd2ceff8d37564d6522e4", "c0a5785b1109a6bd7fac76d6837fd1feca158e54e521ccd2ae8bfe393cc9d4fc", "fe7a7cae1ccb57d33952113ff4fa1bc5f879963600ed74918f1236e212ee50b9"]
 neo4j-driver = ["6a3872f28d34e711e2f6335ae3f4ff10bae338b4986d3f0fe46c592ca1820877"]
 neotime = ["849f2e7a67204d67d4cb57c523b6e1cf4d36baf105197294fee6585e76ebc632"]
+nltk = ["286f6797204ffdb52525a1d21ec0a221ec68b8e3fa4f2d25f412ac8e63c70e8d", "e51590c0bf2d9dcb7ce088b03e4f42c94e7cdd2a372c724320dfa8b19de77609"]
 pep8 = ["b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee", "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"]
 pluggy = ["8ddc32f03971bfdf900a81961a48ccf2fb677cf7715108f85295c67405798616", "980710797ff6a041e9a73a5787804f848996ecaa6f8a1b1e08224a5894f2074a"]
 prompt-toolkit = ["1df952620eccb399c53ebb359cc7d9a8d3a9538cb34c5a1344bdbeb29fbcc381", "3f473ae040ddaa52b52f97f6b4a493cfa9f5920c255a12dc56a7d34397a398a4", "858588f1983ca497f1cf4ffde01d978a3ea02b01c8a26a8bbc5cd2e66d816917"]
@@ -667,9 +710,12 @@ pytz = ["32b0891edff07e28efe91284ed9c31e123d84bea3fd98e1f72be2508f43ef8d9", "d5f
 pyyaml = ["3d7da3009c0f3e783b2c873687652d83b1bbfd5c88e9813fb7e5b03c0dd3108b", "3ef3092145e9b70e3ddd2c7ad59bdd0252a94dfe3949721633e41344de00a6bf", "40c71b8e076d0550b2e6380bada1f1cd1017b882f7e16f09a65be98e017f211a", "558dd60b890ba8fd982e05941927a3911dc409a63dcb8b634feaa0cda69330d3", "a7c28b45d9f99102fa092bb213aa12e0aaf9a6a1f5e395d36166639c1f96c3a1", "aa7dd4a6a427aed7df6fb7f08a580d68d9b118d90310374716ae90b710280af1", "bc558586e6045763782014934bfaf39d48b8ae85a2713117d16c39864085c613", "d46d7982b62e0729ad0175a9bc7e10a566fc07b224d2c79fafb5e032727eaa04", "d5eef459e30b09f5a098b9cea68bebfeb268697f78d647bd255a085371ac7f3f", "e01d3203230e1786cd91ccfdc8f8454c8069c91bee3962ad93b87a4b2860f537", "e170a9e6fcfd19021dd29845af83bb79236068bf5fd4df3327c1be18182b2531"]
 requests = ["502a824f31acdacb3a35b6690b5fbf0bc41d63a24a45c4004352b0242707598e", "7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b"]
 rope = ["a108c445e1cd897fe19272ab7877d172e7faf3d4148c80e7d20faba42ea8f7b2"]
+shovel = ["1ff63f91711ba274096d35b681d3c073d7a33ba6c0de2e74467fbb53d9a13dde"]
+singledispatch = ["5b06af87df13818d14f08a028e42f566640aef80805c3b50c5056b086e3c2b9c", "833b46966687b3de7f438c761ac475213e53b306740f1abfaa86e1d1aae56aa8"]
 six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
+textblob = ["574f30be68a5afcc9f0ccfad088394833343a611c4f0a20473622e07c02cac0f", "fe607b2d19b8cb490c09cc4b09e3454e08ce9860359cc3eabcc5c2f18eec856c"]
 urllib3 = ["06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b", "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"]
 wcwidth = ["3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e", "f4ebe71925af7b40a864553f761ed559b43544f8f71746c2d756c7fe788ade7c"]
-webargs = ["98dc1130124316f338710d83e1866a58c939ab2a6a3d895ca8598b31df9513f6", "c9d6b86b6908f4fe3751e799b6d3e187e513d961734dfb45f562ecbac60c49d1", "d51bfc71cc007cc4fef0156c00fccc5b9c27eccc0c6243d4796203312442ad3a"]
+webargs = ["792296799e3f9a2e96aacdbaa819324ec5dbfb1ddd8b4d863d6a368d68c4e69c", "d2b6006ecfd4328ddedd746c4f57eeafad4a4e191c891539f7b3eda8b69609a4", "ed0b28ba45c86d7d2fc6e049a158e9c19c70cab178057e9ec54217736942f452"]
 werkzeug = ["c3fd7a7d41976d9f44db327260e263132466836cef6f91512889ed60ad26557c", "d5da73735293558eb1651ee2fddc4d0dedcfa06538b8813a2e20011583c9e49b"]
 wrapt = ["4aea003270831cceb8a90ff27c4031da6ead7ec1886023b80ce0dfe0adf61533"]
