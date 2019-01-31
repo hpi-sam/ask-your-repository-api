@@ -36,7 +36,6 @@ class ArtifactsController(ApplicationController):
     @use_args(artifacts_validator.search_args())
     def index(self, params):
         """Logic for querying several artifacts"""
-
         search_args = params.get('search')
         if search_args is not None:
             params['search'] = SynonymGenerator.get_synonyms(search_args)

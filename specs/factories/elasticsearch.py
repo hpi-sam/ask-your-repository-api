@@ -60,6 +60,31 @@ def es_search_response():
              "tags": ["uml", "use case diagram"],
              "file_date": get_date(1)}}]}}
 
+def es_search_response_synonyms():
+    """ Creates an example body for a search request """
+    return {"hits": {"total": 12, "max_score": 1.0, "hits": [
+        {"_index": "artifact",
+         "_type": "image",
+         "_id": f"{get_uuid(0)}",
+         "_score": 1.0,
+         "_source": {
+             "created_at": get_date(0),
+             "updated_at": get_date(0),
+             "file_url": "class_diagram.png",
+             "tags": ["team", "group"],
+             "file_date": get_date(0)}},
+        {"_index": "artifact",
+         "_type": "image",
+         "_id": f"{get_uuid(1)}",
+
+         "_score": 0.5,
+         "_source": {
+             "created_at": get_date(1),
+             "updated_at": get_date(1),
+             "file_url": "use_case_diagram.png",
+             "tags": ["group"],
+             "file_date": get_date(1)}}]}}
+
 def es_search_all_response():
     """ Creates an example body for a search request """
     return {"hits": {"total": 12, "max_score": 1.0, "hits": [

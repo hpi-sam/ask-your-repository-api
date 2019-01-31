@@ -15,7 +15,7 @@ class SynonymGenerator:
 
         synonyms_list = cls.get_synonym_list(synonyms)
 
-        return synonyms_list
+        return params if not synonyms_list else synonyms_list
 
     @classmethod
     def get_synset_synonyms(cls,superset):
@@ -27,10 +27,7 @@ class SynonymGenerator:
     def get_synset_relations(cls,synsets):
         synset_relations = []
         for synset in synsets:
-            synset_relations.extend(synset.hypernyms())
-            synset_relations.extend(synset.hyponyms())
-            synset_relations.extend(synset.member_holonyms())
-            synset_relations.extend(synset.part_meronyms())
+            synset_relations.extend(synset.hypernyms() + synset.hyponyms() + synset.member_holonyms() + synset.part_meronyms())
         return synset_relations
 
     @classmethod
