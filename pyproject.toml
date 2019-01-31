@@ -19,6 +19,7 @@ py2neo = "*"
 requests = "*"
 textblob = "*"
 nltk = "*"
+shovel = "*"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"

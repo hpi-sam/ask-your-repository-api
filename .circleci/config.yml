@@ -12,9 +12,9 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install poetry && poetry install
+      - run: poetry run shovel utils.download_wordkit
       - run: poetry run coverage run --source=application -m mamba.cli specs
       - run: poetry run coveralls
-      - run: poetry run python utils/download_wordkit.py
   lint:
     docker:
       - image: circleci/python:3.7
