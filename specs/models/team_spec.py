@@ -1,12 +1,14 @@
-from mamba import description, before, after, it, context
-from expects import expect, equal, raise_error
 import uuid
-from application.models.team import NeoTeam
-from specs.spec_helpers import Context
-from specs.models.custom_matcher import be_uuid, have_node
+
+from expects import expect, equal, raise_error
 from flask import current_app
+from mamba import description, before, after, it, context
 from py2neo import Node
+
 from application.errors import NotFound
+from application.models.team import NeoTeam
+from specs.models.custom_matcher import be_uuid, have_node
+from specs.spec_helpers import Context
 
 with description('Team') as self:
     with before.each:
@@ -43,7 +45,7 @@ with description('Team') as self:
             with before.each:
                 self.team = NeoTeam(name='Blue')
                 self.team.save()
-                self.team.name='Red'
+                self.team.name = 'Red'
                 self.team.save()
 
             with it('saves new data in same node'):

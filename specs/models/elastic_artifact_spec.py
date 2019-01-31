@@ -1,19 +1,20 @@
 """ Tests ESModel """
 
 import sys
+
+from doublex import Mock, Stub
+from expects import expect, equal, raise_error
 from flask import current_app
+from hamcrest import anything
 from mamba import description, before, after, it
-from expects import expect, equal, raise_error, have_key, contain, have_len, be_above
-from hamcrest import has_length, greater_than, contains, has_key, anything
-from doublex import Mock, Stub, ANY_ARG
-from application.models.elastic_artifact import ElasticArtifact
+
 from application.errors import NotInitialized
+from application.models.elastic_artifact import ElasticArtifact
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
 with description('Artifact') as self:
-
     with before.each:
         self.context = Context()
         current_app.es = Stub()

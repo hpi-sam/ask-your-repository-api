@@ -1,6 +1,7 @@
 """ Defines mocked elasticsearch responses """
-from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import get_date
+from specs.factories.uuid_fixture import get_uuid
+
 
 def es_get_response(index=0):
     """ Creates an example body for a get request """
@@ -12,6 +13,7 @@ def es_get_response(index=0):
                         "file_url": "test.png",
                         "file_date": get_date(index)}}
 
+
 def es_get_untagged_image_response():
     """ Creates an example body for a get request """
     return {"_id": f"{get_uuid(0)}",
@@ -21,6 +23,7 @@ def es_get_untagged_image_response():
                         "updated_at": get_date(0),
                         "file_url": "test.png",
                         "file_date": get_date(0)}}
+
 
 def es_tags_equals_none_response():
     """ An example body where tags are None for regression testing """
@@ -34,6 +37,7 @@ def es_tags_equals_none_response():
                 "file_url": "use_case_diagram.png",
                 "tags": None,
                 "file_date": get_date(0)}}
+
 
 def es_search_response():
     """ Creates an example body for a search request """
@@ -84,6 +88,7 @@ def es_search_response_synonyms():
              "file_url": "use_case_diagram.png",
              "tags": ["group"],
              "file_date": get_date(1)}}]}}
+
 
 def es_search_all_response():
     """ Creates an example body for a search request """
@@ -208,6 +213,7 @@ def es_search_all_response():
              "file_url": "use_case_diagram.png",
              "tags": ["uml"],
              "file_date": get_date(1)}}]}}
+
 
 def es_find_all_response():
     """ Creates an example body for a find_all request """

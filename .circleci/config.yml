@@ -21,7 +21,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install poetry && poetry install
-      - run: poetry run pylint application/ specs/
+      - run: poetry run prospector
   e2e:
     machine:
       docker_layer_caching: true

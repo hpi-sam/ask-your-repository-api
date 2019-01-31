@@ -1,7 +1,9 @@
 """Abstract class for all neo models"""
 import uuid
+
 from flask import current_app
 from py2neo.ogm import GraphObject, Property
+
 from application.errors import NotFound
 
 

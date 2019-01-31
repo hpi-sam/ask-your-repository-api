@@ -1,20 +1,20 @@
 """ Tests for artifacts """
 
 import sys
+
+from doublex import Mock, Stub, ANY_ARG
+from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
-from expects import expect, equal, have_key, have_keys
-from doublex import Mock, Stub, ANY_ARG
-from specs.spec_helpers import Context
+
+from application.models.team import NeoTeam
 from specs.factories.elasticsearch import es_search_response
 from specs.factories.request_generator import build_request
-from application.models.team import NeoTeam
+from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
-
 with description('/dialogflow_images') as self:
-
     with before.each:
         self.context = Context()
         current_app.es = Stub()

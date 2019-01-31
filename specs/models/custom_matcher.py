@@ -1,6 +1,8 @@
-from expects.matchers import Matcher
 from uuid import UUID
-from py2neo import NodeMatcher, Relationship, RelationshipMatcher
+
+from expects.matchers import Matcher
+from py2neo import NodeMatcher
+
 
 # Read this for custom matcher documentation:
 # https://expects.readthedocs.io/en/stable/custom-matchers.html
@@ -36,7 +38,7 @@ class have_relationship(Matcher):
         self.node2 = node2
 
     def _match(self, graph):
-        query = f"MATCH (node1{self.node1.labels} {{id:'{self.node1['id']}'}})-[relation:{self.rel}]->(node2{self.node2.labels}{{id:'{self.node2['id']}'}}) RETURN relation"
+        query = f"MATCH (node1{self.node1.labels} {{id:'{self.node1['id']}'}})-[relation:{self.rel}]->(node2{self.node2.labels}{{id:'{self.node2['id']}'}}) RETURN relation"  # noqa
         relationship = graph.run(query).evaluate()
         if relationship is not None:
             return True, 'Relationship found'

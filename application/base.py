@@ -1,9 +1,9 @@
 """ Defines wrapper for Routes and Resources """
 
-from flask_restful import Resource
 from flask import current_app
+from flask_restful import Resource
 from marshmallow import Schema, post_load, post_dump
-import application.error_handling.request_parsing #pylint: disable=unused-import
+
 
 def output_decorator(decorator_function):
     """
@@ -16,10 +16,13 @@ def output_decorator(decorator_function):
         if instance.decorate:
             return decorator_function(instance, data)
         return data
+
     return decorate
+
 
 class BaseSchema(Schema):
     """ Initialize Schemas with Schema(Model) """
+
     def __init__(self, model, *args, decorate=False, create_objects=True, **kwargs):
         super().__init__(*args, **kwargs)
         self.model = model
@@ -33,6 +36,7 @@ class BaseSchema(Schema):
             return self.model(data)
         return data
 
+
 @BaseSchema.error_handler
 def handle_errors(schema, errors, obj):
     """
@@ -44,6 +48,7 @@ def handle_errors(schema, errors, obj):
                      .format(errors))
     current_app.logger.error(error_message)
     raise ValueError(error_message)
+
 
 def add_resource(api, url, controller, only=None):
     """
@@ -99,7 +104,6 @@ class ActionController:
     def delete(self, *args, **kwargs):
         """ Method for getting a single resource """
 
-
     @classmethod
     def collection(cls, index=True, create=True):
         """ Creates the Collection class with allowed methods """
@@ -109,7 +113,7 @@ class ActionController:
         # all method decorators (preserves order)
 
         decorators = cls.method_decorators + \
-            list(set(cls.collection_decorators) - set(cls.method_decorators))
+                     list(set(cls.collection_decorators) - set(cls.method_decorators))
         methods["method_decorators"] = decorators
 
         if create:
@@ -128,7 +132,7 @@ class ActionController:
 
         # adds the list of member_decorators to the list of all method decorators (preserves order)
         decorators = cls.method_decorators + \
-            list(set(cls.member_decorators) - set(cls.method_decorators))
+                     list(set(cls.member_decorators) - set(cls.method_decorators))
         methods["method_decorators"] = decorators
 
         if show:

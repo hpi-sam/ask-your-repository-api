@@ -3,6 +3,7 @@ Handles all logic of the home api
 """
 
 from flask import current_app
+
 from .application_controller import ApplicationController
 
 

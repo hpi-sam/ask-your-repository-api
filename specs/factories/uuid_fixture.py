@@ -17,6 +17,7 @@ UUIDS = [
     'c3ce702d-133c-4eda-9952-db4cafab140d',
     'fb56a8f3-3f7b-45b2-a708-fd5cf422e8dc']
 
+
 def get_uuid(index):
     """get a uuid, each index will be a new id.
     But always the same with each index"""

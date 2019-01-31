@@ -2,20 +2,22 @@
 
 import sys
 from io import BytesIO
+
+from doublex import Mock, Stub, ANY_ARG
+from doublex_expects import have_been_satisfied
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from expects import expect, equal, have_key, have_keys
 from hamcrest import matches_regexp, anything, has_key, has_entries, contains_string
 from elasticsearch.exceptions import NotFoundError
-from doublex import Mock, Stub, ANY_ARG
-from doublex_expects import have_been_satisfied
+
+from application.models.neo_artifact import NeoArtifact
 from specs.spec_helpers import Context
-from specs.factories.elasticsearch import es_search_response, es_get_response, es_search_response_synonyms
+from specs.factories.elasticsearch import es_search_response, es_get_response, , es_search_response_synonyms
 from specs.factories.uuid_fixture import get_uuid
 from specs.factories.date_fixture import date_regex
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
-from application.models.neo_artifact import NeoArtifact
 
 sys.path.insert(0, 'specs')
 
@@ -185,7 +187,7 @@ with description('/images') as self:
                                 index='artifact').raises(NotFoundError)
                         current_app.es = elastic_mock
                         self.response = self.context.client().patch(f"/images", json={
-                            "artifacts": [{ "id": get_uuid(0), "tags": ["blue", "red"]}]
+                            "artifacts": [{"id": get_uuid(0), "tags": ["blue", "red"]}]
                         })
 
                     with it('returns a 404 status code'):

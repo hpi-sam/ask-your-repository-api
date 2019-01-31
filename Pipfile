@@ -22,7 +22,6 @@ nltk = "*"
 [dev-packages]
 coverage = "*"
 python-coveralls = "*"
-pylint = "*"
 mamba = "*"
 expects = "*"
 doublex = "*"
@@ -31,6 +30,7 @@ pep8 = "*"
 autopep8 = "*"
 rope = "*"
 PyHamcrest = "*"
+prospector = "*"
 
 [requires]
 python_version = "3.7"

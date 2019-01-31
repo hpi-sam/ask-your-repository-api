@@ -1,9 +1,10 @@
 """Image Recognition"""
-from eventlet import spawn_n
 import requests
-from application.schemas.artifact_schema import ArtifactSchema
+from eventlet import spawn_n
 from flask import copy_current_request_context
 from flask import current_app
+
+from application.schemas.artifact_schema import ArtifactSchema
 
 
 class ImageRecognizer:

@@ -1,19 +1,19 @@
-import sys
-from flask import current_app
-from mamba import description, before, after, it, context
-from expects import expect, equal, raise_error, have_key, contain, have_len, be_above, be_none, be_a
-from hamcrest import has_length, greater_than, contains, has_key, anything
-from doublex import Mock, Stub, ANY_ARG
-from doublex_expects import have_been_satisfied
-from application.models.artifact import Artifact
-from application.models.neo_artifact import NeoArtifact
-from application.models.elastic_artifact import ElasticArtifact
-from application.errors import NotInitialized
-from specs.spec_helpers import Context
-from specs.models.custom_matcher import have_node
-from specs.factories.elasticsearch import es_get_response
-from py2neo import Node
 import uuid
+
+from doublex import Mock
+from doublex_expects import have_been_satisfied
+from expects import expect, equal, be_none, be_a
+from flask import current_app
+from hamcrest import has_key, anything
+from mamba import description, before, after, it, context
+from py2neo import Node
+
+from application.models.artifact import Artifact
+from application.models.elastic_artifact import ElasticArtifact
+from application.models.neo_artifact import NeoArtifact
+from specs.factories.elasticsearch import es_get_response
+from specs.models.custom_matcher import have_node
+from specs.spec_helpers import Context
 
 with description('Artifact Wrapper') as self:
     with before.each:
@@ -41,7 +41,8 @@ with description('Artifact Wrapper') as self:
             with before.each:
                 self.artifact = Artifact(file_url='asdf', type='image')
                 with Mock() as elastic_mock:
-                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id), body=anything())
+                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                       body=anything())
                 current_app.es = elastic_mock
                 self.artifact.save()
 
@@ -53,7 +54,7 @@ with description('Artifact Wrapper') as self:
 
         with context('with tags'):
             with before.each:
-                self.artifact = Artifact(file_url='asdf', type='image', tags=['a','s','d','f'])
+                self.artifact = Artifact(file_url='asdf', type='image', tags=['a', 's', 'd', 'f'])
                 with Mock() as elastic_mock:
                     elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
                                        body=has_key('tags'))
@@ -64,7 +65,7 @@ with description('Artifact Wrapper') as self:
                 expect(current_app.es).to(have_been_satisfied)
 
             with it('saves tags in Neo4j'):
-                expect(self.artifact.neo.tag_list()).to(equal(['a','s','d','f']))
+                expect(self.artifact.neo.tag_list()).to(equal(['a', 's', 'd', 'f']))
 
     with description('find'):
         with before.each:
@@ -82,8 +83,10 @@ with description('Artifact Wrapper') as self:
             with before.each:
                 self.artifact = Artifact(file_url='asdf', type='image')
                 with Mock() as elastic_mock:
-                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id), body=anything())
-                    elastic_mock.update(index='artifact', doc_type='image', id=str(self.artifact.neo.id), body=anything())
+                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                       body=anything())
+                    elastic_mock.update(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                        body=anything())
                 current_app.es = elastic_mock
                 self.artifact.save()
                 self.artifact.update(file_url='blub')
@@ -129,7 +132,3 @@ with description('Artifact Wrapper') as self:
 
         with it('deletes in Neo4j'):
             expect(len(NeoArtifact.all())).to(equal(0))
-
-
-
-

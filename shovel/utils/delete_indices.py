@@ -1,8 +1,11 @@
 import os
+
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from shovel import task
+
 load_dotenv()
+
 
 @task
 def delete_indices():

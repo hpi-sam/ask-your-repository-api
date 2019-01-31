@@ -3,15 +3,20 @@ Core function of the flask app.
 All system wide variables and functions should be declared here.
 All logic and features should go in this module
 """
+
+# pylint: disable=wrong-import-order, no-name-in-module
+
 import os
-from flask import Flask, Blueprint
+
 from elasticsearch import Elasticsearch
-from flask_restful import Api
+from flask import Flask, Blueprint
 from flask_cors import CORS
-from flask_socketio import SocketIO
+from flask_restful import Api
 from py2neo import Database
-from .routes import create_routes
+
 from .extensions import socketio
+from .routes import create_routes
+
 
 def create_app(config_filename=None):
     """
@@ -35,6 +40,7 @@ def create_app(config_filename=None):
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
     return app
+
 
 def register_extensions(app):
     """ Registers all flask extensions """

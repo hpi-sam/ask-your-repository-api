@@ -3,13 +3,14 @@ Handles all logic of the dialogflow_artifacts api
 """
 
 from webargs.flaskparser import use_args
-from ..extensions import socketio
-from ..responders import respond_with
+
+from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
+from ..extensions import socketio
 from ..models.artifact import Artifact
 from ..models.team import NeoTeam
+from ..responders import respond_with
 from ..validators import dialogflow_artifacts_validator
-from .application_controller import ApplicationController
 
 
 class DialogflowArtifactsController(ApplicationController):

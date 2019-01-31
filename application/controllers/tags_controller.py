@@ -2,12 +2,13 @@
 Handles all logic of the artefacts api
 """
 from webargs.flaskparser import use_args
-from ..errors import NotFound
+
+from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
+from ..errors import NotFound
 from ..models.artifact import Artifact
 from ..models.elastic_artifact import ElasticArtifact
 from ..validators import tags_validator
-from .application_controller import ApplicationController
 
 
 class TagsController(ApplicationController):
@@ -54,8 +55,8 @@ class TagsController(ApplicationController):
                     else:
                         tag_frequencies[tag] = 1
 
-        min_support_frequencies = {key:value for (key, value) in tag_frequencies.items()
-                                   if value/current_tags_frequency >= params['min_support']}
+        min_support_frequencies = {key: value for (key, value) in tag_frequencies.items()
+                                   if value / current_tags_frequency >= params['min_support']}
         sorted_frequencies = sorted(min_support_frequencies.items(),
                                     key=lambda kv: kv[1], reverse=True)[:params['limit']]
         sorted_tags = [frequency[0] for frequency in sorted_frequencies]

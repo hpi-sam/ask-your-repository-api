@@ -1,19 +1,20 @@
 """
 Handles all logic of the artifacts api
 """
-
-#!/mnt/c/Users/Luise/OneDrive/Uni/HPI/0-Bachelorprojekt/ask-your-repository-api
-
+import datetime
 import os
 import uuid
-import datetime
+
 import werkzeug
 from flask import current_app
 from webargs.flaskparser import use_args
-from ..responders import no_content, respond_with
-from ..errors import NotFound
+
+from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
+from ..errors import NotFound
 from ..models.artifact import Artifact
+from ..recognition.image_recognition import ImageRecognizer
+from ..responders import no_content, respond_with
 from ..validators import artifacts_validator
 from ..recognition.image_recognition import ImageRecognizer
 from .application_controller import ApplicationController

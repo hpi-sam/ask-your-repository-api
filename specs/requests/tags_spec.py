@@ -1,22 +1,22 @@
 """ Tests for artifacts """
 
 import sys
-from flask import current_app
-from mamba import  description, context, before, after, it
-from expects import expect, equal, have_key, contain_only, be_below_or_equal
-from elasticsearch.exceptions import NotFoundError
+
 from doublex import Mock, Stub
+from elasticsearch.exceptions import NotFoundError
+from expects import expect, equal, have_key, contain_only, be_below_or_equal
+from flask import current_app
 from hamcrest import matches_regexp
-from specs.spec_helpers import Context
+from mamba import description, context, before, after, it
+
+from specs.factories.date_fixture import date_regex
 from specs.factories.elasticsearch import es_get_response, es_search_all_response
 from specs.factories.uuid_fixture import get_uuid
-from specs.factories.date_fixture import date_regex
+from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
-
 with description('/images') as self:
-
     with before.each:
         self.context = Context()
         current_app.es = Stub()
@@ -52,7 +52,6 @@ with description('/images') as self:
                         expect(self.response.status_code).to(equal(204))
 
                 with context("the resource doesn't exists"):
-
                     with before.each:
                         with Mock() as elastic_mock:
                             elastic_mock.get(
@@ -92,8 +91,8 @@ with description('/images') as self:
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 1}).returns({
-                                                      "hits": {
-                                                          "total": 12}})
+                            "hits": {
+                                "total": 12}})
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 12}).returns(es_search_all_response())
@@ -119,8 +118,8 @@ with description('/images') as self:
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 1}).returns({
-                                                      "hits": {
-                                                          "total": 12}})
+                            "hits": {
+                                "total": 12}})
                         elastic_mock.search(index="artifact",
                                             body={"from": 0,
                                                   "size": 12}).returns(es_search_all_response())

@@ -1,5 +1,6 @@
 """Access to Artifacts via Neo4J"""
 from py2neo.ogm import Property, RelatedTo
+
 from .neo_model import NeoModel
 from .neo_tag import NeoTag
 
