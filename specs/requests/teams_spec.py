@@ -1,9 +1,11 @@
 import sys
+
+from expects import expect, have_key, have_len, contain_only, equal, be, be_empty
 from flask import current_app
 from mamba import description, before, after, it
-from expects import *
-from specs.spec_helpers import Context
+
 from application.models.team import NeoTeam
+from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 

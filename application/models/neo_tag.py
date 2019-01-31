@@ -1,5 +1,6 @@
 """Accessing tags in neo"""
 from py2neo.ogm import RelatedFrom, Property
+
 from .neo_model import NeoModel
 
 

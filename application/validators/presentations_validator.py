@@ -2,6 +2,7 @@
 
 from webargs import fields
 
+
 def create_args():
     """Defines and validates params for index"""
     return {

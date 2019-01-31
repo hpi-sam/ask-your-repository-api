@@ -4,6 +4,7 @@ from webargs import fields, ValidationError
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+
 def search_args():
     """Defines and validates params for index"""
     return {
@@ -15,6 +16,7 @@ def search_args():
         "offset": fields.Integer(missing=0),
         "limit": fields.Integer(missing=12)
     }
+
 
 def create_args():
     """Defines and validates params for create"""
@@ -29,12 +31,14 @@ def create_args():
         "tags": fields.List(fields.String())
     }
 
+
 def update_args():
     """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
         "tags": fields.List(fields.String(), missing=[])
     }
+
 
 def update_many_args():
     """Defines and validates params for update many"""
@@ -45,22 +49,26 @@ def update_many_args():
         }))
     }
 
+
 def delete_args():
     """Defines and validates params for delete"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args')
     }
 
+
 def validate_image(image):
     """validator for uploaded files"""
     validate_file_name(image.filename)
     return image
+
 
 def validate_file_name(filename):
     """validator for uploaded file names"""
     if not allowed_file(filename):
         raise ValidationError('Errornous file_url')
     return filename
+
 
 def allowed_file(filename):
     """checks if file extension is allowed"""

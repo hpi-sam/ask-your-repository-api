@@ -1,8 +1,11 @@
 import os
+
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from shovel import task
+
 load_dotenv()
+
 
 @task
 def setup_indices():
@@ -14,16 +17,16 @@ def setup_indices():
                     "tags": {"type": "text"},
                     "file_url": {"type": "text"},
                     "team_id": {"type": "text"},
-                    "file_date":  {
-                        "type":   "date",
+                    "file_date": {
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     },
-                    "created_at":  {
-                        "type":   "date",
+                    "created_at": {
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     },
-                    "updated_at":  {
-                        "type":   "date",
+                    "updated_at": {
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     }
                 }

@@ -1,13 +1,13 @@
 """ Tests for home """
 
+from doublex import Mock, Stub, ANY_ARG
+from expects import expect, equal, have_keys
 from flask import current_app
 from mamba import description, context, before, after, it
-from expects import expect, equal, have_keys
-from doublex import Mock, Stub, ANY_ARG
+
 from specs.spec_helpers import Context
 
 with description('/') as self:
-
     with before.each:
         self.context = Context()
         current_app.es = Stub()

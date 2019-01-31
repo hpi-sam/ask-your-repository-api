@@ -3,12 +3,13 @@ Handles all logic of the artefacts api
 """
 from flask_socketio import join_room, leave_room
 from webargs.flaskparser import use_args
-from ..extensions import socketio
+
+from .application_controller import ApplicationController
 from ..errors import NotFound
-from ..validators import teams_validator
+from ..extensions import socketio
 from ..models.team import NeoTeam
 from ..responders import respond_with
-from .application_controller import ApplicationController
+from ..validators import teams_validator
 
 
 @socketio.on("join_team")

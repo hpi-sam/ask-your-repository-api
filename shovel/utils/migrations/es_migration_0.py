@@ -1,7 +1,9 @@
 import os
+
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from shovel import task
+
 load_dotenv()
 
 
@@ -15,16 +17,16 @@ def migrate_indices_0():
                     "tags": {"type": "text"},
                     "file_url": {"type": "keyword"},
                     "team_id": {"type": "keyword"},
-                    "file_date":  {
-                            "type":   "date",
-                            "format": "strict_date_optional_time||epoch_millis"
-                    },
-                    "created_at":  {
-                        "type":   "date",
+                    "file_date": {
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     },
-                    "updated_at":  {
-                        "type":   "date",
+                    "created_at": {
+                        "type": "date",
+                        "format": "strict_date_optional_time||epoch_millis"
+                    },
+                    "updated_at": {
+                        "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
                     }
                 }

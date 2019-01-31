@@ -1,6 +1,6 @@
 """ Elastic search artifact model wraps api into crud methods"""
-from ..schemas.artifact_schema import ArtifactSchema
 from .esmodel import ESModel
+from ..schemas.artifact_schema import ArtifactSchema
 
 
 class ElasticArtifact(ESModel):
@@ -35,13 +35,19 @@ class ElasticArtifact(ESModel):
             {"types": params["types"], "search_body": body})
 
     @classmethod
-    def search_body_helper(cls, search, daterange, limit=10, offset=0, team_id=None): # pylint: disable=too-many-arguments
+    def search_body_helper(
+            cls,
+            search,
+            daterange,
+            limit=10,
+            offset=0,
+            team_id=None
+    ):  # pylint: disable=too-many-arguments
         """ Defines a common body for search function """
         if search:
             search_query = {"match": {"tags": search}}
         else:
             search_query = {"match_all": {}}
-
 
         team_filter = {"team_id": str(team_id)}
 

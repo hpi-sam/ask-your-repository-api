@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [tool.poetry]
 name = "Elija"
 version = "0.1.0"
@@ -17,6 +18,7 @@ flask-socketio = "*"
 eventlet = "*"
 py2neo = "*"
 requests = "*"
+prospector = "^1.1"
 textblob = "*"
 nltk = "*"
 shovel = "*"
@@ -33,3 +35,37 @@ pep8 = "*"
 autopep8 = "*"
 rope = "*"
 PyHamcrest = "*"
+=======
+[tool.poetry]
+name = "Elija"
+version = "0.1.0"
+description = "https://github.com/hpi-sam/ask-your-repository-api"
+authors = ["Jascha Beste <jascha.beste@student.hpi.de>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+Flask = "==1.0.2"
+flask-restful = "*"
+elasticsearch = "*"
+python-dotenv = "*"
+gunicorn = "*"
+flask-cors = "*"
+webargs = "*"
+flask-socketio = "*"
+eventlet = "*"
+py2neo = "*"
+requests = "*"
+
+[tool.poetry.dev-dependencies]
+coverage = "*"
+python-coveralls = "*"
+prospector = "^1.1"
+mamba = "*"
+expects = "*"
+doublex = "*"
+doublex-expects = "*"
+pep8 = "*"
+autopep8 = "*"
+rope = "*"
+PyHamcrest = "*"
+>>>>>>> 670b600... Make linter happy

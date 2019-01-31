@@ -1,6 +1,7 @@
 """ Defines schema for database artifact objects """
 from flask import current_app
 from marshmallow import fields
+
 from ..base import BaseSchema, output_decorator
 
 

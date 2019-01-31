@@ -44,7 +44,7 @@ class Artifact:
         self.neo.delete()
 
     @classmethod
-    def find(cls, id, force=True): # pylint: disable= invalid-name
+    def find(cls, id, force=True):  # pylint: disable= invalid-name
         """Finds Artifact and creates instances"""
         artifact = Artifact()
         artifact.elastic = ElasticArtifact.find(id)
@@ -52,6 +52,6 @@ class Artifact:
             artifact.neo = NeoArtifact.find_by(id=id, force=force)
         else:
             artifact.neo = NeoArtifact(url=artifact.elastic.file_url, id=str(artifact.elastic.id))
-            artifact._add_tags_to_neo(artifact.elastic.tags) # pylint: disable= protected-access
+            artifact._add_tags_to_neo(artifact.elastic.tags)  # pylint: disable= protected-access
             artifact.neo.save()
         return artifact

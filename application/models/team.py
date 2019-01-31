@@ -1,5 +1,6 @@
 """" Access to the Team model """
 from py2neo.ogm import Property
+
 from application.schemas.team_schema import TeamSchema
 from .neo_model import NeoModel
 

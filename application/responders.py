@@ -2,6 +2,7 @@
 
 from flask import make_response
 
+
 def respond_with(resource):
     """ Responds with a collection of - or single json """
     if isinstance(resource, (list,)):
@@ -10,6 +11,7 @@ def respond_with(resource):
                     .dump(resource, many=True).data)
         return []
     return resource.schema(resource.__class__, decorate=True).dump(resource).data
+
 
 def no_content():
     """ Creates an empty response with

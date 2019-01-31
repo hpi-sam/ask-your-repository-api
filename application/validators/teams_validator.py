@@ -15,12 +15,14 @@ def create_args():
         deserialize=validate_team_name
     )}
 
+
 def update_args():
     """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
         "name": fields.String(required=True, validate=validate.Length(min=1))
     }
+
 
 def validate_team_name(team_name):
     if not isinstance(team_name, str):

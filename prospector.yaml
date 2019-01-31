@@ -1,0 +1,14 @@
+ignore-paths:
+  - shovel/
+  - instance/
+
+strictness: veryhigh
+
+test-warnings: true
+
+pep8:
+  full: true
+  options:
+    max-line-length: 120
+  disable:
+    - E127

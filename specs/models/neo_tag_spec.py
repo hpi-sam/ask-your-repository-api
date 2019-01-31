@@ -1,10 +1,11 @@
-from mamba import description, before, after, it, context
 from expects import expect, equal
-from application.models.neo_tag import NeoTag
-from specs.spec_helpers import Context
-from specs.models.custom_matcher import be_uuid, have_node, have_relationship
 from flask import current_app
+from mamba import description, before, after, it
 from py2neo import Node
+
+from application.models.neo_tag import NeoTag
+from specs.models.custom_matcher import have_node
+from specs.spec_helpers import Context
 
 with description('NeoTag') as self:
     with before.each:

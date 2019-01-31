@@ -1,12 +1,12 @@
-from flask import current_app
-from mamba import description, before, it
-from expects import expect
 from doublex import Mock, ANY_ARG, method_returning
 from doublex_expects import have_been_called
-from specs.spec_helpers import Context
+from expects import expect
+from mamba import description, before, it
+
 from application.controllers.artifacts_controller import no_content
 from application.recognition.image_recognition import ImageRecognizer
 from specs.factories.image_recognition import vision_api_response
+from specs.spec_helpers import Context
 
 with description('image recognition called during create') as self:
     with before.each:

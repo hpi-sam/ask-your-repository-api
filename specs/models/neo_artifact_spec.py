@@ -1,11 +1,12 @@
-from mamba import description, before, after, it, context
 from expects import expect, equal
+from flask import current_app
+from mamba import description, before, after, it, context
+from py2neo import Node
+
 from application.models.neo_artifact import NeoArtifact
 from application.models.neo_tag import NeoTag
-from specs.spec_helpers import Context
 from specs.models.custom_matcher import be_uuid, have_node, have_relationship
-from flask import current_app
-from py2neo import Node
+from specs.spec_helpers import Context
 
 node_name = "NeoArtifact"
 with description('NeoArtifact') as self:
