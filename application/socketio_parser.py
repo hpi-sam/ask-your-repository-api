@@ -46,8 +46,7 @@ class SocketioParser(Parser):
                 if as_kwargs:
                     kwargs.update(parsed_args)
                     return func(*args, **kwargs)
-                else:
-                    return func(parsed_args, *args, **kwargs)
+                return func(parsed_args, *args, **kwargs)
 
             return socket_wrapper
 
