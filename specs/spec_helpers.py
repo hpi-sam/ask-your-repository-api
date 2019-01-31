@@ -58,15 +58,15 @@ class TestingRequest(Request):  # pylint:disable=too-few-public-methods, too-man
 
     @property
     def files(self):
-        # Consume steam if it didn't happen yet
+        # Consume input stream from the request if still unconsumed
         if 'form' not in self.__dict__:
             self._load_form_data()
 
         file_dictionary = MultiDict()
         files = self.__dict__.get('files')
         if files:
-            for key, value in files.items(multi=True):
-                file_dictionary.add(key, TestingFileStorage(filename=value.filename))
+            for key, file_storage in files.items(multi=True):
+                file_dictionary.add(key, TestingFileStorage(filename=file_storage.filename))
 
         return file_dictionary
 
