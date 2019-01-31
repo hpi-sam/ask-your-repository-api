@@ -3,51 +3,57 @@ from textblob import Word
 
 class SynonymGenerator:
 
-    @classmethod
-    def get_synonyms(cls,params):
-        synonyms = []
+    def __init__(self, params):
+        self.params = params
+        self.synonyms = []
+        self.synsets = []
+        self.synset_relations = []
+        self.synset_synonyms = []
+        self.synonyms_list = ""
 
-        synsets = cls.get_word_synsets(params)
-        synset_relations = cls.get_synset_relations(synsets)
-        synset_synonyms = cls.get_synset_synonyms(synsets)
+    def get_synonyms(self):
+        self._create_synsets()
+        self._combine_synsets()
+        self.synonyms_list = self._parse_synsets_to_string(self.synonyms)
+        return self.synonyms_list if self._word_found() else self.params
 
-        synonyms.extend(synsets + synset_relations + synset_synonyms)
+    def _word_found(self):
+        return True if self.synonyms_list else False
 
-        synonyms_list = cls.get_synonym_list(synonyms)
+    def _create_synsets(self):
+        self.synsets = self._get_word_synsets(self.params)
+        self.synset_relations = self._get_synset_relations(self.synsets)
+        self.synset_synonyms = self._get_synset_synonyms(self.synsets)
 
-        return params if not synonyms_list else synonyms_list
-
-    @classmethod
-    def get_synset_synonyms(cls,superset):
-        synonyms_list = cls.get_synonym_list(superset)
-        synset_synonyms = cls.get_word_synsets(synonyms_list)
+    def _get_synset_synonyms(self,superset):
+        synonyms_list = self._parse_synsets_to_string(superset)
+        synset_synonyms = self._get_word_synsets(synonyms_list)
         return synset_synonyms
 
-    @classmethod
-    def get_synset_relations(cls,synsets):
+    def _get_synset_relations(self,synsets):
         synset_relations = []
         for synset in synsets:
             synset_relations.extend(synset.hypernyms() + synset.hyponyms() + synset.member_holonyms() + synset.part_meronyms())
         return synset_relations
 
-    @classmethod
-    def get_word_synsets(cls,params):
-        args = params.split(' ')
+    def _get_word_synsets(self, words):
+        args = words.split(' ')
         word_synsets = []
         for arg in args:
             word = Word(arg)
             word_synsets.extend(word.synsets)
         return word_synsets
 
-    @classmethod
-    def get_lemma_names(cls,synsets):
+    def _get_lemma_names(self,synsets):
         lemmas = []
         for synset in synsets:
             lemma = synset.lemma_names()
             lemmas.extend(lemma)
         return lemmas
 
-    @classmethod
-    def get_synonym_list(cls,synsets):
-        lemmas = cls.get_lemma_names(synsets)
+    def _parse_synsets_to_string(self,synsets):
+        lemmas = self._get_lemma_names(synsets)
         return ' '.join(set(lemmas))
+
+    def _combine_synsets(self):
+        self.synonyms.extend(self.synsets + self.synset_relations + self.synset_synonyms)

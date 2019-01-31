@@ -38,7 +38,7 @@ class ArtifactsController(ApplicationController):
         """Logic for querying several artifacts"""
         search_args = params.get('search')
         if search_args is not None:
-            params['search'] = SynonymGenerator.get_synonyms(search_args)
+            params['search'] = SynonymGenerator(search_args).get_synonyms()
 
         artifacts = Artifact.search(params)
 
