@@ -17,6 +17,8 @@ flask-socketio = "*"
 eventlet = "*"
 py2neo = "*"
 requests = "*"
+textblob = "*"
+nltk = "*"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
