@@ -115,6 +115,42 @@ with description('Artifact Wrapper') as self:
             with it('updates in Neo4j'):
                 expect(self.artifact.neo.tag_list()).to(equal(['a', 's', 'd', 'f']))
 
+        with context('label_annotations'):
+            with before.each:
+                self.artifact = Artifact(file_url='asdf', type='image')
+                with Mock() as elastic_mock:
+                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                       body=anything())
+                    elastic_mock.update(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                        body=anything())
+                current_app.es = elastic_mock
+                self.artifact.save()
+                self.artifact.update(label_annotations=['a', 's', 'd', 'f'])
+
+            with it('updates in Elasticsearch'):
+                expect(current_app.es).to(have_been_satisfied)
+
+            with it('updates in Neo4j'):
+                expect(self.artifact.neo.label_annotation_list()).to(equal(['a', 's', 'd', 'f']))
+
+        with context('text_annotations'):
+            with before.each:
+                self.artifact = Artifact(file_url='asdf', type='image')
+                with Mock() as elastic_mock:
+                    elastic_mock.index(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                       body=anything())
+                    elastic_mock.update(index='artifact', doc_type='image', id=str(self.artifact.neo.id),
+                                        body=anything())
+                current_app.es = elastic_mock
+                self.artifact.save()
+                self.artifact.update(text_annotations=['a', 's', 'd', 'f'])
+
+            with it('updates in Elasticsearch'):
+                expect(current_app.es).to(have_been_satisfied)
+
+            with it('updates in Neo4j'):
+                expect(self.artifact.neo.text_annotation_list()).to(equal(['a', 's', 'd', 'f']))
+
     with description('delete'):
         with before.each:
             self.artifact = Artifact(file_url='asdf', type='image')
