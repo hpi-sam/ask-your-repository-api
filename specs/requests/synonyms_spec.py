@@ -6,6 +6,7 @@ from expects import expect, equal
 from flask import current_app
 from hamcrest import anything, has_entries, contains_string
 from mamba import description, before, after, it
+from neomodel import db
 
 from specs.factories.elasticsearch import es_search_response_synonyms
 from specs.spec_helpers import Context
@@ -17,7 +18,7 @@ with description('/images') as self:
     with after.each:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
-        current_app.graph.delete_all()
+        db.cypher_query("MATCH (a) DETACH DELETE a")
         if hasattr(self, "context"):
             self.context.delete()
 

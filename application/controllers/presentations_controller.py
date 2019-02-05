@@ -8,7 +8,7 @@ from webargs.flaskparser import use_args
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
-from ..models.artifact import ElasticArtifact
+from ..models.artifact_builder import ElasticArtifact
 from ..responders import respond_with, no_content
 from ..validators import presentations_validator
 

@@ -1,16 +1,13 @@
-"""" Access to the Team model """
-from py2neo.ogm import Property
+""" Access to Team objects in Ne4J """
+from neomodel import StructuredNode, StringProperty, RelationshipTo
 
+from application.models.mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.schemas.team_schema import TeamSchema
-from .neo_model import NeoModel
 
 
-class NeoTeam(NeoModel):
-    """" Program representation of Team nodes in Neo4J """
+class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
+    """ The class that manages Teams """
     schema = TeamSchema
-    __primarylabel__ = "Team"
-    name = Property()
+    name = StringProperty(required=True)
 
-    def __init__(self, id=None, name=''):
-        super().__init__(id=id)
-        self.name = name
+    artifacts = RelationshipTo('.Artifact', 'UPLOADED')

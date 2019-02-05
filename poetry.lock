@@ -31,27 +31,6 @@ six = "*"
 wrapt = "*"
 
 [[package]]
-category = "main"
-description = "Atomic file writes."
-name = "atomicwrites"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.0"
-
-[[package]]
-category = "main"
-description = "Classes Without Boilerplate"
-name = "attrs"
-optional = false
-python-versions = "*"
-version = "18.2.0"
-
-[package.extras]
-dev = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface", "sphinx", "zope.interface", "pre-commit"]
-docs = ["sphinx", "zope.interface"]
-tests = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface"]
-
-[[package]]
 category = "dev"
 description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
 name = "autopep8"
@@ -98,8 +77,9 @@ version = "0.5.1"
 args = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Cross-platform colored terminal text."
+marker = "sys_platform == \"win32\""
 name = "colorama"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
@@ -373,17 +353,6 @@ version = "1.5"
 
 [[package]]
 category = "main"
-description = "More routines for operating on iterables, beyond itertools"
-name = "more-itertools"
-optional = false
-python-versions = "*"
-version = "5.0.0"
-
-[package.dependencies]
-six = ">=1.0.0,<2.0.0"
-
-[[package]]
-category = "main"
 description = "Neo4j Bolt driver for Python"
 name = "neo4j-driver"
 optional = false
@@ -392,6 +361,18 @@ version = "1.6.2"
 
 [package.dependencies]
 neotime = "1.0.0"
+
+[[package]]
+category = "main"
+description = "An object mapper for the neo4j graph database."
+name = "neomodel"
+optional = false
+python-versions = "*"
+version = "3.2.9"
+
+[package.dependencies]
+neo4j-driver = ">=1.5.2,<1.7.0"
+pytz = ">=2016.10"
 
 [[package]]
 category = "main"
@@ -442,29 +423,6 @@ python-versions = "*"
 version = "0.4.1"
 
 [[package]]
-category = "main"
-description = "plugin and hook calling mechanisms for python"
-name = "pluggy"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "0.8.1"
-
-[package.extras]
-dev = ["pre-commit", "tox"]
-
-[[package]]
-category = "main"
-description = "Library for building powerful interactive command lines in Python"
-name = "prompt-toolkit"
-optional = false
-python-versions = "*"
-version = "1.0.15"
-
-[package.dependencies]
-six = ">=1.9.0"
-wcwidth = "*"
-
-[[package]]
 category = "dev"
 description = "Prospector: python static analysis tool"
 name = "prospector"
@@ -498,35 +456,6 @@ with_pyroma = ["pyroma (>=2.4)"]
 with_vulture = ["vulture (>=0.6,<0.25)"]
 
 [[package]]
-category = "main"
-description = "library with cross-python path, ini-parsing, io, code, log facilities"
-name = "py"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.7.0"
-
-[[package]]
-category = "main"
-description = "Python client library and toolkit for Neo4j"
-name = "py2neo"
-optional = false
-python-versions = "*"
-version = "4.1.3"
-
-[package.dependencies]
-click = ">=2.0"
-colorama = "*"
-neo4j-driver = ">=1.6.2,<1.7"
-neotime = "1.0.0"
-prompt_toolkit = "1.0.15"
-pygments = ">=2.0"
-pytest = "*"
-
-[package.dependencies.urllib3]
-extras = ["secure"]
-version = ">=1.21.1,<1.23"
-
-[[package]]
 category = "dev"
 description = "Python style guide checker"
 name = "pycodestyle"
@@ -553,14 +482,6 @@ name = "pyflakes"
 optional = false
 python-versions = "*"
 version = "1.6.0"
-
-[[package]]
-category = "main"
-description = "Pygments is a syntax highlighting package written in Python."
-name = "pygments"
-optional = false
-python-versions = "*"
-version = "2.3.1"
 
 [[package]]
 category = "dev"
@@ -637,27 +558,6 @@ version = "0.4"
 
 [package.dependencies]
 pylint = "*"
-
-[[package]]
-category = "main"
-description = "pytest: simple powerful testing with Python"
-name = "pytest"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "4.2.0"
-
-[package.dependencies]
-atomicwrites = ">=1.0"
-attrs = ">=17.4.0"
-colorama = "*"
-more-itertools = ">=4.0.0"
-pluggy = ">=0.7"
-py = ">=1.5.0"
-setuptools = "*"
-six = ">=1.10.0"
-
-[package.extras]
-testing = ["hypothesis (>=3.56)", "nose", "requests", "mock"]
 
 [[package]]
 category = "dev"
@@ -847,14 +747,6 @@ socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [[package]]
 category = "main"
-description = "Measures number of Terminal column cells of wide-character codes"
-name = "wcwidth"
-optional = false
-python-versions = "*"
-version = "0.1.7"
-
-[[package]]
-category = "main"
 description = "Declarative parsing and validation of HTTP request objects, with built-in support for popular web frameworks, including Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, and aiohttp."
 name = "webargs"
 optional = false
@@ -893,15 +785,13 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "fb4115b6971a3645bbe0a2f1c41a55440b0efa64011399ac851aacc717e4e9d1"
+content-hash = "e11ad644095bf71fa8c6c4d1144f1b9b67e8b1be7fa1fe6830628d9333c4f62b"
 python-versions = ">=3.7"
 
 [metadata.hashes]
 aniso8601 = ["03c0ffeeb04edeca1ed59684cc6836dc377f58e52e315dc7be3af879909889f4", "ac30cceff24aec920c37b8d74d7d8a5dd37b1f62a90b4f268a6234cabe147080"]
 args = ["a785b8d837625e9b61c39108532d95b85274acd679693b71ebb5156848fcf814"]
 astroid = ["292fa429e69d60e4161e7612cb7cc8fa3609e2e309f80c224d93a76d5e7b58be", "c7013d119ec95eb626f7a2011f0b63d0c9a095df9ad06d8507b37084eada1a8d"]
-atomicwrites = ["03472c30eb2c5d1ba9227e4c2ca66ab8287fbfbbda3888aa93dc2e28fc6811b4", "75a9445bac02d8d058d5e1fe689654ba5a6556a1dfd8ce6ec55a0ed79866cfa6"]
-attrs = ["10cbf6e27dbce8c30807caf056c8eb50917e0eaafe86347671b57254006c3e69", "ca4be454458f9dec299268d472aaa5a11f67a4ff70093396e1ceae9c76cf4bbb"]
 autopep8 = ["33d2b5325b7e1afb4240814fe982eea3a92ebea712869bfd08b3c0393404248c"]
 certifi = ["47f9c83ef4c0c621eaef743f133f09fa8a74a9b75f037e8624f83bd1b6626cb7", "993f830721089fef441cdfeb4b2c8c9df86f0c63239f06bd025a76a7daddb033"]
 chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"]
@@ -932,28 +822,22 @@ markupsafe = ["048ef924c1623740e70204aa7143ec592504045ae4429b59c30054cb31e3c432"
 marshmallow = ["958e6640bec9a04ca15701e3d99b12c4269d0f43be596f00eeca1f2baf530abc", "d072db26baf2b0de886ad58f12360610d7bdea439e975a0179d1da82340c4f72"]
 mccabe = ["ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42", "dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"]
 monotonic = ["23953d55076df038541e648a53676fb24980f7a1be290cdda21300b3bc21dfb0", "552a91f381532e33cbd07c6a2655a21908088962bb8fa7239ecbcc6ad1140cc7"]
-more-itertools = ["38a936c0a6d98a38bcc2d03fdaaedaba9f412879461dd2ceff8d37564d6522e4", "c0a5785b1109a6bd7fac76d6837fd1feca158e54e521ccd2ae8bfe393cc9d4fc", "fe7a7cae1ccb57d33952113ff4fa1bc5f879963600ed74918f1236e212ee50b9"]
 neo4j-driver = ["6a3872f28d34e711e2f6335ae3f4ff10bae338b4986d3f0fe46c592ca1820877"]
+neomodel = ["2f7cd8aa60a0069d3cde4938581bfafc690d03820b48cf93aa727b6ec4bd923b"]
 neotime = ["849f2e7a67204d67d4cb57c523b6e1cf4d36baf105197294fee6585e76ebc632"]
 nltk = ["286f6797204ffdb52525a1d21ec0a221ec68b8e3fa4f2d25f412ac8e63c70e8d", "e51590c0bf2d9dcb7ce088b03e4f42c94e7cdd2a372c724320dfa8b19de77609"]
 pep8 = ["b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee", "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"]
 pep8-naming = ["1b419fa45b68b61cd8c5daf4e0c96d28915ad14d3d5f35fcc1e7e95324a33a2e", "4eedfd4c4b05e48796f74f5d8628c068ff788b9c2b08471ad408007fc6450e5a"]
-pluggy = ["8ddc32f03971bfdf900a81961a48ccf2fb677cf7715108f85295c67405798616", "980710797ff6a041e9a73a5787804f848996ecaa6f8a1b1e08224a5894f2074a"]
-prompt-toolkit = ["1df952620eccb399c53ebb359cc7d9a8d3a9538cb34c5a1344bdbeb29fbcc381", "3f473ae040ddaa52b52f97f6b4a493cfa9f5920c255a12dc56a7d34397a398a4", "858588f1983ca497f1cf4ffde01d978a3ea02b01c8a26a8bbc5cd2e66d816917"]
 prospector = ["877d8d361a5c0e04c8587718c22c5d671afcf814945c96b3e592836d772943fd"]
-py = ["bf92637198836372b520efcba9e020c330123be8ce527e535d185ed4b6f45694", "e76826342cefe3c3d5f7e8ee4316b80d1dd8a300781612ddbc765c17ba25a6c6"]
-py2neo = ["6123ead0b238662d93a308f20be728454ee6c3e0569fd5497b05fc410b2488bd"]
 pycodestyle = ["74abc4e221d393ea5ce1f129ea6903209940c1ecd29e002e8c6933c2b21026e0", "cbc619d09254895b0d12c2c691e237b2e91e9b2ecf5e84c26b35400f93dcfb83", "cbfca99bd594a10f674d0cd97a3d802a1fdef635d4361e1a2658de47ed261e3a"]
 pydocstyle = ["2258f9b0df68b97bf3a6c29003edc5238ff8879f1efb6f1999988d934e432bd8", "5741c85e408f9e0ddf873611085e819b809fca90b619f5fd7f34bd4959da3dd4", "ed79d4ec5e92655eccc21eb0c6cf512e69512b4a97d215ace46d17e4990f2039"]
 pyflakes = ["08bd6a50edf8cffa9fa09a463063c425ecaaf10d1eb0335a7e8b1401aef89e6f", "8d616a382f243dbf19b54743f280b80198be0bca3a5396f1d2e1fca6223e8805"]
-pygments = ["5ffada19f6203563680669ee7f53b64dabbeb100eb51b61996085e99c03b284a", "e8218dd399a61674745138520d0d4cf2621d7e032439341bc3f647bff125818d"]
 pyhamcrest = ["6b672c02fdf7470df9674ab82263841ce8333fb143f32f021f6cb26f0e512420", "7a4bdade0ed98c699d728191a058a60a44d2f9c213c51e2dd1e6fb42f2c6128a", "8ffaa0a53da57e89de14ced7185ac746227a8894dbd5a3c718bf05ddbd1d56cd", "bac0bea7358666ce52e3c6c85139632ed89f115e9af52d44b3c36e0bf8cf16a9", "f30e9a310bcc1808de817a92e95169ffd16b60cbc5a016a49c8d0e8ababfae79"]
 pylint = ["1d6d3622c94b4887115fe5204982eee66fdd8a951cf98635ee5caee6ec98c3ec", "31142f764d2a7cd41df5196f9933b12b7ee55e73ef12204b648ad7e556c119fb"]
 pylint-celery = ["41e32094e7408d15c044178ea828dd524beedbdbe6f83f712c5e35bde1de4beb"]
 pylint-django = ["5dc5f85caef2c5f9e61622b9cbd89d94edd3dcf546939b2974d18de4fa90d676", "bf313f10b68ed915a34f0f475cc9ff8c7f574a95302beb48b79c5993f7efd84c"]
 pylint-flask = ["8fcdbb7cbf13d8c2ac1f2230b2aa1c1b83bb3ca2bd8b76f95561cb8757a305ec"]
 pylint-plugin-utils = ["8ad25a82bcce390d1d6b7c006c123e0cb18051839c9df7b8bdb7823c53fe676e"]
-pytest = ["65aeaa77ae87c7fc95de56285282546cfa9c886dc8e5dc78313db1c25e21bc07", "6ac6d467d9f053e95aaacd79f831dbecfe730f419c6c7022cb316b365cd9199d"]
 python-coveralls = ["1748272081e0fc21e2c20c12e5bd18cb13272db1b130758df0d473da0cb31087", "736dda01f64beda240e1500d5f264b969495b05fcb325c7c0eb7ebbfd1210b70"]
 python-dotenv = ["a84569d0e00d178bc5b957f7ff208bf49287cbf61857c31c258c4a91f571527b", "c9b1ddd3cdbe75c7d462cb84674d87130f4b948f090f02c7d7144779afb99ae0"]
 python-engineio = ["e4ac17c04c32ccca67287dfdbbe4ee1e9eec3a0a1a9a6070f3ab784db08407dd", "ea4cf4ea0f19b65cedea83218e416a2c880c918ff91f64c604a034cd50110529"]
@@ -971,7 +855,6 @@ six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a
 snowballstemmer = ["919f26a68b2c17a7634da993d91339e288964f93c274f1343e3bbbe2096e1128", "9f3bcd3c401c3e862ec0ebe6d2c069ebc012ce142cce209c098ccb5b09136e89"]
 textblob = ["574f30be68a5afcc9f0ccfad088394833343a611c4f0a20473622e07c02cac0f", "fe607b2d19b8cb490c09cc4b09e3454e08ce9860359cc3eabcc5c2f18eec856c"]
 urllib3 = ["06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b", "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"]
-wcwidth = ["3df37372226d6e63e1b1e1eda15c594bca98a22d33a23832a90998faa96bc65e", "f4ebe71925af7b40a864553f761ed559b43544f8f71746c2d756c7fe788ade7c"]
 webargs = ["10438164b41b81abe45b299eb182580f7bc6bcdbc864b0cbd62845bb6bab424d", "3bed01136ea4a7d1468a54f6c3925d133872a83a2144e83a94f484731576bc58", "494044344b5673e3624621d0e9d14d5dc01dd05c0b5b8952febc80a4f80181f6"]
 werkzeug = ["c3fd7a7d41976d9f44db327260e263132466836cef6f91512889ed60ad26557c", "d5da73735293558eb1651ee2fddc4d0dedcfa06538b8813a2e20011583c9e49b"]
 wrapt = ["4aea003270831cceb8a90ff27c4031da6ead7ec1886023b80ce0dfe0adf61533"]

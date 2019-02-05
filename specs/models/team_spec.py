@@ -1,139 +1,90 @@
-import uuid
+"""Tests for the team model"""
+import datetime
 
-from expects import expect, equal, raise_error
-from flask import current_app
-from mamba import description, before, after, it, context
-from py2neo import Node
+from expects import expect, equal, be_a, raise_error, contain_only, contain
+from mamba import describe, it, before, after
+from neomodel import db
 
-from application.errors import NotFound
-from application.models.team import NeoTeam
-from specs.models.custom_matcher import be_uuid, have_node
+from application.models import Team
+from specs.models.custom_matcher import be_uuid
 from specs.spec_helpers import Context
 
-with description('Team') as self:
+with describe("Team Model") as self:
     with before.each:
         self.context = Context()
 
     with after.each:
-        current_app.graph.delete_all()
+        db.cypher_query("MATCH (a) DETACH DELETE a")
+        if hasattr(self, 'context'):
+            self.context.delete()
 
-    with description('Constructing'):
-        with context('with Default Constructor'):
-            with before.each:
-                self.team = NeoTeam(name='Blue')
-            with it('has a name'):
-                expect(self.team.name).to(equal('Blue'))
+    with describe("Constructing"):
+        with before.each:
+            self.team = Team(name='asdf').save()
+            self.team.refresh()
+
+        with it('exists'):
+            expect(Team.exists(name='asdf')).to(equal(True))
+
+        with it('has correct file url'):
+            expect(self.team.name).to(equal('asdf'))
+
+        with describe("Default attributes"):
             with it('has a uuid'):
-                expect(self.team.id).to(be_uuid())
+                expect(self.team.id_).to(be_uuid())
 
-        with context('with Constructor with an id'):
-            with before.each:
-                self.blues_id = uuid.uuid4()
-                self.team = NeoTeam(name='Blue', id=str(self.blues_id))
-            with it('sets the id'):
-                expect(self.team.id).to(equal(self.blues_id))
+            with it('has a created_at timestamp'):
+                expect(self.team.created_at).to(be_a(datetime.datetime))
 
-    with description('saving'):
-        with context('Creating new node'):
-            with before.each:
-                self.team = NeoTeam(name='Blue')
-                self.team.save()
-            with it('creates a new node'):
-                expect(current_app.graph).to(have_node(Node("Team", name='Blue')))
+            with it('has a updated_at timestamp'):
+                expect(self.team.updated_at).to(be_a(datetime.datetime))
 
-        with context('Changing existing node'):
-            with before.each:
-                self.team = NeoTeam(name='Blue')
-                self.team.save()
-                self.team.name = 'Red'
-                self.team.save()
+            with it('updated_at and created_at are equal'):
+                expect(self.team.updated_at).to(equal(self.team.created_at))
 
-            with it('saves new data in same node'):
-                expect(current_app.graph).to(have_node(Node("Team", name="Red")))
-                expect(current_app.graph).not_to(have_node(Node("Team", name="Blue")))
-
-    with description('List Teams'):
+    with describe("Updating"):
         with before.each:
-            NeoTeam(name='Blue').save()
-            NeoTeam(name='Red').save()
-            self.teams = NeoTeam.all()
+            self.team = Team(name='asdf').save()
+            self.team.update(name='blub')
+            self.team.refresh()
 
-        with it('returns list of 2'):
-            expect(len(self.teams)).to(equal(2))
+        with it('updated the url'):
+            expect(self.team.name).to(equal('blub'))
 
-        with it('returns Team object list'):
-            expect(self.teams[0].name).to(equal('Blue') | equal('Red'))
-            expect(self.teams[1].name).to(equal('Red') | equal('Blue'))
+        with it('sets updated_at timestamp'):
+            expect(self.team.updated_at).to_not(equal(self.team.created_at))
 
-    with description('Finding teams'):
+    with describe('finding'):
         with before.each:
-            self.blue = NeoTeam(name='Blue')
-            self.blue.save()
-            self.red = NeoTeam(name='Red')
-            self.red.save()
+            self.team1 = Team(name='asdf').save()
+            self.team2 = Team(name='woop').save()
+            self.team3 = Team(name='lulz')
+        with describe('find by url'):
+            with it('finds url asdf'):
+                expect(Team.find_by(name='asdf')).to(equal(self.team1))
+            with it('finds url woop'):
+                expect(Team.find_by(name='woop')).to(equal(self.team2))
+            with it('doesnt find url lulz'):
+                expect(lambda: Team.find_by(name='lulz')).to(raise_error(Team.DoesNotExist))  # pylint:disable=no-member
+            with it('doesnt find url lmao'):
+                expect(lambda: Team.find_by(name='lmao')).to(raise_error(Team.DoesNotExist))  # pylint:disable=no-member
 
-        with context('Finding Team by name'):
-            with before.each:
-                self.found_red = NeoTeam.find_by(name='Red')
-                self.found_blue = NeoTeam.find_by(name='Blue')
+        with describe('find by id'):
+            with it('finds team1'):
+                expect(Team.find_by(id_=self.team1.id_)).to(equal(self.team1))
+            with it('finds team2'):
+                expect(Team.find_by(id_=self.team2.id_)).to(equal(self.team2))
+            with it('doesnt find team3'):
+                expect(lambda: Team.find_by(id_=self.team3.id_)).to(raise_error(Team.DoesNotExist))  # pylint:disable=no-member
 
-            with it('finds blue'):
-                expect(self.found_blue.name).to(equal(self.blue.name))
-                expect(self.found_blue.id).to(equal(self.blue.id))
-
-            with it('finds red'):
-                expect(self.found_red.name).to(equal(self.red.name))
-                expect(self.found_red.id).to(equal(self.red.id))
-
-        with context('Finding Team by id'):
-            with before.each:
-                self.found_red = NeoTeam.find_by(id=str(self.red.id))
-                self.found_blue = NeoTeam.find_by(id=str(self.blue.id))
-
-            with it('finds blue'):
-                expect(self.found_blue.name).to(equal(self.blue.name))
-                expect(self.found_blue.id).to(equal(self.blue.id))
-
-            with it('finds red'):
-                expect(self.found_red.name).to(equal(self.red.name))
-                expect(self.found_red.id).to(equal(self.red.id))
-
-        with description('Not Found'):
-            with it('returns None with force false'):
-                expect(NeoTeam.find_by(name='asdf')).to(equal(None))
-            with it('throws exception with force true'):
-                expect(lambda: NeoTeam.find_by(name='asdf', force=True)).to(raise_error(NotFound))
-
-    with description('exists'):
+    with describe('Retrieving multiple'):
         with before.each:
-            NeoTeam(name='Blue').save()
+            self.team1 = Team(name='asdf').save()
+            self.team2 = Team(name='woop').save()
+            self.team3 = Team(name='lulz')
+            self.all_teams = Team.all()
 
-        with it('Returns true if team exists'):
-            expect(NeoTeam.exists(name='Blue')).to(equal(True))
-
-        with it('Returns false if team does not exist'):
-            expect(NeoTeam.exists(name='Red')).to(equal(False))
-
-    with description('create'):
-        with before.each:
-            self.team = NeoTeam.create(name='Blue')
-
-        with it('creates new node'):
-            expect(current_app.graph).to(have_node(Node("Team", name='Blue')))
-
-    with description('update'):
-        with before.each:
-            self.team = NeoTeam.create(name="Blue")
-            self.team.update(name="Red")
-
-        with it('saves new attributes'):
-            expect(NeoTeam.exists(name="Red")).to(equal(True))
-            expect(NeoTeam.exists(name="Blue")).to(equal(False))
-
-    with description('delete'):
-        with before.each:
-            self.team = NeoTeam.create(name="Blue")
-            self.team.delete()
-
-        with it('deletes team'):
-            expect(NeoTeam.exists(name='Blue')).to(equal(False))
+        with it('returns list with all currently existing teams'):
+            expect(self.all_teams).to(be_a(list))
+            expect(self.all_teams).to(contain_only(self.team1, self.team2))
+            expect(self.all_teams).to_not(contain(self.team3))

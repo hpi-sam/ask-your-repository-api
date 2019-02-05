@@ -11,27 +11,29 @@ from flask_socketio import emit
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
-from ..extensions import socketio
-from ..socketio_parser import use_args as socketio_args
-from ..responders import no_content, respond_with
 from ..error_handling.es_connection import check_es_connection
 from ..errors import NotFound
-from ..models.artifact import Artifact
+from ..extensions import socketio
+from ..models.artifact_builder import ArtifactBuilder
 from ..recognition.image_recognition import ImageRecognizer
+from ..responders import no_content, respond_with
+from ..socketio_parser import use_args as socketio_args
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
+
 
 @socketio.on("SYNCHRONIZED_SEARCH")
 @socketio_args(artifacts_validator.search_args())
 def synchronized_search(params):
     """ Called from client when presentation mode is on """
-    artifacts = Artifact.search(params)
+    artifacts = ArtifactBuilder.search(params)
 
     emit('START_PRESENTATION',
          respond_with(artifacts),
          room=str(params["team_id"]),
          broadcast=True
-        )
+         )
+
 
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
@@ -41,8 +43,8 @@ class ArtifactsController(ApplicationController):
     def show(self, object_id):
         """Logic for getting a single artifact"""
         try:
-            artifact = Artifact.find(object_id)
-            return respond_with(artifact.elastic)
+            artifact = ArtifactBuilder.find(object_id)
+            return respond_with(artifact.neo)
         except NotFound:
             return {"error": "not found"}, 404
 
@@ -53,13 +55,16 @@ class ArtifactsController(ApplicationController):
         if search_args is not None:
             params['search'] = SynonymGenerator(search_args).get_synonyms()
 
-        artifacts = Artifact.search(params)
+        if search_args is None:
+            artifacts = ArtifactBuilder.find_multiple(params)
+        else:
+            artifacts = ArtifactBuilder.search(params)
 
         if params['notify_clients']:
             socketio.emit('START_PRESENTATION',
                           room=str(params["team_id"]),
                           data=respond_with(artifacts)
-                         )
+                          )
 
         return {"images": respond_with(artifacts)}, 200
 
@@ -69,11 +74,12 @@ class ArtifactsController(ApplicationController):
         metadata = self._upload_file(params)
         artifact = self._create_artifact(params, metadata)
         ImageRecognizer.auto_add_tags(artifact.elastic)
-        return respond_with(artifact.elastic), 200
+        return respond_with(artifact.neo), 200
 
     def _create_artifact(self, params, metadata):
         params.update(metadata)
-        artifact = Artifact(**params)
+        artifact = ArtifactBuilder()
+        artifact.build_with(**params)
         artifact.save()
         return artifact
 
@@ -82,7 +88,7 @@ class ArtifactsController(ApplicationController):
         """Logic for updating an artifact"""
         object_id = params.pop("id")
         try:
-            artifact = Artifact.find(object_id)
+            artifact = ArtifactBuilder.find(object_id)
             artifact.update(**params)
             return no_content()
         except NotFound:
@@ -95,7 +101,7 @@ class ArtifactsController(ApplicationController):
         for update_data in params["artifacts"]:
             object_id = update_data.pop("id")
             try:
-                artifact = Artifact.find(object_id)
+                artifact = ArtifactBuilder.find(object_id)
                 artifact.update(**update_data)
             except NotFound:
                 return {"error": f"failed at <{object_id}>: not found"}, 404
@@ -107,7 +113,7 @@ class ArtifactsController(ApplicationController):
         """Logic for deleting an artifact"""
         object_id = params["id"]
         try:
-            artifact = Artifact.find(object_id)
+            artifact = ArtifactBuilder.find(object_id)
             artifact.delete()
             return no_content()
         except NotFound:
