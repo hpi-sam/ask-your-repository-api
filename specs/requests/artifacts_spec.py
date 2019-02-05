@@ -10,8 +10,9 @@ from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from hamcrest import matches_regexp
 from mamba import shared_context, included_context, description, context, before, after, it
+from neomodel import db
 
-from application.models.neo_artifact import NeoArtifact
+from application.models import Artifact
 from specs.factories.date_fixture import date_regex
 from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.image_recognition import mock_image_recognition
@@ -21,15 +22,18 @@ from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
+
+def create_artifact_with(id):
+    return Artifact(id_=id, file_url='asdf').save()
+
+
 with description('/images') as self:
     with before.each:
         self.context = Context()
         current_app.es = Stub()
 
     with after.each:
-        # If check to prevent tests from failing occasionally
-        # Needs to be inspected!
-        current_app.graph.delete_all()
+        db.cypher_query("MATCH (a) DETACH DELETE a")
         if hasattr(self, "context"):
             self.context.delete()
 
@@ -141,6 +145,8 @@ with description('/images') as self:
             with context('valid request'):
                 with context("all the resources exist"):
                     with before.each:
+                        create_artifact_with(get_uuid(0))
+                        create_artifact_with(get_uuid(1))
                         with Mock() as elastic_mock:
                             elastic_mock.get(
                                 doc_type='_all', id=f'{get_uuid(0)}',
@@ -213,6 +219,7 @@ with description('/images') as self:
         with description('GET'):
             with context("the resource exists"):
                 with before.each:
+                    self.artifact = create_artifact_with(get_uuid(0))
                     with Mock() as elastic_mock:
                         elastic_mock.get(
                             doc_type='_all', id=f'{get_uuid(0)}',
@@ -222,6 +229,10 @@ with description('/images') as self:
 
                 with it('returns a 200 status code'):
                     expect(self.response.status_code).to(equal(200))
+
+                with it('has correct json response'):
+                    expect(self.response.json).to(have_keys('file_date', 'updated_at', 'created_at',
+                                                            'url', 'team_id', 'id', 'tags'))
 
             with context("the resource doesn't exists"):
                 with before.each:
@@ -242,8 +253,8 @@ with description('/images') as self:
             with context('valid request'):
                 with context("the resource exists"):
                     with before.each:
+                        create_artifact_with(get_uuid(0))
                         with Mock() as elastic_mock:
-                            NeoArtifact(id=get_uuid(0)).save()
                             elastic_mock.get(
                                 doc_type='_all', id=f'{get_uuid(0)}',
                                 index='artifact').returns(es_get_response())
@@ -297,6 +308,7 @@ with description('/images') as self:
                 with context("the resource exists"):
                     with before.each:
                         with Mock() as elastic_mock:
+                            create_artifact_with(get_uuid(0))
                             elastic_mock.get(
                                 doc_type='_all', id=f'{get_uuid(0)}',
                                 index='artifact').returns(es_get_response())

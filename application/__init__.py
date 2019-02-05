@@ -12,7 +12,7 @@ from elasticsearch import Elasticsearch
 from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask_restful import Api
-from py2neo import Database
+from neomodel import config
 
 from .extensions import socketio
 from .routes import create_routes
@@ -31,8 +31,7 @@ def create_app(config_filename=None):
     app.config.from_pyfile(config_filename)
     app.es = (Elasticsearch(app.config['ELASTICSEARCH_URL'])
               if app.config['ELASTICSEARCH_URL'] else None)
-    app.graph = (Database(app.config['NEO4J_URL']).default_graph
-                 if app.config['NEO4J_URL'] else None)
+    config.DATABASE_URL = app.config['NEO4J_URL']
     app.register_blueprint(api_bp)
     register_extensions(app)
 

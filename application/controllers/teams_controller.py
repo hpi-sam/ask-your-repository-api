@@ -6,9 +6,8 @@ from flask_socketio import join_room, leave_room
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
-from ..errors import NotFound
 from ..extensions import socketio
-from ..models.team import NeoTeam
+from ..models.team import Team
 from ..responders import respond_with
 from ..validators import teams_validator
 
@@ -30,29 +29,29 @@ class TeamsController(ApplicationController):
 
     def show(self, object_id):
         try:
-            team = NeoTeam.find_by(force=True, id=object_id)
+            team = Team.find_by(id_=object_id)
             return respond_with(team), 200
-        except NotFound:
+        except Team.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
 
     @use_args(teams_validator.index_args())
     def index(self, params):  # pylint: disable=W0613
         """Logic for querying several teams"""
-        teams = NeoTeam.all()
+        teams = Team.all()
         return {"teams": respond_with(teams)}, 200
 
     @use_args(teams_validator.create_args())
     def create(self, params):
         """Logic for creating a team"""
-        team = NeoTeam.create(name=params["name"])
+        team = Team(name=params["name"]).save()
         return respond_with(team), 200
 
     @use_args(teams_validator.update_args())
     def update(self, params, object_id):
         """Logic for updating a team"""
         try:
-            team = NeoTeam.find_by(force=True, id=object_id)
+            team = Team.find_by(id_=object_id)
             team.update(name=params["name"])
             return respond_with(team), 200
-        except NotFound:
+        except Team.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404

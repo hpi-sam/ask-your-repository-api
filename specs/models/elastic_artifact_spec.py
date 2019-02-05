@@ -26,8 +26,10 @@ with description('Artifact') as self:
     with description('update'):
         with before.each:
             with Mock() as elastic_mock:
-                elastic_mock.index(body=anything(), doc_type=anything(), id=anything(), index='artifact')
-                elastic_mock.update(body=anything(), doc_type=anything(), id=anything(), index='artifact')
+                elastic_mock.index(body=anything(), doc_type=anything(),
+                                   id=anything(), index='artifact')
+                elastic_mock.update(body=anything(), doc_type=anything(),
+                                    id=anything(), index='artifact')
 
             self.artifact = ElasticArtifact({"type": "image"})
             current_app.es = elastic_mock

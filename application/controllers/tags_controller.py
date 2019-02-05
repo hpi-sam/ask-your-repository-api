@@ -6,7 +6,7 @@ from webargs.flaskparser import use_args
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..errors import NotFound
-from ..models.artifact import Artifact
+from ..models.artifact_builder import ArtifactBuilder
 from ..models.elastic_artifact import ElasticArtifact
 from ..validators import tags_validator
 
@@ -22,7 +22,7 @@ class TagsController(ApplicationController):
         object_id = str(params.pop('id'))
 
         try:
-            artifact = Artifact.find(object_id)
+            artifact = ArtifactBuilder.find(object_id)
             existing_tags = artifact.elastic.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))

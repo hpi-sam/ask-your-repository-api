@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/python:3.7
         environment:
-          NEO4J_URL: bolt://localhost:7687
+          NEO4J_URL: bolt://:@localhost:7687
       - image: neo4j:3.4.5
         environment:
           NEO4J_AUTH: none
@@ -13,6 +13,7 @@ jobs:
       - checkout
       - run: sudo pip install poetry && poetry install
       - run: poetry run shovel utils.download_wordkit
+      - run: poetry run neomodel_install_labels application application.models --db bolt://:@localhost:7687
       - run: poetry run coverage run --source=application -m mamba.cli specs
       - run: poetry run coveralls
   lint:

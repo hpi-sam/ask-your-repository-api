@@ -1,17 +1,19 @@
 import os
 
 from dotenv import load_dotenv
-from py2neo import Database
 from shovel import task
-
-load_dotenv()
+from neomodel import install_labels
+from neomodel import config
 
 
 @task
 def setup_neo_constraints():
-    db = Database(os.environ.get('NEO4J_URL'))
-    graph = db.default_graph
-    graph.schema.create_uniqueness_constraint("NeoTag", "name")
+    load_dotenv()
+    config.ENCRYPTED_CONNECTION = False
+    config.DATABASE_URL = os.environ.get('NEO4J_URL')
+    #install_labels(Team)
+    #install_labels(Tag)
+    #install_labels(Artifact)
     print('success')
 
 

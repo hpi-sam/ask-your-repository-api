@@ -9,12 +9,18 @@ from flask import current_app
 from hamcrest import matches_regexp
 from mamba import description, context, before, after, it
 
+from application.models import Artifact
 from specs.factories.date_fixture import date_regex
 from specs.factories.elasticsearch import es_get_response, es_search_all_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
+
+
+def create_artifact_with(id):
+    Artifact(id_=id, file_url='asdf').save()
+
 
 with description('/images') as self:
     with before.each:
@@ -32,6 +38,7 @@ with description('/images') as self:
             with description('POST'):
                 with context("the resource exists"):
                     with before.each:
+                        create_artifact_with(get_uuid(0))
                         with Mock() as elastic_mock:
                             elastic_mock.get(
                                 doc_type='_all', id=f'{get_uuid(0)}',
