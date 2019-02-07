@@ -7,6 +7,7 @@ try:
 except ImportError:
     from collections import Mapping
 
+
 class SocketioParser(Parser):
     """ Only parses requests that are json / dictionaries """
     DEFAULT_LOCATIONS = ["json"]
@@ -15,6 +16,7 @@ class SocketioParser(Parser):
         """ Parses a single element of the socketio request json """
         return get_value(params, name, field)
 
+    # pylint: disable=too-many-arguments
     def use_args(
             self,
             argmap,
@@ -22,8 +24,7 @@ class SocketioParser(Parser):
             as_kwargs=False,
             validate=None,
             error_status_code=None,
-            error_headers=None,
-        ): #pylint: disable=too-many-arguments
+            error_headers=None):
         """ Creates a decorator funtion for socketio on-methods """
         locations = locations or self.locations
         # Optimization: If argmap is passed as a dictionary, we only need
@@ -51,9 +52,11 @@ class SocketioParser(Parser):
             return socket_wrapper
 
         return decorator
+    # pylint: enable=too-many-arguments
 
-#pylint: disable=invalid-name
+
+# pylint: disable=invalid-name
 parser = SocketioParser()
 use_args = parser.use_args
 use_kwargs = parser.use_kwargs
-#pylint: enable=invalid-name
+# pylint: enable=invalid-name

@@ -18,7 +18,6 @@ from ..error_handling.es_connection import check_es_connection
 from ..errors import NotFound
 from ..models.artifact import Artifact
 from ..recognition.image_recognition import ImageRecognizer
-from ..responders import no_content, respond_with
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
 
