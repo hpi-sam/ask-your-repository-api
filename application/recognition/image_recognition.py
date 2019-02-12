@@ -5,6 +5,7 @@ from flask import copy_current_request_context
 from flask import current_app
 
 from application.schemas.artifact_schema import ArtifactSchema
+from application.models.artifact_builder import ArtifactBuilder
 
 
 class ImageRecognizer:
@@ -68,6 +69,7 @@ class ImageRecognizer:
 
     @classmethod
     def add_tags_artifact(cls, artifact, new_tags):
-        existing_tags = artifact.tags or []
+        existing_tags = artifact.tags_list or []
         tags = existing_tags + new_tags
-        artifact.update({"tags": tags})
+        builder = ArtifactBuilder.for_artifact(artifact)
+        builder.update_with(tags=tags)

@@ -9,7 +9,7 @@ from hamcrest import anything
 from mamba import description, before, after, it
 
 from application.errors import NotInitialized
-from application.models.elastic_artifact import ElasticArtifact
+from application.models.elastic.elastic_artifact import ElasticArtifact
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')

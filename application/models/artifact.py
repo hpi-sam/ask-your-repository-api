@@ -38,8 +38,10 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pyl
         return tags_list
 
     def post_save(self):
+        """Sync with Elasticsearch"""
         super()
         ElasticSyncer.for_artifact(self).sync()
 
     def pre_delete(self):
+        """Sync with Elasticsearch"""
         ElasticSyncer.for_artifact(self).delete()
