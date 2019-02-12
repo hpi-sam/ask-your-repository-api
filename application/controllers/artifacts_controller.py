@@ -20,6 +20,7 @@ from ..responders import no_content, respond_with
 from ..socketio_parser import use_args as socketio_args
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
+from application.models import Artifact
 
 
 @socketio.on("SYNCHRONIZED_SEARCH")
@@ -45,7 +46,7 @@ class ArtifactsController(ApplicationController):
         try:
             artifact = ArtifactBuilder.find(object_id)
             return respond_with(artifact.neo)
-        except NotFound:
+        except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
     @use_args(artifacts_validator.search_args())
@@ -73,7 +74,7 @@ class ArtifactsController(ApplicationController):
         """Logic for creating an artifact"""
         metadata = self._upload_file(params)
         artifact = self._create_artifact(params, metadata)
-        ImageRecognizer.auto_add_tags(artifact.elastic)
+        ImageRecognizer.auto_add_tags(artifact.neo)
         return respond_with(artifact.neo), 200
 
     def _create_artifact(self, params, metadata):
@@ -91,7 +92,7 @@ class ArtifactsController(ApplicationController):
             artifact = ArtifactBuilder.find(object_id)
             artifact.update(**params)
             return no_content()
-        except NotFound:
+        except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
     @use_args(artifacts_validator.update_many_args())
@@ -103,7 +104,7 @@ class ArtifactsController(ApplicationController):
             try:
                 artifact = ArtifactBuilder.find(object_id)
                 artifact.update(**update_data)
-            except NotFound:
+            except Artifact.DoesNotExist:
                 return {"error": f"failed at <{object_id}>: not found"}, 404
 
         return no_content()
@@ -116,7 +117,7 @@ class ArtifactsController(ApplicationController):
             artifact = ArtifactBuilder.find(object_id)
             artifact.delete()
             return no_content()
-        except NotFound:
+        except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
     def _upload_file(self, params):

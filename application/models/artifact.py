@@ -5,6 +5,7 @@ from neomodel import (StructuredNode, StringProperty, DateTimeProperty,
 
 from application.models.mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.schemas.artifact_schema import NeoArtifactSchema
+from .elastic import ElasticSyncer
 
 
 class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
@@ -35,3 +36,10 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pyl
         for tag in self.tags:  # pylint:disable=not-an-iterable
             tags_list.append(tag.name)
         return tags_list
+
+    def post_save(self):
+        super()
+        ElasticSyncer.for_artifact(self).sync()
+
+    def pre_delete(self):
+        ElasticSyncer.for_artifact(self).delete()

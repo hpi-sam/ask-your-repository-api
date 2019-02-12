@@ -182,7 +182,8 @@ class ESModel:
 
         self.updated_at = datetime.datetime.now()
         db_params = self.schema(self.__class__, only=('id', 'type', 'updated_at')).dump(self).data
-        params["updated_at"] = db_params["updated_at"]
+        if "updated_at" not in params:
+            params["updated_at"] = db_params["updated_at"]
         current_app.es.update(
             index=self.index,
             doc_type=db_params["type"],

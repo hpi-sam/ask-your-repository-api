@@ -6,6 +6,7 @@ from doublex import Mock, Stub
 from elasticsearch.exceptions import NotFoundError
 from expects import expect, equal, have_key, contain_only, be_below_or_equal
 from flask import current_app
+from neomodel import db
 from hamcrest import matches_regexp
 from mamba import description, context, before, after, it
 
@@ -30,6 +31,7 @@ with description('/images') as self:
     with after.each:
         # If check to prevent tests from failing occasionally
         # Needs to be inspected!
+        db.cypher_query("MATCH (a) DETACH DELETE a")
         if hasattr(self, "context"):
             self.context.delete()
 
@@ -39,17 +41,7 @@ with description('/images') as self:
                 with context("the resource exists"):
                     with before.each:
                         create_artifact_with(get_uuid(0))
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response())
 
-                            elastic_mock.update(
-                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                                body={'doc': {"updated_at": matches_regexp(date_regex()),
-                                              "tags": ["class_diagram", "", "new_tag"]}})
-
-                        current_app.es = elastic_mock
                         self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
                                                                    json={"tags": [
                                                                        "new_tag", "class_diagram"
@@ -60,11 +52,6 @@ with description('/images') as self:
 
                 with context("the resource doesn't exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
                                                                    json={"tags": [
                                                                        "new_tag", "class_diagram"
