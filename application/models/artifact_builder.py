@@ -6,14 +6,13 @@ from .elastic_artifact import ElasticArtifact
 
 
 class ArtifactBuilder:
-    """ This class abstracts syncing of Neo and Elastic """
+    """ This class helps with building Artifacts """
 
     def __init__(self):
-        self.elastic = None
         self.neo = None
 
     def build_with(self, **properties):
-        """ builds self.neo and self.elastic neo is saved elastic not"""
+        """ builds self.neo and saves it"""
         neo_properties = self._make_properties_neo_compatible(**properties)
         self.neo = Artifact(**neo_properties).save()
         if 'tags' in properties:
@@ -21,7 +20,6 @@ class ArtifactBuilder:
         if 'team_id' in properties and properties.get('team_id') is not None:
             self._connect_to_team(properties['team_id'])
         properties['id'] = self.neo.id_
-        self.elastic = ElasticArtifact(properties)
 
     def _make_properties_neo_compatible(self, **properties):
         if 'type' in properties:
@@ -36,7 +34,6 @@ class ArtifactBuilder:
 
     def save(self):
         """Save both models"""
-        self.elastic.save()
         self.neo.save()
 
     def _add_tags_to_neo(self, tags):
@@ -46,7 +43,6 @@ class ArtifactBuilder:
 
     def update(self, **properties):
         """Update both models"""
-        self.elastic.update(properties)
         neo_properties = self._make_properties_neo_compatible(**properties)
         if 'tags' in properties:
             self._add_tags_to_neo(properties['tags'])
@@ -61,7 +57,6 @@ class ArtifactBuilder:
 
     def delete(self):
         """Delete both models"""
-        self.elastic.delete()
         self.neo.delete()
 
     @classmethod
@@ -80,7 +75,6 @@ class ArtifactBuilder:
     def find(cls, id, force=True):  # pylint: disable= invalid-name
         """Finds Artifact and creates instances"""
         artifact = ArtifactBuilder()
-        artifact.elastic = ElasticArtifact.find(id)
         if not isinstance(id, uuid.UUID):
             id = uuid.UUID(id)
         artifact.neo = Artifact.find_by(force=force, id_=str(id))

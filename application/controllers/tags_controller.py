@@ -9,6 +9,7 @@ from ..errors import NotFound
 from ..models.artifact_builder import ArtifactBuilder
 from ..models.elastic_artifact import ElasticArtifact
 from ..validators import tags_validator
+from ..models import Artifact
 
 
 class TagsController(ApplicationController):
@@ -23,13 +24,13 @@ class TagsController(ApplicationController):
 
         try:
             artifact = ArtifactBuilder.find(object_id)
-            existing_tags = artifact.elastic.tags or []
+            existing_tags = artifact.neo.tags_list or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
             artifact.update(tags=new_list)
             return '', 204
-        except NotFound:
+        except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
     @use_args(tags_validator.suggested_tags_args())

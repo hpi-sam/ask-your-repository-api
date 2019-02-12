@@ -50,12 +50,6 @@ with description('/images') as self:
                 expect(self.response.status_code).to(equal(503))
 
         with description('GET'):
-            with before.each:
-                with Mock() as elastic_mock:
-                    elastic_mock.search(ANY_ARG).returns(es_search_response())
-
-                    current_app.es = elastic_mock
-
             with shared_context('responds with error') as self:
                 with before.each:
                     self.response = (self.context.client()
@@ -91,11 +85,6 @@ with description('/images') as self:
                         pass
 
         with description('POST'):
-            with before.each:
-                with Mock() as elastic_mock:
-                    elastic_mock.index(ANY_ARG).returns({})
-                current_app.es = elastic_mock
-
             with context("with file attached"):
                 with before.each:
                     with mock_image_recognition:
@@ -147,25 +136,6 @@ with description('/images') as self:
                     with before.each:
                         create_artifact_with(get_uuid(0))
                         create_artifact_with(get_uuid(1))
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response(0))
-                            elastic_mock.update(
-                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                                body={'doc': {
-                                    "updated_at": matches_regexp(date_regex()),
-                                    "tags": ["blue", "red"]}})
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(1)}',
-                                index='artifact').returns(es_get_response(1))
-                            elastic_mock.update(
-                                doc_type='image', id=f'{get_uuid(1)}', index='artifact',
-                                body={'doc': {
-                                    "updated_at": matches_regexp(date_regex()),
-                                    "tags": ["blue", "green"]}})
-
-                        current_app.es = elastic_mock
                         self.response = self.context.client().patch(f"/images", json={
                             "artifacts": [
                                 {
@@ -179,19 +149,11 @@ with description('/images') as self:
                             ]
                         })
 
-                    with it('calls all mocks'):
-                        expect(current_app.es).to(have_been_satisfied)
-
                     with it('returns a 204 status code'):
                         expect(self.response.status_code).to(equal(204))
 
                 with context("a resource does not exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().patch(f"/images", json={
                             "artifacts": [{"id": get_uuid(0), "tags": ["blue", "red"]}]
                         })
@@ -220,11 +182,6 @@ with description('/images') as self:
             with context("the resource exists"):
                 with before.each:
                     self.artifact = create_artifact_with(get_uuid(0))
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').returns(es_get_response())
-                    current_app.es = elastic_mock
                     self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 200 status code'):
@@ -236,11 +193,6 @@ with description('/images') as self:
 
             with context("the resource doesn't exists"):
                 with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.get(
-                            doc_type='_all', id=f'{get_uuid(0)}',
-                            index='artifact').raises(NotFoundError)
-                    current_app.es = elastic_mock
                     self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 404 status code'):
@@ -254,18 +206,6 @@ with description('/images') as self:
                 with context("the resource exists"):
                     with before.each:
                         create_artifact_with(get_uuid(0))
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response())
-
-                            elastic_mock.update(
-                                doc_type='image', id=f'{get_uuid(0)}', index='artifact',
-                                body={'doc': {
-                                    "updated_at": matches_regexp(date_regex()),
-                                    "tags": ["added", "tags"]}})
-
-                        current_app.es = elastic_mock
                         self.response = self.context.client().put(f"/images/{get_uuid(0)}", json={
                             "tags": ["added", "tags"],
                             "file_url": "test_updated.png"
@@ -276,11 +216,6 @@ with description('/images') as self:
 
                 with context("the resource doesn't exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().put(f"/images/{get_uuid(0)}")
 
                     with it('returns a 404 status code'):
@@ -307,28 +242,14 @@ with description('/images') as self:
             with context("valid request"):
                 with context("the resource exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            create_artifact_with(get_uuid(0))
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').returns(es_get_response())
-
-                            elastic_mock.delete(
-                                doc_type='image', id=f'{get_uuid(0)}', refresh='wait_for', index='artifact')
-
-                        current_app.es = elastic_mock
-                        self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+                       create_artifact_with(get_uuid(0))
+                       self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                     with it('returns a 204 status code'):
                         expect(self.response.status_code).to(equal(204))
 
                 with context("the resource doesn't exists"):
                     with before.each:
-                        with Mock() as elastic_mock:
-                            elastic_mock.get(
-                                doc_type='_all', id=f'{get_uuid(0)}',
-                                index='artifact').raises(NotFoundError)
-                        current_app.es = elastic_mock
                         self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                     with it('returns a 404 status code'):
