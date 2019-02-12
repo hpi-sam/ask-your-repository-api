@@ -3,16 +3,13 @@
 import sys
 
 from doublex import Mock, Stub
-from elasticsearch.exceptions import NotFoundError
 from expects import expect, equal, have_key, contain_only, be_below_or_equal
 from flask import current_app
-from neomodel import db
-from hamcrest import matches_regexp
 from mamba import description, context, before, after, it
+from neomodel import db
 
 from application.models import Artifact
-from specs.factories.date_fixture import date_regex
-from specs.factories.elasticsearch import es_get_response, es_search_all_response
+from specs.factories.elasticsearch import es_search_all_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 

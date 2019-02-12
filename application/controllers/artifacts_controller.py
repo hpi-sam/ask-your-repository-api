@@ -10,9 +10,10 @@ from flask import current_app
 from flask_socketio import emit
 from webargs.flaskparser import use_args
 
+from application.models import Artifact, Team
+from application.models.elastic.elastic_artifact import ElasticArtifact
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
-from ..errors import NotFound
 from ..extensions import socketio
 from ..models.artifact_builder import ArtifactBuilder
 from ..recognition.image_recognition import ImageRecognizer
@@ -20,14 +21,13 @@ from ..responders import no_content, respond_with
 from ..socketio_parser import use_args as socketio_args
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
-from application.models import Artifact
 
 
 @socketio.on("SYNCHRONIZED_SEARCH")
 @socketio_args(artifacts_validator.search_args())
 def synchronized_search(params):
     """ Called from client when presentation mode is on """
-    artifacts = ArtifactBuilder.search(params)
+    artifacts = ElasticArtifact.search(params)
 
     emit('START_PRESENTATION',
          respond_with(artifacts),
@@ -44,8 +44,8 @@ class ArtifactsController(ApplicationController):
     def show(self, object_id):
         """Logic for getting a single artifact"""
         try:
-            artifact = ArtifactBuilder.find(object_id)
-            return respond_with(artifact.neo)
+            artifact = Artifact.find_by(id_=object_id)
+            return respond_with(artifact)
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
@@ -55,11 +55,9 @@ class ArtifactsController(ApplicationController):
         search_args = params.get('search')
         if search_args is not None:
             params['search'] = SynonymGenerator(search_args).get_synonyms()
-
-        if search_args is None:
-            artifacts = ArtifactBuilder.find_multiple(params)
+            artifacts = ElasticArtifact.search(params)
         else:
-            artifacts = ArtifactBuilder.search(params)
+            artifacts = self._find_multiple_by(params)
 
         if params['notify_clients']:
             socketio.emit('START_PRESENTATION',
@@ -69,18 +67,27 @@ class ArtifactsController(ApplicationController):
 
         return {"images": respond_with(artifacts)}, 200
 
+    def _find_multiple_by(self, params):
+        team = Team.find_by(id_=params.get('team_id'), force=False)
+        if team is None:
+            artifacts = Artifact.nodes
+        else:
+            artifacts = team.artifacts
+        _from = params.get('offset', 0)
+        _to = params.get('limit', 10) + _from
+        return artifacts.order_by('created_at')[_from:_to]
+
     @use_args(artifacts_validator.create_args())
     def create(self, params):
         """Logic for creating an artifact"""
         metadata = self._upload_file(params)
         artifact = self._create_artifact(params, metadata)
-        ImageRecognizer.auto_add_tags(artifact.neo)
-        return respond_with(artifact.neo), 200
+        ImageRecognizer.auto_add_tags(artifact)
+        return respond_with(artifact), 200
 
     def _create_artifact(self, params, metadata):
         params.update(metadata)
-        artifact = ArtifactBuilder()
-        artifact.build_with(**params)
+        artifact = ArtifactBuilder().build_with(**params)
         artifact.save()
         return artifact
 
@@ -89,8 +96,9 @@ class ArtifactsController(ApplicationController):
         """Logic for updating an artifact"""
         object_id = params.pop("id")
         try:
-            artifact = ArtifactBuilder.find(object_id)
-            artifact.update(**params)
+            artifact = Artifact.find_by(id_=object_id)
+            builder = ArtifactBuilder.for_artifact(artifact)
+            builder.update_with(**params)
             return no_content()
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
@@ -102,8 +110,9 @@ class ArtifactsController(ApplicationController):
         for update_data in params["artifacts"]:
             object_id = update_data.pop("id")
             try:
-                artifact = ArtifactBuilder.find(object_id)
-                artifact.update(**update_data)
+                artifact = Artifact.find_by(id_=object_id)
+                builder = ArtifactBuilder.for_artifact(artifact)
+                builder.update_with(**update_data)
             except Artifact.DoesNotExist:
                 return {"error": f"failed at <{object_id}>: not found"}, 404
 
@@ -114,7 +123,7 @@ class ArtifactsController(ApplicationController):
         """Logic for deleting an artifact"""
         object_id = params["id"]
         try:
-            artifact = ArtifactBuilder.find(object_id)
+            artifact = Artifact.find_by(id_=object_id)
             artifact.delete()
             return no_content()
         except Artifact.DoesNotExist:

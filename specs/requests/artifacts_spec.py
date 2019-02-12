@@ -3,18 +3,13 @@
 import sys
 from io import BytesIO
 
-from doublex import Mock, Stub, ANY_ARG
-from doublex_expects import have_been_satisfied
-from elasticsearch.exceptions import NotFoundError
+from doublex import Stub
 from expects import expect, equal, have_key, have_keys
 from flask import current_app
-from hamcrest import matches_regexp
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
 
 from application.models import Artifact
-from specs.factories.date_fixture import date_regex
-from specs.factories.elasticsearch import es_search_response, es_get_response
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
 from specs.factories.uuid_fixture import get_uuid
@@ -242,8 +237,8 @@ with description('/images') as self:
             with context("valid request"):
                 with context("the resource exists"):
                     with before.each:
-                       create_artifact_with(get_uuid(0))
-                       self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
+                        create_artifact_with(get_uuid(0))
+                        self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                     with it('returns a 204 status code'):
                         expect(self.response.status_code).to(equal(204))

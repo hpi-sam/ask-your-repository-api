@@ -3,13 +3,12 @@ Handles all logic of the artefacts api
 """
 from webargs.flaskparser import use_args
 
+from application.models.elastic.elastic_artifact import ElasticArtifact
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
-from ..errors import NotFound
-from ..models.artifact_builder import ArtifactBuilder
-from ..models.elastic_artifact import ElasticArtifact
-from ..validators import tags_validator
 from ..models import Artifact
+from ..models.artifact_builder import ArtifactBuilder
+from ..validators import tags_validator
 
 
 class TagsController(ApplicationController):
@@ -23,12 +22,13 @@ class TagsController(ApplicationController):
         object_id = str(params.pop('id'))
 
         try:
-            artifact = ArtifactBuilder.find(object_id)
-            existing_tags = artifact.neo.tags_list or []
+            artifact = Artifact.find_by(id_=object_id)
+            builder = ArtifactBuilder.for_artifact(artifact)
+            existing_tags = artifact.tags_list or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
-            artifact.update(tags=new_list)
+            builder.update_with(tags=new_list)
             return '', 204
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
