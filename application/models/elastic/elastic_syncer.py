@@ -88,8 +88,9 @@ class ElasticSyncer:
 
     def _artifact_dump(self, artifact):
         data = NeoArtifactSchema(application.models.artifact.Artifact,
-                                 decorate=True).dump(artifact).data
-        data['file_url'] = data.pop('url')
+                                 decorate=False).dump(artifact).data
         data['type'] = 'image'
+        data["id"] = data.pop("id_")
+        data["tags"] = data.pop("tags_list")
         load_result = ArtifactSchema(ElasticArtifact, create_objects=False).load(data)
         return load_result.data

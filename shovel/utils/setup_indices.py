@@ -15,8 +15,8 @@ def setup_indices():
             "image": {
                 "properties": {
                     "tags": {"type": "text"},
-                    "file_url": {"type": "text"},
-                    "team_id": {"type": "text"},
+                    "file_url": {"type": "keyword"},
+                    "team_id": {"type": "keyword"},
                     "file_date": {
                         "type": "date",
                         "format": "strict_date_optional_time||epoch_millis"
