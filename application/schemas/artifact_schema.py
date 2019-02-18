@@ -15,7 +15,7 @@ class ArtifactSchema(BaseSchema):
     team_id = fields.UUID(missing=None)
     tags = fields.List(fields.String(), missing=[], default=[])
     file_date = fields.DateTime(missing=None)
-    score = fields.Integer()
+    score = fields.Number()
 
     @output_decorator
     def transform_fields(self, data):
