@@ -10,13 +10,13 @@
 You can use the installer from [here](https://github.com/pyenv/pyenv-installer) for easy installation.
 
 Installing dependencies:
-- Way 1 Setup Poetry:
+- **Setup Poetry**:
   - [Install Poetry](https://poetry.eustace.io/docs/#system-requirements)
   - Install dependencies via: `poetry install`
   
-- Way 2 Setup Pipenv:
-  - [Install Pipenv](https://pipenv.readthedocs.io/en/latest/)
+- If you don't have poetry installed yet but have pipenv installeed, you can try to use pipenv instead:  
   - In project folder run `pipenv install`
+  - We don't regulary update our Pipfile anymore though so you might run into trouble!
 
 - Copy .env.example into new .env file
 - It's highly recommended you have docker installed it makes environment setup much easier: https://www.docker.com/get-started
@@ -54,21 +54,16 @@ Installing dependencies:
   - Unfortunately sometimes a service crashes, then you neet to run both commands again
 
 # Install dependencies
-- With Poetry:
-    - Run: `poetry install`
-    
-- With Pipenv:
-    - Run: `pipenv install`
-    - And run: `pipenv install --dev`
+- Run: `poetry install`
 
 # Setup database
-- Run: `pipenv run python utils/setup_elasticsearch.py`
+- Run: `poetry run shovel utils.setup_indices`
 
 # Running tests
-- Run: `pipenv run mamba specs`
+- Run: `poetry run mamba specs`
 
 # Running linter
-- Run: `pipenv run pylint application/ specs/`
+- Run: `poetry run prospector`
 
 # Start service
-- Run: `pipenv run flask run`
+- Run: `poetry run flask run`
