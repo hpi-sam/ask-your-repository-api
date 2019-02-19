@@ -20,6 +20,8 @@ textblob = "*"
 nltk = "*"
 shovel = "*"
 neomodel = "==3.2.9" # version 3.3.0 is broken with flask!
+flask-jwt-extended = "^3.17"
+flask-bcrypt = "^0.7.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
