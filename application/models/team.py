@@ -1,5 +1,5 @@
 """ Access to Team objects in Ne4J """
-from neomodel import StructuredNode, StringProperty, RelationshipTo
+from neomodel import StructuredNode, StringProperty, RelationshipTo, Relationship
 
 from application.models.mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.schemas.team_schema import TeamSchema
@@ -11,3 +11,4 @@ class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     name = StringProperty(required=True)
 
     artifacts = RelationshipTo('.Artifact', 'UPLOADED')
+    users = Relationship('.user.User', 'MEMBER')

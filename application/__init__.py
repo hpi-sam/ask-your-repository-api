@@ -12,9 +12,10 @@ from elasticsearch import Elasticsearch
 from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask_restful import Api
+from flask_jwt_extended import JWTManager
 from neomodel import config
 
-from .extensions import socketio
+from .extensions import socketio, bcrypt
 from .routes import create_routes
 
 
@@ -33,6 +34,7 @@ def create_app(config_filename=None):
               if app.config['ELASTICSEARCH_URL'] else None)
     config.DATABASE_URL = app.config['NEO4J_URL']
     app.register_blueprint(api_bp)
+    jwt = JWTManager(app)
     register_extensions(app)
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
@@ -44,3 +46,4 @@ def create_app(config_filename=None):
 def register_extensions(app):
     """ Registers all flask extensions """
     socketio.init_app(app)
+    bcrypt.init_app(app)
