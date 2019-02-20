@@ -25,7 +25,7 @@ def create_app(config_filename=None):
     See instance directory.
     """
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    CORS(app, supports_credentials=True)
     api_bp = Blueprint('api', __name__)
     api = Api(api_bp)
     create_routes(api)
@@ -34,7 +34,7 @@ def create_app(config_filename=None):
               if app.config['ELASTICSEARCH_URL'] else None)
     config.DATABASE_URL = app.config['NEO4J_URL']
     app.register_blueprint(api_bp)
-    jwt = JWTManager(app)
+    JWTManager(app)
     register_extensions(app)
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
