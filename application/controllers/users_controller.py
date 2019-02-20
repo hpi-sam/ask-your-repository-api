@@ -1,7 +1,7 @@
 """
 Handles all logic of the user api
 """
-from flask import current_app, jsonify
+from flask import jsonify, make_response
 from flask_jwt_extended import jwt_required, create_access_token, set_access_cookies, get_csrf_token
 from webargs.flaskparser import use_args
 
@@ -22,7 +22,7 @@ class UsersController(ApplicationController):
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
 
-    #@jwt_required
+    @jwt_required
     @use_args(users_validator.index_args())
     def index(self, params):  # pylint: disable=W0613
         """Logic for querying several users"""
@@ -39,6 +39,7 @@ class UsersController(ApplicationController):
     @use_args(users_validator.update_args())
     def update(self, params, object_id):
         """Logic for updating a user"""
+        object_id = params.pop("id")
         try:
             user = User.find_by(id_=object_id)
             user.update(**params)
@@ -46,6 +47,7 @@ class UsersController(ApplicationController):
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
 
+    @jwt_required
     @use_args(users_validator.delete_args())
     def delete(self, params, object_id):
         """Logic for deleting a user"""
@@ -59,6 +61,7 @@ class UsersController(ApplicationController):
 
     @use_args(users_validator.login_args())
     def login(self, params):
+        """ Returns a cookie and a csrf token for double submit CSRF protection. """
         try:
             user = User.find_by(email=params["email"])
             if not bcrypt.check_password_hash(user.password, params["password"]):
@@ -66,9 +69,11 @@ class UsersController(ApplicationController):
             access_token = create_access_token(identity=user.id_)
             response = respond_with(user)
             response["token"] = get_csrf_token(access_token)
-
-            set_access_cookies(jsonify(response), access_token)
-            return response, 200
+            response = jsonify(response)
+            set_access_cookies(response, access_token, 100000)
+            response = make_response(response, 200)
+            response.mimetype = 'application/json'
+            return response
 
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "Bad username or password"}, 401

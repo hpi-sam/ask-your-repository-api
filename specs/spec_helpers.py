@@ -1,9 +1,30 @@
 """Defines helpers for specs."""
 
-from flask import Request
+from flask import Request, current_app
+from flask.testing import FlaskClient
+from flask_jwt_extended import create_access_token, get_csrf_token
+from flask_jwt_extended.config import config
 from werkzeug.datastructures import MultiDict, FileStorage
 
 from application import create_app
+
+
+class TestingClient(FlaskClient):
+    """ Adds login to the testing client class """
+
+    def login(self):
+        """ Login a testing user and return the token """
+        access_token = create_access_token(identity='test_user')
+        server_name = current_app.config["SERVER_NAME"] or "localhost"
+        self.set_cookie(server_name,
+                        config.access_cookie_name,
+                        value=access_token,
+                        max_age=config.cookie_max_age,
+                        secure=config.cookie_secure,
+                        httponly=True,
+                        domain=config.cookie_domain,
+                        path=config.access_cookie_path)
+        return get_csrf_token(access_token)
 
 
 class TestingFileStorage(FileStorage):
@@ -77,6 +98,7 @@ class Context:
     def __init__(self):
         """ Initializes the Application Context. """
         app = create_app('test_config.cfg')
+        app.test_client_class = TestingClient
         app.request_class = TestingRequest
         self._ctx = app.app_context()
         self._ctx.push()

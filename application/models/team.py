@@ -11,4 +11,4 @@ class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     name = StringProperty(required=True)
 
     artifacts = RelationshipTo('.Artifact', 'UPLOADED')
-    users = Relationship('.user.User', 'MEMBER')
+    users = Relationship('.User', 'MEMBER')
