@@ -58,6 +58,12 @@ Installing dependencies:
 
 # Setup database
 - Run: `poetry run shovel utils.setup_indices`
+- Install constraints for neo4j for development and testing database (adapt the urls if you have a different setup):
+  - Run: `poetry run neomodel_install_labels application application.models --db bolt://:@localhost:7687`
+  - Run: `poetry run neomodel_install_labels application application.models --db bolt://:@localhost:17687`
+ 
+# Download Wordkit for synonyms
+- Run: `poetry run shovel utils.download_wordkit`
 
 # Running tests
 - Run: `poetry run mamba specs`
