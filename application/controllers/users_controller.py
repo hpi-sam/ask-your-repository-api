@@ -2,6 +2,7 @@
 Handles all logic of the user api
 """
 from flask import jsonify, make_response
+from neomodel import exceptions
 from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
                                 set_access_cookies, get_csrf_token)
 from webargs.flaskparser import use_args
@@ -33,7 +34,10 @@ class UsersController(ApplicationController):
     @use_args(users_validator.create_args())
     def create(self, params):
         """Logic for creating a user"""
-        user = User(**params).save()
+        try:
+            user = User(**params).save()
+        except exceptions.UniqueProperty:
+            return {"error": "Username or Email already taken"}, 409
         return respond_with(user), 200
 
     @jwt_required
