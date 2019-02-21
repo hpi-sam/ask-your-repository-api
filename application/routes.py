@@ -21,6 +21,7 @@ def create_routes(api):
     add_resource(api, '/teams', TeamsController)
     add_resource(api, '/users', UsersController)
     add_method(api, '/users/login', "login", UsersController, method="post")
+    add_method(api, '/users/logout', "logout", UsersController, method="post")
     add_resource(api, '/presentations', PresentationsController, only="create")
     add_method(api, '/images/<object_id>/tags', "add_tags",
                TagsController, method="post")

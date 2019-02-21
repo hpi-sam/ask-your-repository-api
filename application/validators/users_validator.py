@@ -36,8 +36,8 @@ def delete_args():
 def login_args():
     """Defines and validates params for update"""
     return {
-        "email": fields.String(),
-        "password": fields.String()
+        "email_or_username": fields.String(required=True),
+        "password": fields.String(required=True)
     }
 
 def validate_user_name(user_name):

@@ -2,7 +2,8 @@
 Handles all logic of the user api
 """
 from flask import jsonify, make_response
-from flask_jwt_extended import jwt_required, create_access_token, set_access_cookies, get_csrf_token
+from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
+                                set_access_cookies, get_csrf_token)
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
@@ -62,18 +63,25 @@ class UsersController(ApplicationController):
     @use_args(users_validator.login_args())
     def login(self, params):
         """ Returns a cookie and a csrf token for double submit CSRF protection. """
-        try:
-            user = User.find_by(email=params["email"])
-            if not bcrypt.check_password_hash(user.password, params["password"]):
-                return {"error": "Bad username or password"}, 401
-            access_token = create_access_token(identity=user.id_)
-            response = respond_with(user)
-            response["token"] = get_csrf_token(access_token)
-            response = jsonify(response)
-            set_access_cookies(response, access_token, 100000)
-            response = make_response(response, 200)
-            response.mimetype = 'application/json'
-            return response
-
-        except User.DoesNotExist:  # pylint:disable=no-member
+        user = (User.find_by(username=params["email_or_username"], force=False)
+                or User.find_by(email=params["email_or_username"], force=False))
+        if not user or not bcrypt.check_password_hash(user.password, params["password"]):
             return {"error": "Bad username or password"}, 401
+        access_token = create_access_token(identity=user.id_)
+        response = respond_with(user)
+        response["token"] = get_csrf_token(access_token)
+        response = jsonify(response)
+        set_access_cookies(response, access_token, 1000000)
+        response = make_response(response, 200)
+        response.mimetype = 'application/json'
+
+        return response
+
+    @jwt_required
+    def logout(self): # pylint: disable=W0613
+        """ Unsets the cookie in repsponse """
+        resp = jsonify({'logout': True})
+        unset_jwt_cookies(resp)
+        response = make_response(resp, 200)
+        response.mimetype = 'application/json'
+        return response
