@@ -161,3 +161,87 @@ with description('/users') as self:
 
                 with it('responds with 422 invalid request'):
                     expect(self.response.status_code).to(equal(422))
+
+    with description('login'):
+        with before.each:
+            self.user = User(username='TestUser',
+                             email='test@example.com',
+                             password='test').save()
+
+        with description('with email and password'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/users/login',
+                    data={'email_or_username': 'test@example.com', 'password': 'test'})
+
+            with it('responds with 200'):
+                expect(self.response.status_code).to(equal(200))
+
+            with it('returns the user with token'):
+                expect(self.response.json).to(have_key('username', 'TestUser'))
+                expect(self.response.json).to(have_key('email', 'test@example.com'))
+                expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
+                expect(self.response.json).to(have_key('token'))
+
+        with description('with username and password'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/users/login',
+                    data={'email_or_username': 'TestUser', 'password': 'test'})
+
+            with it('responds with 200'):
+                expect(self.response.status_code).to(equal(200))
+
+            with it('returns the user with token'):
+                expect(self.response.json).to(have_key('username', 'TestUser'))
+                expect(self.response.json).to(have_key('email', 'test@example.com'))
+                expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
+                expect(self.response.json).to(have_key('token'))
+
+        with description('with invalid username or email'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/users/login',
+                    data={'email_or_username': 'WrongUsername', 'password': 'test'})
+
+            with it('responds with 401'):
+                expect(self.response.status_code).to(equal(401))
+
+            with it('returns an error message'):
+                expect(self.response.json).to(equal({"error": "Bad username or password"}))
+
+        with description('with invalid password'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/users/login',
+                    data={'email_or_username': 'TestUser', 'password': 'wrong_password'})
+
+            with it('responds with 401'):
+                expect(self.response.status_code).to(equal(401))
+
+            with it('returns an error message'):
+                expect(self.response.json).to(equal({"error": "Bad username or password"}))
+
+    with description('logout'):
+        with description('when logged in'):
+            with before.each:
+                token = self.context.client().login()
+                self.response = self.context.client().post(
+                    '/users/logout',
+                    headers={'X-CSRF-TOKEN': token})
+            with it('responds with 200'):
+                expect(self.response.status_code).to(equal(200))
+
+            with it('returns logged out json'):
+                expect(self.response.json).to(equal({"logout": True}))
+
+        with description('without being logged in'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/users/logout')
+
+            with it('responds with 401'):
+                expect(self.response.status_code).to(equal(401))
+
+            with it('returns message not allowed'):
+                expect(self.response.json).to(equal({'msg': 'Missing cookie "access_token_cookie"'}))
