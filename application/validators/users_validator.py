@@ -32,14 +32,6 @@ def delete_args():
         "id": fields.UUID(required=True, load_from='object_id', location='view_args')
     }
 
-
-def login_args():
-    """Defines and validates params for update"""
-    return {
-        "email_or_username": fields.String(required=True),
-        "password": fields.String(required=True)
-    }
-
 def validate_user_name(user_name):
     if not isinstance(user_name, str):
         raise ValidationError("User name must be a string")

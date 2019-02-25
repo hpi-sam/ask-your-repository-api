@@ -1,17 +1,14 @@
 """
 Handles all logic of the user api
 """
-from flask import jsonify, make_response
 from neomodel import exceptions
-from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
-                                set_access_cookies, get_csrf_token)
+from flask_jwt_extended import jwt_required
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
 from ..models.user import User
 from ..responders import respond_with, no_content
 from ..validators import users_validator
-from ..extensions import bcrypt
 
 class UsersController(ApplicationController):
     """ Controller for users """
@@ -63,29 +60,3 @@ class UsersController(ApplicationController):
             return no_content()
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
-
-    @use_args(users_validator.login_args())
-    def login(self, params):
-        """ Returns a cookie and a csrf token for double submit CSRF protection. """
-        user = (User.find_by(username=params["email_or_username"], force=False)
-                or User.find_by(email=params["email_or_username"], force=False))
-        if not user or not bcrypt.check_password_hash(user.password, params["password"]):
-            return {"error": "Bad username or password"}, 401
-        access_token = create_access_token(identity=user.id_)
-        response = respond_with(user)
-        response["token"] = get_csrf_token(access_token)
-        response = jsonify(response)
-        set_access_cookies(response, access_token, 1000000)
-        response = make_response(response, 200)
-        response.mimetype = 'application/json'
-
-        return response
-
-    @jwt_required
-    def logout(self): # pylint: disable=W0613
-        """ Unsets the cookie in repsponse """
-        resp = jsonify({'logout': True})
-        unset_jwt_cookies(resp)
-        response = make_response(resp, 200)
-        response.mimetype = 'application/json'
-        return response
