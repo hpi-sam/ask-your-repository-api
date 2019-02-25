@@ -1,26 +1,24 @@
 """Defines helpers for specs."""
 
-from flask import Request, current_app
+from flask import Request
 from flask.testing import FlaskClient
-from flask_jwt_extended import create_access_token, get_csrf_token
-from flask_jwt_extended.config import config
 from werkzeug.datastructures import MultiDict, FileStorage
 
 from application import create_app
+
 
 class TestingClient(FlaskClient):
     """ Adds login to the testing client class """
 
     def login(self, email_or_username, password):
         """ Login a testing user and return the token """
-        user_response = self.post('/users/login',
+        user_response = self.post('/authentications',
                                   data={'email_or_username': email_or_username,
                                         'password': password})
 
-        if user_response.status_code == 200:
-            return user_response.json["token"]
-        else:
+        if user_response.status_code != 200:
             raise Exception('Invalid username or password')
+        return user_response.json["token"]
 
 
 class TestingFileStorage(FileStorage):

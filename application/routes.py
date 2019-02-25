@@ -14,15 +14,16 @@ def create_routes(api):
     from .controllers.presentations_controller import PresentationsController
     from .controllers.teams_controller import TeamsController
     from .controllers.users_controller import UsersController
+    from .controllers.authentications_controller import AuthenticationsController
 
     add_method(api, '/', "show_status", HomeController, method="get")
     add_resource(api, '/images', ArtifactsController)
     add_method(api, '/images', "update_many", ArtifactsController, method="patch")
     add_resource(api, '/teams', TeamsController)
     add_resource(api, '/users', UsersController)
-    add_method(api, '/users/login', "login", UsersController, method="post")
-    add_method(api, '/users/logout', "logout", UsersController, method="post")
-    add_resource(api, '/presentations', PresentationsController, only="create")
+    add_resource(api, '/authentications', AuthenticationsController, only=["create"])
+    add_method(api, '/authentications', "delete", AuthenticationsController, method="delete")
+    add_resource(api, '/presentations', PresentationsController, only=["create"])
     add_method(api, '/images/<object_id>/tags', "add_tags",
                TagsController, method="post")
     add_method(api, "/tags/suggested", "suggested_tags",
