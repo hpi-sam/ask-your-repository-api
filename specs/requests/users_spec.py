@@ -22,7 +22,7 @@ with description('/users') as self:
         with before.each:
             User(username='TestUser', email='test@example.com', password='test').save()
             User(username='TestUser2', email='test2@example.com', password='test').save()
-            token = self.context.client().login()
+            token = self.context.client().login('TestUser', 'test')
             self.response = self.context.client().get('/users', headers={'X-CSRF-TOKEN': token})
 
         with it('responds with all users'):
@@ -76,7 +76,7 @@ with description('/users') as self:
                     self.user = User(username='TestUser',
                                      email='test@example.com',
                                      password='test').save()
-                    token = self.context.client().login()
+                    token = self.context.client().login('TestUser', 'test')
                     self.response = self.context.client().get(f'/users/{self.user.id_}', headers={'X-CSRF-TOKEN': token})
 
                 with it('responds with 200'):
@@ -96,7 +96,10 @@ with description('/users') as self:
                     user = User(username='TestUser',
                                 email='test@example.com',
                                 password='test')
-                    token = self.context.client().login()
+                    User(username='AdminUser',
+                         email='test@example.com',
+                         password='test').save()
+                    token = self.context.client().login('AdminUser', 'test')
                     self.response = self.context.client().get(f'/users/{user.id_}', headers={'X-CSRF-TOKEN': token})
 
                 with it('responds error 404'):
@@ -109,7 +112,7 @@ with description('/users') as self:
                                      email='test@example.com',
                                      password='test').save()
 
-                    token = self.context.client().login()
+                    token = self.context.client().login('TestUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{self.user.id_}',
                         data={'username': 'AnotherUser'},
@@ -139,7 +142,10 @@ with description('/users') as self:
                                 email='test@example.com',
                                 password='test').save()
                     user.delete()
-                    token = self.context.client().login()
+                    User(username='AdminUser',
+                         email='test@example.com',
+                         password='test').save()
+                    token = self.context.client().login('AdminUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
                         data={'username': 'AntotherUser'},
@@ -153,7 +159,7 @@ with description('/users') as self:
                     user = User(username='TestUser',
                                 email='test@example.com',
                                 password='test').save()
-                    token = self.context.client().login()
+                    token = self.context.client().login('TestUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
                         data={'username': ''},
@@ -225,7 +231,10 @@ with description('/users') as self:
     with description('logout'):
         with description('when logged in'):
             with before.each:
-                token = self.context.client().login()
+                User(username='TestUser',
+                     email='test@example.com',
+                     password='test').save()
+                token = self.context.client().login('TestUser', 'test')
                 self.response = self.context.client().post(
                     '/users/logout',
                     headers={'X-CSRF-TOKEN': token})

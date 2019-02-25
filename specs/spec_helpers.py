@@ -8,23 +8,19 @@ from werkzeug.datastructures import MultiDict, FileStorage
 
 from application import create_app
 
-
 class TestingClient(FlaskClient):
     """ Adds login to the testing client class """
 
-    def login(self):
+    def login(self, email_or_username, password):
         """ Login a testing user and return the token """
-        access_token = create_access_token(identity='test_user')
-        server_name = current_app.config["SERVER_NAME"] or "localhost"
-        self.set_cookie(server_name,
-                        config.access_cookie_name,
-                        value=access_token,
-                        max_age=config.cookie_max_age,
-                        secure=config.cookie_secure,
-                        httponly=True,
-                        domain=config.cookie_domain,
-                        path=config.access_cookie_path)
-        return get_csrf_token(access_token)
+        user_response = self.post('/users/login',
+                                  data={'email_or_username': email_or_username,
+                                        'password': password})
+
+        if user_response.status_code == 200:
+            return user_response.json["token"]
+        else:
+            raise Exception('Invalid username or password')
 
 
 class TestingFileStorage(FileStorage):
