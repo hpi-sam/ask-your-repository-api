@@ -74,4 +74,4 @@ with description('Artifact Wrapper') as self:
 
                 with it('saves new tags in neo4j'):
                     ARTIFACT = Artifact.find_by(file_url='asdf')
-                    expect(ARTIFACT.tags_list).to(contain('a', 's', 'd', 'f', 'l', 'm', 'a', 'o'))
+                    expect(ARTIFACT.tags_list).to(contain('l', 'm', 'a', 'o'))
