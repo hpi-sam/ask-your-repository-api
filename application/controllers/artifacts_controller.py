@@ -112,7 +112,7 @@ class ArtifactsController(ApplicationController):
             try:
                 artifact = Artifact.find_by(id_=object_id)
                 builder = ArtifactBuilder.for_artifact(artifact)
-                builder.update_with(**update_data)
+                builder.update_with(override_tags=False, **update_data)
             except Artifact.DoesNotExist:
                 return {"error": f"failed at <{object_id}>: not found"}, 404
 

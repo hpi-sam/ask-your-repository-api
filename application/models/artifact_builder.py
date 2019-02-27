@@ -53,11 +53,14 @@ class ArtifactBuilder:
         self.neo.tags.disconnect_all()
         self._add_tags_to_neo(tags)
 
-    def update_with(self, **properties):
+    def update_with(self, override_tags=True, **properties):
         """Update both models"""
         neo_properties = self._make_properties_neo_compatible(**properties)
         if 'tags' in properties:
-            self._overwrite_tags_in_neo(properties['tags'])
+            if override_tags:
+                self._overwrite_tags_in_neo(properties['tags'])
+            else:
+                self._add_tags_to_neo(properties['tags'])
         if 'team_id' in properties:
             self._overwrite_team(properties['team_id'])
         self.neo.update(**neo_properties)
