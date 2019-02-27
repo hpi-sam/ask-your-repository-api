@@ -27,13 +27,35 @@ from ..validators import artifacts_validator
 @socketio_args(artifacts_validator.search_args())
 def synchronized_search(params):
     """ Called from client when presentation mode is on """
-    artifacts = ElasticArtifact.search(params)
+    artifacts = _search_artifacts(params)
 
     emit('START_PRESENTATION',
          respond_with(artifacts),
          room=str(params["team_id"]),
          broadcast=True
          )
+
+
+def _search_artifacts(params):
+    search_args = params.get('search')
+    if search_args is not None:
+        params['search'] = SynonymGenerator(search_args).get_synonyms()
+        artifacts = ElasticArtifact.search(params)
+    else:
+        artifacts = _find_multiple_by(params)
+    return artifacts
+
+
+def _find_multiple_by(params):
+    team = Team.find_by(id_=params.get('team_id'), force=False)
+    if team is None:
+        artifacts = Artifact.nodes
+    else:
+        artifacts = team.artifacts
+    _from = params.get('offset', 0)
+    _to = params.get('limit', 10) + _from
+    return artifacts.order_by('created_at')[_from:_to]
+
 
 
 class ArtifactsController(ApplicationController):
@@ -52,12 +74,7 @@ class ArtifactsController(ApplicationController):
     @use_args(artifacts_validator.search_args())
     def index(self, params):
         """Logic for querying several artifacts"""
-        search_args = params.get('search')
-        if search_args is not None:
-            params['search'] = SynonymGenerator(search_args).get_synonyms()
-            artifacts = ElasticArtifact.search(params)
-        else:
-            artifacts = self._find_multiple_by(params)
+        artifacts = _search_artifacts(params)
 
         if params['notify_clients']:
             socketio.emit('START_PRESENTATION',
@@ -67,15 +84,6 @@ class ArtifactsController(ApplicationController):
 
         return {"images": respond_with(artifacts)}, 200
 
-    def _find_multiple_by(self, params):
-        team = Team.find_by(id_=params.get('team_id'), force=False)
-        if team is None:
-            artifacts = Artifact.nodes
-        else:
-            artifacts = team.artifacts
-        _from = params.get('offset', 0)
-        _to = params.get('limit', 10) + _from
-        return artifacts.order_by('created_at')[_from:_to]
 
     @use_args(artifacts_validator.create_args())
     def create(self, params):
