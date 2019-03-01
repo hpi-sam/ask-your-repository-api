@@ -35,5 +35,6 @@ services:
     environment:
       - REACT_APP_API_URL=http://elija:5000
       - CYPRESS_API_URL=http://elija:5000
+      - CYPRESS_NEO4J_URL=http://:@neo4j_dev:7474
     ports:
       - "3000:3000"
