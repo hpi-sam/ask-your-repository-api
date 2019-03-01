@@ -2,6 +2,7 @@
 from flask import current_app
 from marshmallow import fields
 
+from .tag_schema import TagSchema
 from ..base import BaseSchema, output_decorator
 
 
@@ -37,7 +38,10 @@ class NeoArtifactSchema(BaseSchema):
     updated_at = fields.DateTime(missing=None)
     file_url = fields.String(missing=None)
     team_id = fields.String(missing=None)
-    tags_list = fields.List(fields.String(), missing=[], default=[])
+    tags = fields.Nested(TagSchema, many=True, only='name')
+    label_tags = fields.Nested(TagSchema, many=True, only='name')
+    user_tags = fields.Nested(TagSchema, many=True, only='name')
+    text_tags = fields.Nested(TagSchema, many=True, only='name')
     file_date = fields.DateTime(missing=None)
 
     @output_decorator
@@ -45,7 +49,6 @@ class NeoArtifactSchema(BaseSchema):
         """ Transforms field for output """
         data["url"] = self.build_url(data.pop("file_url"))
         data["id"] = data.pop("id_")
-        data["tags"] = data.pop("tags_list")
         return data
 
     @staticmethod
@@ -53,4 +56,3 @@ class NeoArtifactSchema(BaseSchema):
         """ Schema: fileserver/id_filename """
         return current_app.config["FILE_SERVER"] + \
                "/" + file_url
-

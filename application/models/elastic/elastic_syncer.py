@@ -91,6 +91,9 @@ class ElasticSyncer:
                                  decorate=False).dump(artifact).data
         data['type'] = 'image'
         data["id"] = data.pop("id_")
-        data["tags"] = data.pop("tags_list")
+        data["tags"] = data.pop("tags")
+        data["user_tags"] = data.pop("user_tags")
+        data["label_tags"] = data.pop("label_tags")
+        data["text_tags"] = data.pop("text_tags")
         load_result = ArtifactSchema(model=ElasticArtifact, create_objects=False).load(data)
         return load_result.data

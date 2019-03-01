@@ -29,7 +29,7 @@ with description('/images') as self:
                 self.artifacts = []
                 for i in range(1, 21):
                     self.artifact = Artifact(file_url=f"url_{i}").save()
-                    self.artifact.tags.connect(Tag.find_or_create_by(name=f"tag_{i % 5}"))
+                    self.artifact.user_tags.connect(Tag.find_or_create_by(name=f"tag_{i % 5}"))
                     self.team.artifacts.connect(self.artifact)
                     self.artifacts.append(self.artifact)
                 params = {"offset": 5, "limit": 10, "team_id": self.team.id_}
@@ -46,4 +46,5 @@ with description('/images') as self:
                 expect(self.response.json['images'][0]).to(have_keys(id=image.id_,
                                                                      url=contain(image.file_url),
                                                                      team_id=image.team_id,
-                                                                     tags=image.tags_list))
+                                                                     tags=list(map(lambda x: x.name,
+                                                                                   image.tags))))
