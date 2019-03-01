@@ -58,16 +58,42 @@ with description('/users') as self:
                                               email='test@example.com')
                        ).to_not(be(None))
 
+        with description('username already taken'):
+            with before.each:
+                self.user = UserFactory.create_user(username='test')
+                self.response = self.context.client().post(
+                    '/users',
+                    data={'username': 'test', 'email': 'othertest@example.com', 'password': 'test'})
+
+            with it('responds with 409 conflict'):
+                expect(self.response.status_code).to(equal(409))
+
+            with it('does not save a second user'):
+                expect(User.nodes).to(have_len(1))
+
+        with description('email already taken'):
+            with before.each:
+                self.user = UserFactory.create_user(email='test@example.com')
+                self.response = self.context.client().post(
+                    '/users',
+                    data={'username': 'othertest', 'email': 'test@example.com', 'password': 'test'})
+
+            with it('responds with 409 conflict'):
+                expect(self.response.status_code).to(equal(409))
+
+            with it('does not save a second user'):
+                expect(User.nodes).to(have_len(1))
+
         with description('invalid request'):
             with before.each:
                 self.response = self.context.client().post(
                     '/users',
                     data={'username': ''})
 
-            with it('declines empty name'):
+            with it('responds with 422 invalid request'):
                 expect(self.response.status_code).to(equal(422))
 
-            with it('does not save invalid users'):
+            with it('does not save a user'):
                 expect(User.nodes).to(be_empty)
 
     with description('/:id'):
