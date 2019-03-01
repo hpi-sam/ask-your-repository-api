@@ -1,5 +1,5 @@
 """ Helpers for models """
-
+import uuid
 
 class DefaultHelperMixin:
     """ Default helpers for neomodels """
@@ -8,6 +8,13 @@ class DefaultHelperMixin:
     def all(cls):
         """ Returns all objects of this model """
         return list(cls.nodes)
+
+    @classmethod
+    def find(cls, uid, force=True):
+        """ Find an object by uid """
+        if not isinstance(uid, uuid.UUID):
+            uid = uuid.UUID(uid)
+        return cls.find_by(id_=str(uid), force=force)
 
     @classmethod
     def find_by(cls, force=True, **properties, ):
