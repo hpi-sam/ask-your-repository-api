@@ -1,7 +1,7 @@
 """ Access to Artifacts via Neo4J """
 
 from neomodel import (StructuredNode, StringProperty, DateTimeProperty,
-                      RelationshipTo, RelationshipFrom)
+                      RelationshipTo, RelationshipFrom, cardinality)
 
 from application.models.mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.schemas.artifact_schema import NeoArtifactSchema
@@ -16,10 +16,11 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 
-    user_tags = RelationshipTo('.Tag', 'TAGGED_WITH')
-    label_tags = RelationshipTo('.Tag', 'LABELED_WITH')
-    text_tags = RelationshipTo('.Tag', 'CONTAINS_TEXT')
-    team = RelationshipFrom('.Team', 'UPLOADED')
+    user_tags = RelationshipTo('.Tag', 'TAGGED_WITH', cardinality=cardinality.ZeroOrOne)
+    label_tags = RelationshipTo('.Tag', 'LABELED_WITH', cardinality=cardinality.ZeroOrOne)
+    text_tags = RelationshipTo('.Tag', 'CONTAINS_TEXT', cardinality=cardinality.ZeroOrOne)
+    team = RelationshipFrom('.Team', 'UPLOADED', cardinality=cardinality.ZeroOrOne)
+    user = RelationshipTo('.User', 'CREATED_BY', cardinality=cardinality.ZeroOrOne)
 
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema
@@ -32,7 +33,18 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
     def team_id(self):
         """ Returns this artifacts teams id """
         teams = list(self.team)
-        return teams[0].id_ if teams else None
+        team_id = None
+        if teams:
+            team_id = teams[0].id_
+        return team_id
+
+    @property
+    def tags_list(self):
+        """ Returns this artifacts tags as string array """
+        tags_list = []
+        for tag in self.tags:  # pylint:disable=not-an-iterable
+            tags_list.append(tag.name)
+        return tags_list
 
     def post_save(self):
         """Sync with Elasticsearch"""

@@ -1,5 +1,5 @@
 """ Access to User objects in Ne4J """
-from neomodel import StructuredNode, StringProperty, RelationshipFrom
+from neomodel import StructuredNode, StringProperty, RelationshipFrom, cardinality
 
 from ..models.mixins import DefaultPropertyMixin, DefaultHelperMixin
 from ..schemas.user_schema import UserSchema
@@ -12,7 +12,8 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     email = StringProperty(required=True, unique_index=True)
     password = StringProperty(required=True)
 
-    teams = RelationshipFrom('.Team', 'HAS_MEMBER')
+    teams = RelationshipFrom('.Team', 'HAS_MEMBER', cardinality=cardinality.ZeroOrMore)
+    artifacts = RelationshipFrom('.Artifact', 'CREATED_BY', cardinality=cardinality.ZeroOrMore)
 
     @classmethod
     def find_by_email_or_username(cls, email_or_username):

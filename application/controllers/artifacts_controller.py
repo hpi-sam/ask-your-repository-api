@@ -10,6 +10,7 @@ import werkzeug
 from flask import current_app
 from flask_socketio import emit
 from webargs.flaskparser import use_args
+from flask_jwt_extended import jwt_optional, get_jwt_identity
 
 from application.models import Artifact, Team
 from application.models.elastic.elastic_artifact import ElasticArtifact
@@ -64,6 +65,7 @@ def _find_multiple_by(params):
     return artifacts.order_by('created_at')[_from:_to]
 
 
+
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
@@ -90,13 +92,21 @@ class ArtifactsController(ApplicationController):
 
         return {"images": respond_with(artifacts)}, 200
 
+
+    @jwt_optional
     @use_args(artifacts_validator.create_args())
     def create(self, params):
         """Logic for creating an artifact"""
         metadata = self._upload_file(params)
+        metadata = self._add_user(metadata)
         artifact = self._create_artifact(params, metadata)
         ImageRecognizer.auto_add_tags(artifact)
         return respond_with(artifact), 200
+
+    def _add_user(self, params):
+        user_id = get_jwt_identity()
+        params.update({'user_id': user_id})
+        return params
 
     def _create_artifact(self, params, metadata):
         params.update(metadata)
