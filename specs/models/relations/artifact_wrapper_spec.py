@@ -39,11 +39,13 @@ with description('Artifact Wrapper') as self:
         with context('with tags'):
             with before.each:
                 self.artifact = ArtifactBuilder()
-                self.artifact.build_with(file_url='asdf', type='image', tags=['a', 's', 'd', 'f'])
+                self.artifact.build_with(file_url='asdf', type='image',
+                                         user_tags=['a', 's', 'd', 'f'])
                 self.artifact.save()
 
             with it('saves tags in Neo4j'):
-                expect(self.artifact.neo.tags_list).to(contain('a', 's', 'd', 'f'))
+                expect(list(map(lambda x: x.name, self.artifact.neo.tags))).to(
+                    contain('a', 's', 'd', 'f'))
 
     with description('update'):
         with context('file_url'):
@@ -62,16 +64,35 @@ with description('Artifact Wrapper') as self:
                 self.artifact = ArtifactBuilder()
                 self.artifact.build_with(file_url='asdf', type='image')
                 self.artifact.save()
-                self.artifact.update_with(tags=['a', 's', 'd', 'f'])
+                self.artifact.update_with(user_tags=['a', 's', 'd', 'f'],
+                                          label_tags=['x', 'd'],
+                                          text_tags=['r', 'o', 'f', 'l'])
 
-            with it('updates in neo4j'):
+            with it('updates user tags in neo4j'):
                 ARTIFACT = Artifact.find_by(file_url='asdf')
-                expect(ARTIFACT.tags_list).to(contain('a', 's', 'd', 'f'))
+                expect(list(map(lambda x: x.name, ARTIFACT.user_tags))).to(
+                    contain('a', 's', 'd', 'f'))
+
+            with it('updates label tags in neo4j'):
+                ARTIFACT = Artifact.find_by(file_url='asdf')
+                expect(list(map(lambda x: x.name, ARTIFACT.label_tags))).to(
+                    contain('x', 'd'))
+
+            with it('updates text tags in neo4j'):
+                ARTIFACT = Artifact.find_by(file_url='asdf')
+                expect(list(map(lambda x: x.name, ARTIFACT.text_tags))).to(
+                    contain('r', 'o', 'f', 'l'))
+
+            with it('shows all tags from neo4j'):
+                ARTIFACT = Artifact.find_by(file_url='asdf')
+                expect(list(map(lambda x: x.name, ARTIFACT.tags))).to(
+                    contain('a', 'x', 'r'))
 
             with context('updating again'):
                 with before.each:
-                    self.artifact.update_with(tags=['l', 'm', 'a', 'o'])
+                    self.artifact.update_with(user_tags=['l', 'm', 'a', 'o'])
 
                 with it('saves new tags in neo4j'):
                     ARTIFACT = Artifact.find_by(file_url='asdf')
-                    expect(ARTIFACT.tags_list).to(contain('l', 'm', 'a', 'o'))
+                    expect(list(map(lambda x: x.name, ARTIFACT.user_tags))).to(
+                        contain('l', 'm', 'a', 'o'))

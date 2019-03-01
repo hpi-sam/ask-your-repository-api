@@ -8,34 +8,31 @@ from application.schemas.artifact_schema import NeoArtifactSchema
 from .elastic import ElasticSyncer
 
 
-class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
+# pylint:disable=abstract-method
+class Artifact(StructuredNode, DefaultPropertyMixin,
+               DefaultHelperMixin):
     """ The class that manages artifacts """
     schema = NeoArtifactSchema
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 
-    tags = RelationshipTo('.Tag', 'TAGGED_WITH')
+    user_tags = RelationshipTo('.Tag', 'TAGGED_WITH')
+    label_tags = RelationshipTo('.Tag', 'LABELED_WITH')
+    text_tags = RelationshipTo('.Tag', 'CONTAINS_TEXT')
     team = RelationshipFrom('.Team', 'UPLOADED')
 
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema
+    @property
+    def tags(self):
+        """Returns union of all tag types as tags."""
+        return list(self.user_tags) + list(self.label_tags) + list(self.text_tags)
 
     @property
     def team_id(self):
         """ Returns this artifacts teams id """
         teams = list(self.team)
-        team_id = None
-        if teams:
-            team_id = teams[0].id_
-        return team_id
-
-    @property
-    def tags_list(self):
-        """ Returns this artifacts tags as string array """
-        tags_list = []
-        for tag in self.tags:  # pylint:disable=not-an-iterable
-            tags_list.append(tag.name)
-        return tags_list
+        return teams[0].id_ if teams else None
 
     def post_save(self):
         """Sync with Elasticsearch"""

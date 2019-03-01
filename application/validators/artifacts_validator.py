@@ -29,7 +29,7 @@ def create_args():
             location='files',
             load_from='image'),
         "team_id": fields.UUID(missing=None),
-        "tags": fields.List(fields.String())
+        "user_tags": fields.List(fields.String(), load_from='tags')
     }
 
 
@@ -37,7 +37,7 @@ def update_args():
     """Defines and validates params for update"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "tags": fields.List(fields.String(), missing=[])
+        "user_tags": fields.List(fields.String(), missing=[], load_from='tags')
     }
 
 
@@ -46,7 +46,7 @@ def update_many_args():
     return {
         "artifacts": fields.List(fields.Nested({
             "id": fields.UUID(required=True),
-            "tags": fields.List(fields.String(), required=True)
+            "user_tags": fields.List(fields.String(), required=True, load_from='tags')
         }))
     }
 

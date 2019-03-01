@@ -184,7 +184,8 @@ with description('/images') as self:
 
                 with it('has correct json response'):
                     expect(self.response.json).to(have_keys('file_date', 'updated_at', 'created_at',
-                                                            'url', 'team_id', 'id', 'tags'))
+                                                            'url', 'team_id', 'id', 'tags',
+                                                            'user_tags', 'label_tags', 'text_tags'))
 
             with context("the resource doesn't exists"):
                 with before.each:

@@ -2,6 +2,7 @@
 import uuid
 
 from . import Artifact, Tag, Team
+from .property_builder import PropertyBuilder
 
 
 class ArtifactBuilder:
@@ -19,50 +20,43 @@ class ArtifactBuilder:
 
     def build_with(self, **properties):
         """ builds self.neo and saves it"""
-        neo_properties = self._make_properties_neo_compatible(**properties)
+        props = PropertyBuilder(**properties)
+        neo_properties = props.node_properties
         self.neo = Artifact(**neo_properties).save()
-        if 'tags' in properties:
-            self._add_tags_to_neo(properties['tags'])
-        if 'team_id' in properties and properties.get('team_id') is not None:
-            self._connect_to_team(properties['team_id'])
-        properties['id'] = self.neo.id_
+        self.build_relations(props.relationship_properties, False)
         return self.neo
 
-    def _make_properties_neo_compatible(self, **properties):
-        if 'type' in properties:
-            properties.pop('type')
-        if 'file' in properties:
-            properties.pop('file')
-        if 'team_id' in properties:
-            properties.pop('team_id')
-        if 'tags' in properties:
-            properties.pop('tags')
-        return properties
+    def build_relations(self, props, override_tags):
+        """Create all relations on the artifact object as described in props."""
+        self._set_full_tags(props, override_tags)
+        if 'team_id' in props and props.get('team_id') is not None:
+            self._connect_to_team(props['team_id'])
 
     def save(self):
         """Save both models"""
         self.neo.save()
 
-    def _add_tags_to_neo(self, tags):
-        for tag in tags:
+    def _add_tags_to_neo(self, new_tags, tag_relation, override=False):
+        if override:
+            tag_relation.disconnect_all()
+        for tag in new_tags:
             created_tag = Tag.find_or_create_by(name=tag)
-            self.neo.tags.connect(created_tag)
+            tag_relation.connect(created_tag)
         self.neo.save()
 
-    def _overwrite_tags_in_neo(self, tags):
-        self.neo.tags.disconnect_all()
-        self._add_tags_to_neo(tags)
+    def _set_full_tags(self, properties, override_tags):
+        if 'user_tags' in properties:
+            self._add_tags_to_neo(properties['user_tags'], self.neo.user_tags, override_tags)
+        if 'label_tags' in properties:
+            self._add_tags_to_neo(properties['label_tags'], self.neo.label_tags)
+        if 'text_tags' in properties:
+            self._add_tags_to_neo(properties['text_tags'], self.neo.text_tags)
 
     def update_with(self, override_tags=True, **properties):
         """Update both models"""
-        neo_properties = self._make_properties_neo_compatible(**properties)
-        if 'tags' in properties:
-            if override_tags:
-                self._overwrite_tags_in_neo(properties['tags'])
-            else:
-                self._add_tags_to_neo(properties['tags'])
-        if 'team_id' in properties:
-            self._overwrite_team(properties['team_id'])
+        props = PropertyBuilder(**properties)
+        neo_properties = props.node_properties
+        self.build_relations(props.relationship_properties, override_tags)
         self.neo.update(**neo_properties)
 
     @classmethod

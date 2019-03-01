@@ -24,7 +24,7 @@ class TagsController(ApplicationController):
         try:
             artifact = Artifact.find_by(id_=object_id)
             builder = ArtifactBuilder.for_artifact(artifact)
-            existing_tags = artifact.tags_list or []
+            existing_tags = artifact.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
 
