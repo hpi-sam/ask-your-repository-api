@@ -16,8 +16,23 @@ from ..error_handling.es_connection import check_es_connection
 from ..models.artifact import Artifact
 from ..validators import artifacts_validator
 from ..recognition.image_recognition import ImageRecognizer
-from .application_controller import ApplicationController
-from ..synonyms.synonyms import SynonymGenerator
+from ..responders import no_content, respond_with
+from ..socketio_parser import use_args as socketio_args
+from ..text_tools import SynonymGenerator
+from ..validators import artifacts_validator
+
+
+@socketio.on("SYNCHRONIZED_SEARCH")
+@socketio_args(artifacts_validator.search_args())
+def synchronized_search(params):
+    """ Called from client when presentation mode is on """
+    artifacts = ElasticArtifact.search(params)
+
+    emit('START_PRESENTATION',
+         respond_with(artifacts),
+         room=str(params["team_id"]),
+         broadcast=True
+         )
 
 
 class ArtifactsController(ApplicationController):
