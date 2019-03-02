@@ -49,7 +49,7 @@ class TeamsController(ApplicationController):
         """Logic for creating a team"""
         team = Team(name=params["name"]).save()
         user = User.find_by(id_=get_jwt_identity())
-        team.users.connect(user)
+        team.members.connect(user)
         return respond_with(team), 200
 
     @use_args(teams_validator.update_args())
