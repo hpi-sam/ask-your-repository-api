@@ -34,7 +34,6 @@ jobs:
       - run: docker-compose build elija
       - run: docker-compose up -d
       - run: docker-compose exec jona dockerize -wait http://elija:5000 -timeout 1m
-      - run: docker-compose exec jona dockerize -wait http://neo4j_dev:7474 -timeout 1m
       - run: docker-compose exec jona yarn cypress run
       - store_artifacts:
           path: /app/cypress/screenshots
