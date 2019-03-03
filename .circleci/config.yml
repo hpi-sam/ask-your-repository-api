@@ -30,6 +30,7 @@ jobs:
       COMPOSE_FILE: .circleci/docker-compose.ci.yml
     steps:
       - checkout
+      - run: docker-compose pull neo4j_dev
       - run: docker-compose pull jona
       - run: docker-compose build elija
       - run: docker-compose up -d
