@@ -84,7 +84,11 @@ with description('/authentications') as self:
                 User(username='TestUser',
                      email='test@example.com',
                      password='test').save()
-                token = self.context.client().login('TestUser', 'test')
+                user_response = self.context.client().post('/authentications',
+                                          data={'email_or_username': 'TestUser',
+                                                'password': 'test'})
+                token = user_response.json["token"]
+
                 self.response = self.context.client().delete(
                     '/authentications',
                     headers={'X-CSRF-TOKEN': token})

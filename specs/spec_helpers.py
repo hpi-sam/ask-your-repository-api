@@ -9,6 +9,9 @@ from application import create_app
 
 class TestingClient(FlaskClient):
     """ Adds login to the testing client class """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.login_token = None
 
     def login(self, email_or_username, password):
         """ Login a testing user and return the token """
@@ -18,7 +21,35 @@ class TestingClient(FlaskClient):
 
         if user_response.status_code != 200:
             raise Exception('Invalid username or password')
-        return user_response.json["token"]
+        self.login_token = user_response.json["token"]
+
+    def logout(self):
+        self.login_token = None
+
+    def get(self, *args, **kwargs):
+        if self.login_token is not None:
+            return super().get(*args, headers={'X-CSRF-TOKEN': self.login_token}, **kwargs)
+        return super().get(*args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        if self.login_token is not None:
+            return super().put(*args, headers={'X-CSRF-TOKEN': self.login_token}, **kwargs)
+        return super().put(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        if self.login_token is not None:
+            return super().post(*args, headers={'X-CSRF-TOKEN': self.login_token}, **kwargs)
+        return super().post(*args, **kwargs)
+
+    def patch(self, *args, **kwargs):
+        if self.login_token is not None:
+            return super().patch(*args, headers={'X-CSRF-TOKEN': self.login_token}, **kwargs)
+        return super().patch(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.login_token is not None:
+            return super().delete(*args, headers={'X-CSRF-TOKEN': self.login_token}, **kwargs)
+        return super().delete(*args, **kwargs)
 
 
 class TestingFileStorage(FileStorage):

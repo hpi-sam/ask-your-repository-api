@@ -22,8 +22,8 @@ with description('/users') as self:
         with before.each:
             User(username='TestUser', email='test@example.com', password='test').save()
             User(username='TestUser2', email='test2@example.com', password='test').save()
-            token = self.context.client().login('TestUser', 'test')
-            self.response = self.context.client().get('/users', headers={'X-CSRF-TOKEN': token})
+            self.context.client().login('TestUser', 'test')
+            self.response = self.context.client().get('/users')
 
         with it('responds with all users'):
             expect(self.response.json).to(have_key('users'))
@@ -76,8 +76,8 @@ with description('/users') as self:
                     self.user = User(username='TestUser',
                                      email='test@example.com',
                                      password='test').save()
-                    token = self.context.client().login('TestUser', 'test')
-                    self.response = self.context.client().get(f'/users/{self.user.id_}', headers={'X-CSRF-TOKEN': token})
+                    self.context.client().login('TestUser', 'test')
+                    self.response = self.context.client().get(f'/users/{self.user.id_}')
 
                 with it('responds with 200'):
                     expect(self.response.status_code).to(equal(200))
@@ -99,8 +99,8 @@ with description('/users') as self:
                     User(username='AdminUser',
                          email='test@example.com',
                          password='test').save()
-                    token = self.context.client().login('AdminUser', 'test')
-                    self.response = self.context.client().get(f'/users/{user.id_}', headers={'X-CSRF-TOKEN': token})
+                    self.context.client().login('AdminUser', 'test')
+                    self.response = self.context.client().get(f'/users/{user.id_}')
 
                 with it('responds error 404'):
                     expect(self.response.status_code).to(equal(404))
@@ -112,11 +112,10 @@ with description('/users') as self:
                                      email='test@example.com',
                                      password='test').save()
 
-                    token = self.context.client().login('TestUser', 'test')
+                    self.context.client().login('TestUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{self.user.id_}',
-                        data={'username': 'AnotherUser'},
-                        headers={'X-CSRF-TOKEN': token})
+                        data={'username': 'AnotherUser'})
 
                 with it('responds with 200'):
                     expect(self.response.status_code).to(equal(200))
@@ -145,11 +144,10 @@ with description('/users') as self:
                     User(username='AdminUser',
                          email='test@example.com',
                          password='test').save()
-                    token = self.context.client().login('AdminUser', 'test')
+                    self.context.client().login('AdminUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
-                        data={'username': 'AntotherUser'},
-                        headers={'X-CSRF-TOKEN': token})
+                        data={'username': 'AntotherUser'})
 
                 with it('responds error 404'):
                     expect(self.response.status_code).to(equal(404))
@@ -159,11 +157,10 @@ with description('/users') as self:
                     user = User(username='TestUser',
                                 email='test@example.com',
                                 password='test').save()
-                    token = self.context.client().login('TestUser', 'test')
+                    self.context.client().login('TestUser', 'test')
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
-                        data={'username': ''},
-                        headers={'X-CSRF-TOKEN': token})
+                        data={'username': ''})
 
                 with it('responds with 422 invalid request'):
                     expect(self.response.status_code).to(equal(422))
