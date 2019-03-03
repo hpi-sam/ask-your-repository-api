@@ -4,6 +4,7 @@ Handles all logic of the artifacts api
 import datetime
 import os
 import uuid
+from pathlib import Path
 
 import werkzeug
 from flask import current_app
@@ -57,7 +58,6 @@ def _find_multiple_by(params):
     return artifacts.order_by('created_at')[_from:_to]
 
 
-
 class ArtifactsController(ApplicationController):
     """ Controller for Artifacts """
 
@@ -83,7 +83,6 @@ class ArtifactsController(ApplicationController):
                           )
 
         return {"images": respond_with(artifacts)}, 200
-
 
     @use_args(artifacts_validator.create_args())
     def create(self, params):
@@ -132,10 +131,16 @@ class ArtifactsController(ApplicationController):
         object_id = params["id"]
         try:
             artifact = Artifact.find_by(id_=object_id)
+            filename_without_ext = os.path.splitext(artifact.file_url)[0]
+            self._delete_files_starting_with(filename_without_ext)
             artifact.delete()
             return no_content()
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
+
+    def _delete_files_starting_with(self, start_string):
+        for p in Path(current_app.config['UPLOAD_FOLDER']).glob(f"{start_string}*"):
+            p.unlink()
 
     def _upload_file(self, params):
         file_saver = FileSaver(params['file'])
