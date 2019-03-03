@@ -1,11 +1,12 @@
-import sys
 import uuid
 
+import sys
 from expects import expect, have_key, have_len, contain_only, equal, be, be_empty
 from mamba import description, before, after, it
 from neomodel import db
 
 from application.models.user import User
+from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
@@ -20,9 +21,9 @@ with description('/users') as self:
 
     with description('GET'):
         with before.each:
-            User(username='TestUser', email='test@example.com', password='test').save()
-            User(username='TestUser2', email='test2@example.com', password='test').save()
-            self.context.client().login('TestUser', 'test')
+            user = UserFactory.create_user()
+            UserFactory.create_user(username='TestUser2', email='test2@example.com')
+            self.context.client().login(user)
             self.response = self.context.client().get('/users')
 
         with it('responds with all users'):
@@ -55,7 +56,7 @@ with description('/users') as self:
                 expect(User.nodes.get_or_none(id_=self.response.json['id'],
                                               username='My User',
                                               email='test@example.com')
-                      ).to_not(be(None))
+                       ).to_not(be(None))
 
         with description('invalid request'):
             with before.each:
@@ -73,10 +74,8 @@ with description('/users') as self:
         with description('GET'):
             with description('valid id'):
                 with before.each:
-                    self.user = User(username='TestUser',
-                                     email='test@example.com',
-                                     password='test').save()
-                    self.context.client().login('TestUser', 'test')
+                    self.user = UserFactory.create_user()
+                    self.context.client().login(self.user)
                     self.response = self.context.client().get(f'/users/{self.user.id_}')
 
                 with it('responds with 200'):
@@ -93,13 +92,9 @@ with description('/users') as self:
             with description('invalid id'):
                 with before.each:
                     # Creating but not saving user so that id is invalid
-                    user = User(username='TestUser',
-                                email='test@example.com',
-                                password='test')
-                    User(username='AdminUser',
-                         email='test@example.com',
-                         password='test').save()
-                    self.context.client().login('AdminUser', 'test')
+                    user = UserFactory.build_user()
+                    wannabe_admin = UserFactory.create_user(username='AdminUser')
+                    self.context.client().login(wannabe_admin)
                     self.response = self.context.client().get(f'/users/{user.id_}')
 
                 with it('responds error 404'):
@@ -108,11 +103,8 @@ with description('/users') as self:
         with description('PUT'):
             with description('valid id'):
                 with before.each:
-                    self.user = User(username='TestUser',
-                                     email='test@example.com',
-                                     password='test').save()
-
-                    self.context.client().login('TestUser', 'test')
+                    self.user = UserFactory.create_user()
+                    self.context.client().login(self.user)
                     self.response = self.context.client().put(
                         f'/users/{self.user.id_}',
                         data={'username': 'AnotherUser'})
@@ -137,14 +129,10 @@ with description('/users') as self:
 
             with description('invalid id'):
                 with before.each:
-                    user = User(username='TestUser',
-                                email='test@example.com',
-                                password='test').save()
+                    user = UserFactory.create_user()
                     user.delete()
-                    User(username='AdminUser',
-                         email='test@example.com',
-                         password='test').save()
-                    self.context.client().login('AdminUser', 'test')
+                    wannabe_admin = UserFactory.create_user(username='AdminUser')
+                    self.context.client().login(wannabe_admin)
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
                         data={'username': 'AntotherUser'})
@@ -154,10 +142,8 @@ with description('/users') as self:
 
             with description('invalid request'):
                 with before.each:
-                    user = User(username='TestUser',
-                                email='test@example.com',
-                                password='test').save()
-                    self.context.client().login('TestUser', 'test')
+                    user = UserFactory.create_user()
+                    self.context.client().login(user)
                     self.response = self.context.client().put(
                         f'/users/{user.id_}',
                         data={'username': ''})
