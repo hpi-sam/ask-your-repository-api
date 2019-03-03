@@ -12,7 +12,3 @@ class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     artifacts = RelationshipTo('.Artifact', 'UPLOADED')
     members = RelationshipTo('.User', 'HAS_MEMBER')
-
-    @property
-    def members_list(self):
-        return list(self.members)

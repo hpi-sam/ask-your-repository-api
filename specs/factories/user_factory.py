@@ -2,6 +2,7 @@ from application.models import User
 
 
 class UserFactory:
+
     @classmethod
     def create_user(cls, *args, **kwargs):
         return cls.build_user(*args, **kwargs).save()

@@ -1,14 +1,23 @@
-import sys
 import uuid
 
-from expects import expect, have_key, have_len, contain_only, equal, be, be_empty
+import sys
+from expects import expect, have_key, have_len, contain_only, equal, be, be_empty, contain
 from mamba import description, before, after, it
 from neomodel import db
 
 from application.models.team import Team
+from specs.factories.team_factory import TeamFactory
+from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
+
+
+def create_and_login_test_user(client):
+    user = UserFactory.create_user()
+    client.login(user)
+    return user
+
 
 with description('/teams') as self:
     with before.each:
@@ -20,21 +29,27 @@ with description('/teams') as self:
 
     with description('GET'):
         with before.each:
-            Team(name='Blue').save()
-            Team(name='Red').save()
+            user = create_and_login_test_user(self.context.client())
+            TeamFactory.create_team(name="Blue", members=[user])
+            TeamFactory.create_team(name="Red", members=[user])
+            TeamFactory.create_team(name="Yellow")
             self.response = self.context.client().get("/teams")
 
-        with it('responds with all teams'):
+        with it('responds with all my teams'):
             expect(self.response.json).to(have_key("teams"))
-            expect(self.response.json["teams"]).to(have_len(2))
             expect(self.response.json["teams"]).to(contain_only(
                 have_key("name", "Blue"),
                 have_key("name", "Red")
             ))
 
+        with it('doesnt respond with other teams'):
+            expect(self.response.json["teams"]).to(have_len(2))
+            expect(self.response.json["teams"]).to_not(contain(have_key("name", "Yellow")))
+
     with description('POST'):
         with description('valid request'):
             with before.each:
+                self.user = create_and_login_test_user(self.context.client())
                 self.response = self.context.client().post(
                     "/teams",
                     data={"name": "My Team"})
@@ -49,8 +64,13 @@ with description('/teams') as self:
             with it('saves the team'):
                 expect(Team.nodes.get_or_none(id_=self.response.json["id"], name="My Team")).to_not(be(None))
 
+            with it('adds logged in user as member'):
+                team = Team.nodes.get_or_none(id_=self.response.json["id"], name="My Team")
+                expect(list(team.members)).to(contain(self.user))
+
         with description('invalid request'):
             with before.each:
+                create_and_login_test_user(self.context.client())
                 self.response = self.context.client().post(
                     "/teams",
                     data={"name": ""})
@@ -65,7 +85,8 @@ with description('/teams') as self:
         with description('GET'):
             with description('valid id'):
                 with before.each:
-                    self.team = Team(name='Blue').save()
+                    self.team = TeamFactory.create_team(name='Blue')
+                    TeamFactory.add_members_to_team(self.team, 2)
                     self.response = self.context.client().get(f"/teams/{self.team.id_}")
 
                 with it('responds with 200'):
@@ -74,6 +95,10 @@ with description('/teams') as self:
                 with it('responds with the correct team'):
                     expect(self.response.json).to(have_key("name", "Blue"))
                     expect(self.response.json).to(have_key("id", uuid.UUID(self.team.id_).urn[9:]))
+
+                with it('includes members in response'):
+                    expect(self.response.json).to(have_key("members"))
+                    expect(self.response.json['members']).to(have_len(2))
 
             with description('invalid id'):
                 with before.each:
