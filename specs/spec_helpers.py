@@ -13,11 +13,11 @@ class TestingClient(FlaskClient):
         super().__init__(*args, **kwargs)
         self.login_token = None
 
-    def login(self, email_or_username, password):
+    def login(self, user):
         """ Login a testing user and return the token """
         user_response = self.post('/authentications',
-                                  data={'email_or_username': email_or_username,
-                                        'password': password})
+                                  data={'email_or_username': user.email,
+                                        'password': 'test'})
 
         if user_response.status_code != 200:
             raise Exception('Invalid username or password')
