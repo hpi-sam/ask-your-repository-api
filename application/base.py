@@ -24,7 +24,7 @@ def output_decorator(decorator_function):
 class BaseSchema(Schema):
     """ Initialize Schemas with Schema(Model) """
 
-    def __init__(self, model=None, *args, decorate=False, create_objects=True, **kwargs):
+    def __init__(self, *args, model=None, decorate=False, create_objects=True, **kwargs):
         super().__init__(*args, **kwargs)
         self.model = model
         self.decorate = decorate

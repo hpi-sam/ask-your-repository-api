@@ -14,7 +14,7 @@ class TestingClient(FlaskClient):
         self.login_token = None
 
     def login(self, user):
-        """ Login a testing user and return the token """
+        """ Login a testing user all requests of this client will be authenticated with that user"""
         user_response = self.post('/authentications',
                                   data={'email_or_username': user.email,
                                         'password': 'test'})
@@ -24,6 +24,7 @@ class TestingClient(FlaskClient):
         self.login_token = user_response.json["token"]
 
     def logout(self):
+        """ Logout a currently logged in user """
         self.login_token = None
 
     def get(self, *args, **kwargs):

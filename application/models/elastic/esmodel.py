@@ -102,7 +102,7 @@ class ESModel:
         """
 
         params = cls.parse_search_response(es_response)
-        result = cls.schema(cls, many=True, create_objects=create_objects).load(params).data
+        result = cls.schema(model=cls, many=True, create_objects=create_objects).load(params).data
         return result
 
     @classmethod
@@ -116,13 +116,13 @@ class ESModel:
         for doc in es_response["docs"]:
             response.append(cls.parse_response(doc))
 
-        return cls.schema(cls, many=True, create_objects=create_objects).load(response).data
+        return cls.schema(model=cls, many=True, create_objects=create_objects).load(response).data
 
     @classmethod
     def create_from_es(cls, es_response, create_object=True):
         """ Create a Resource from elastic_search """
         params = cls.parse_response(es_response)
-        es_object = cls.schema(cls, create_objects=create_object).load(params).data
+        es_object = cls.schema(model=cls, create_objects=create_object).load(params).data
         return es_object
 
     @classmethod
@@ -164,7 +164,7 @@ class ESModel:
         self.id = self.id or uuid.uuid4()
         self.created_at = datetime.datetime.now()
         self.updated_at = datetime.datetime.now()
-        body = self.schema(self.__class__).dump(self).data
+        body = self.schema(model=self.__class__).dump(self).data
         object_id = body.pop("id")
         object_type = body.pop("type")
 
@@ -181,7 +181,8 @@ class ESModel:
             raise NotInitialized()
 
         self.updated_at = datetime.datetime.now()
-        db_params = self.schema(self.__class__, only=('id', 'type', 'updated_at')).dump(self).data
+        db_params = self.schema(model=self.__class__,
+                                only=('id', 'type', 'updated_at')).dump(self).data
         if "updated_at" not in params:
             params["updated_at"] = db_params["updated_at"]
         current_app.es.update(
@@ -195,7 +196,7 @@ class ESModel:
 
     def delete(self):
         """ Delete the Resource """
-        db_params = self.schema(self.__class__, only=('id', 'type')).dump(self).data
+        db_params = self.schema(model=self.__class__, only=('id', 'type')).dump(self).data
         current_app.es.delete(
             refresh='wait_for',
             index=self.index,
