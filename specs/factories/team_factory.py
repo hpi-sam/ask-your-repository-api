@@ -19,5 +19,6 @@ class TeamFactory:
     @classmethod
     def add_members_to_team(cls, team, amount):
         for i in range(amount):
-            team.members.connect(UserFactory.create_user(username=f"TestUser{i}"))
-
+            team.members.connect(UserFactory.create_user(
+                username=f"TestUser{i}",
+                email=f"test{i}@example.com"))
