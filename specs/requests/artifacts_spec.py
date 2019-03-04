@@ -10,6 +10,7 @@ from mamba import shared_context, included_context, description, context, before
 from neomodel import db
 
 from specs.factories.artifact_factory import ArtifactFactory
+from specs.factories.user_factory import UserFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
 from specs.factories.uuid_fixture import get_uuid
@@ -119,6 +120,23 @@ with description('/images') as self:
 
                 with it('returns a 422 status code'):
                     expect(self.response.status_code).to(equal(422))
+
+            with description('logged in'):
+                with before.each:
+                    self.user = UserFactory.create_user()
+                    self.context.client().login(self.user)
+                    with mock_image_recognition:
+                        self.response = self.context.client().post(
+                            "/images", content_type='multipart/form-data', data={
+                                "image": (BytesIO(b'oof'), 'helloworld.jpg'),
+                                "tags": []
+                            })
+
+                with it('returns a 200 status code'):
+                    expect(self.response.status_code).to(equal(200))
+
+                with it('connects the user and returns the user_id'):
+                    expect(self.response.json).to(have_key('author', {'username': self.user.username}))
 
         with description('UPDATE MANY'):
             with context('valid request'):

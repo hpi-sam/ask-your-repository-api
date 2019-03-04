@@ -4,6 +4,7 @@ from marshmallow import fields
 
 from .tag_schema import TagSchema
 from ..base import BaseSchema, output_decorator
+from .user_schema import UserSchema
 
 
 class ArtifactSchema(BaseSchema):
@@ -14,6 +15,7 @@ class ArtifactSchema(BaseSchema):
     updated_at = fields.DateTime(missing=None)
     file_url = fields.String(missing=None)
     team_id = fields.UUID(missing=None)
+    author = fields.Nested(UserSchema, only=["username"], missing=None)
     tags = fields.List(fields.String(), missing=[], default=[])
     file_date = fields.DateTime(missing=None)
     score = fields.Number()
@@ -38,6 +40,7 @@ class NeoArtifactSchema(BaseSchema):
     updated_at = fields.DateTime(missing=None)
     file_url = fields.String(missing=None)
     team_id = fields.String(missing=None)
+    author = fields.Nested(UserSchema, only=["username"], missing=None)
     tags = fields.Nested(TagSchema, many=True, only='name')
     label_tags = fields.Nested(TagSchema, many=True, only='name')
     user_tags = fields.Nested(TagSchema, many=True, only='name')

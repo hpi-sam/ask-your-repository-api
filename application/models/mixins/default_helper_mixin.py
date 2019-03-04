@@ -1,6 +1,7 @@
 """ Helpers for models """
 import uuid
 
+
 class DefaultHelperMixin:
     """ Default helpers for neomodels """
 
