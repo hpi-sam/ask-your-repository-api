@@ -1,5 +1,4 @@
 """ Abstracting Sync of Neo and Elastic"""
-import uuid
 
 from . import Artifact, Tag, Team, User
 from .property_builder import PropertyBuilder
