@@ -42,7 +42,7 @@ class AuthenticationsController(ApplicationController):
         response = respond_with(user)
         response["token"] = get_csrf_token(access_token)
         response = jsonify(response)
-        set_access_cookies(response, access_token, 1000000)
+        set_access_cookies(response, access_token, 10000000000)
         response = make_response(response, 200)
         response.mimetype = 'application/json'
 
