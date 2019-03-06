@@ -38,7 +38,7 @@ class AuthenticationsController(ApplicationController):
 
     @staticmethod
     def _build_login_response(user):
-        access_token = create_access_token(identity=user.id_)
+        access_token = create_access_token(identity=user.id_, expires_delta=False)
         response = respond_with(user)
         response["token"] = get_csrf_token(access_token)
         response = jsonify(response)
