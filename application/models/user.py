@@ -22,4 +22,5 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     def pre_save(self):
         super()
-        self.password = bcrypt.generate_password_hash(self.password).decode('utf-8')
+        if self.does_not_exist():
+            self.password = bcrypt.generate_password_hash(self.password).decode('utf-8')
