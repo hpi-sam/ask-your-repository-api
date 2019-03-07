@@ -15,7 +15,6 @@ class ArtifactSchema(BaseSchema):
     updated_at = fields.DateTime(missing=None)
     file_url = fields.String(missing=None)
     team_id = fields.UUID(missing=None)
-    author = fields.Nested(UserSchema, only=["username"], missing=None)
     tags = fields.List(fields.String(), missing=[], default=[])
     file_date = fields.DateTime(missing=None)
     score = fields.Number()
