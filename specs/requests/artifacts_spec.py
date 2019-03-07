@@ -9,18 +9,13 @@ from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
 
-from application.models import Artifact
+from specs.factories.artifact_factory import ArtifactFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
-
-
-def create_artifact_with(id):
-    return Artifact(id_=id, file_url='asdf').save()
-
 
 with description('/images') as self:
     with before.each:
@@ -129,8 +124,8 @@ with description('/images') as self:
             with context('valid request'):
                 with context("all the resources exist"):
                     with before.each:
-                        create_artifact_with(get_uuid(0))
-                        create_artifact_with(get_uuid(1))
+                        ArtifactFactory.create_artifact(id_=get_uuid(0))
+                        ArtifactFactory.create_artifact(id_=get_uuid(1))
                         self.response = self.context.client().patch(f"/images", json={
                             "artifacts": [
                                 {
@@ -176,7 +171,7 @@ with description('/images') as self:
         with description('GET'):
             with context("the resource exists"):
                 with before.each:
-                    self.artifact = create_artifact_with(get_uuid(0))
+                    self.artifact = ArtifactFactory.create_artifact(id_=get_uuid(0))
                     self.response = self.context.client().get(f"/images/{get_uuid(0)}")
 
                 with it('returns a 200 status code'):
@@ -201,7 +196,7 @@ with description('/images') as self:
             with context('valid request'):
                 with context("the resource exists"):
                     with before.each:
-                        create_artifact_with(get_uuid(0))
+                        ArtifactFactory.create_artifact(id_=get_uuid(0))
                         self.response = self.context.client().put(f"/images/{get_uuid(0)}", json={
                             "tags": ["added", "tags"],
                             "file_url": "test_updated.png"
@@ -238,7 +233,7 @@ with description('/images') as self:
             with context("valid request"):
                 with context("the resource exists"):
                     with before.each:
-                        create_artifact_with(get_uuid(0))
+                        ArtifactFactory.create_artifact(id_=get_uuid(0))
                         self.response = self.context.client().delete(f"/images/{get_uuid(0)}")
 
                     with it('returns a 204 status code'):
