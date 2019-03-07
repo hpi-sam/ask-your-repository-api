@@ -3,7 +3,7 @@
 
 class PropertyBuilder:
     """Describe a PropertyBuilder."""
-    RELATIONSHIP_TYPES = ['tags', 'user_tags', 'label_tags', 'text_tags', 'team_id']
+    RELATIONSHIP_TYPES = ['tags', 'user_tags', 'label_tags', 'text_tags', 'team_id', 'user_id']
     NODE_TYPES = ['file_url', 'file_date']
 
     def __init__(self, **properties):

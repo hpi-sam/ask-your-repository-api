@@ -98,15 +98,14 @@ class ArtifactsController(ApplicationController):
     def create(self, params):
         """Logic for creating an artifact"""
         metadata = self._upload_file(params)
-        metadata = self._add_user(metadata)
+        self._add_user_to_params(metadata)
         artifact = self._create_artifact(params, metadata)
         ImageRecognizer.auto_add_tags(artifact)
         return respond_with(artifact), 200
 
-    def _add_user(self, params):
+    def _add_user_to_params(self, params):
         user_id = get_jwt_identity()
-        params.update({'user_id': user_id})
-        return params
+        params['user_id'] = user_id
 
     def _create_artifact(self, params, metadata):
         params.update(metadata)

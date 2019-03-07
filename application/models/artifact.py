@@ -16,9 +16,9 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 
-    user_tags = RelationshipTo('.Tag', 'TAGGED_WITH', cardinality=cardinality.ZeroOrOne)
-    label_tags = RelationshipTo('.Tag', 'LABELED_WITH', cardinality=cardinality.ZeroOrOne)
-    text_tags = RelationshipTo('.Tag', 'CONTAINS_TEXT', cardinality=cardinality.ZeroOrOne)
+    user_tags = RelationshipTo('.Tag', 'TAGGED_WITH', cardinality=cardinality.ZeroOrMore)
+    label_tags = RelationshipTo('.Tag', 'LABELED_WITH', cardinality=cardinality.ZeroOrMore)
+    text_tags = RelationshipTo('.Tag', 'CONTAINS_TEXT', cardinality=cardinality.ZeroOrMore)
     team = RelationshipFrom('.Team', 'UPLOADED', cardinality=cardinality.ZeroOrOne)
     user = RelationshipTo('.User', 'CREATED_BY', cardinality=cardinality.ZeroOrOne)
 
@@ -39,14 +39,6 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
     def author(self):
         """ Returns this artifacts author """
         return self.user.single()  # pylint:disable=no-member
-
-    @property
-    def tags_list(self):
-        """ Returns this artifacts tags as string array """
-        tags_list = []
-        for tag in self.tags:  # pylint:disable=not-an-iterable
-            tags_list.append(tag.name)
-        return tags_list
 
     def post_save(self):
         """Sync with Elasticsearch"""

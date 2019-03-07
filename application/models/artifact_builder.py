@@ -28,10 +28,10 @@ class ArtifactBuilder:
     def build_relations(self, props, override_tags):
         """Create all relations on the artifact object as described in props."""
         self._set_full_tags(props, override_tags)
-        if properties.get('team_id') is not None:
-            self._connect_relation(self.neo.team, Team.find(properties['team_id']))
-        if properties.get('user_id') is not None:
-            self._connect_relation(self.neo.user, User.find(properties['user_id']))
+        if props.get('team_id') is not None:
+            self._connect_relation(self.neo.team, Team.find(props['team_id']))
+        if props.get('user_id') is not None:
+            self._connect_relation(self.neo.user, User.find(props['user_id']))
 
     def save(self):
         """Save both models"""
