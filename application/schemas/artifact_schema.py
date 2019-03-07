@@ -43,6 +43,7 @@ class NeoArtifactSchema(BaseSchema):
     user_tags = fields.Nested(TagSchema, many=True, only='name')
     text_tags = fields.Nested(TagSchema, many=True, only='name')
     file_date = fields.DateTime(missing=None)
+    score = fields.Number()
 
     @output_decorator
     def transform_fields(self, data):

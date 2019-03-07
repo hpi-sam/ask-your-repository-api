@@ -46,6 +46,7 @@ def _search_artifacts(params):
         artifacts = []
         for elastic_artifact in elastic_artifacts:
             neo_artifact = Artifact.find_by(id_=elastic_artifact.id)
+            setattr(neo_artifact, 'score', elastic_artifact.score)
             artifacts.append(neo_artifact)
     else:
         artifacts = _find_multiple_by(params)
