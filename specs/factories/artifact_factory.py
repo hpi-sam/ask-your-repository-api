@@ -10,6 +10,10 @@ class ArtifactFactory:
             builder = ArtifactBuilder.for_artifact(artifact)
             builder.update_with(user_tags=user_tags)
 
+        return artifact
+
     @classmethod
-    def build_artifact(cls, id_='abc', file_url='abc'):
-        return Artifact(id_=id_, file_url=file_url)
+    def build_artifact(cls, **kwargs):
+        if 'file_url' not in kwargs:
+            kwargs["file_url"] = 'abc'
+        return Artifact(**kwargs)

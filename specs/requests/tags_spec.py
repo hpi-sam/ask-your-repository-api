@@ -2,14 +2,14 @@
 
 import sys
 
-from doublex import Mock, Stub
-from expects import expect, equal, have_key, contain_only, be_below_or_equal
+from doublex import Stub
+from expects import expect, equal, have_key, contain_only, contain, be_below_or_equal
 from flask import current_app
 from mamba import description, context, before, after, it
 from neomodel import db
 
 from specs.factories.artifact_factory import ArtifactFactory
-from specs.factories.elasticsearch import es_search_all_response
+from specs.factories.team_factory import TeamFactory
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 
@@ -69,57 +69,69 @@ with description('/images') as self:
                 # sending a single tag is fine it will be parsed to an array with only one element
                 expect(self.response.json['errors']).to(have_key('object_id'))
 
-    with description("/tags/suggested"):
-        with description("GET"):
-            with context("there are tags with a high enough interestingness"):
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.search(index="artifact",
-                                            body={"from": 0,
-                                                  "size": 1}).returns({
-                            "hits": {
-                                "total": 12}})
-                        elastic_mock.search(index="artifact",
-                                            body={"from": 0,
-                                                  "size": 12}).returns(es_search_all_response())
+with description("images /tags/suggested GET"):
+    with before.all:
+        self.context = Context()
+        current_app.es = Stub()
+        self.team = TeamFactory.create_team()
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['blue', 'red']))
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['blue', 'red']))
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['blue', 'green']))
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['green', 'red']))
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['red', 'black']))
+        self.team.artifacts.connect(ArtifactFactory.create_artifact(user_tags=['yellow', 'purple']))
+        self.other_artifact = ArtifactFactory.create_artifact(user_tags=['pink'])
 
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().get(
-                        "/tags/suggested?tags=class diagram&tags=uml")
+    with after.all:
+        # If check to prevent tests from failing occasionally
+        # Needs to be inspected!
+        db.cypher_query("MATCH (a) DETACH DELETE a")
+        if hasattr(self, "context"):
+            self.context.delete()
 
-                with it("returns a 200 status code"):
-                    expect(self.response.status_code).to(equal(200))
+    with context("without other tags in params"):
+        with before.each:
+            self.response = self.context.client().get(
+                f"/tags/suggested?team_id={self.team.id_}")
 
-                with it("returns <limit> tags at most"):
-                    expect(len(self.response.json["tags"])).to(be_below_or_equal(3))
+        with it("returns a 200 status code"):
+            expect(self.response.status_code).to(equal(200))
 
-                with it("returns the correct tags"):
-                    expect(self.response.json["tags"]).to(contain_only("use case diagram",
-                                                                       "tomato",
-                                                                       "apple"))
+        with it("returns 3 tags at most by default"):
+            expect(len(self.response.json["tags"])).to(be_below_or_equal(3))
 
-            with context("no other tags with a high enough interestingness"):
-                with before.each:
-                    with Mock() as elastic_mock:
-                        elastic_mock.search(index="artifact",
-                                            body={"from": 0,
-                                                  "size": 1}).returns({
-                            "hits": {
-                                "total": 12}})
-                        elastic_mock.search(index="artifact",
-                                            body={"from": 0,
-                                                  "size": 12}).returns(es_search_all_response())
+        with it("returns the blue tag first"):
+            expect(self.response.json["tags"][0]).to(equal("blue"))
 
-                    current_app.es = elastic_mock
-                    self.response = self.context.client().get("/tags/suggested")
+        with it('returns blue green and red'):
+            expect(self.response.json["tags"]).to(contain_only("blue", "green", "red"))
 
-                with it("returns a 200 status code"):
-                    expect(self.response.status_code).to(equal(200))
+    with context("with limit 10"):
+        with before.each:
+            self.response = self.context.client().get(
+                f"/tags/suggested?team_id={self.team.id_}&limit=10")
 
-                with it("returns <limit> tags at most"):
-                    expect(len(self.response.json["tags"])).to(be_below_or_equal(3))
+        with it('does not contain tags outside the team'):
+            expect(self.response.json["tags"]).not_to(contain('pink'))
 
-                with it("returns the most frequent tags"):
-                    expect(self.response.json["tags"]).to(contain_only("tomato",
-                                                                       "uml",
-                                                                       "class diagram"))
+    with context("with tag blue in params"):
+        with before.each:
+            self.response = self.context.client().get(
+                f"/tags/suggested?team_id={self.team.id_}&tags=blue&limit=1")
+
+        with it("returns a 200 status code"):
+            expect(self.response.status_code).to(equal(200))
+
+        with it("returns <limit> tags at most"):
+            expect(len(self.response.json["tags"])).to(be_below_or_equal(1))
+
+        with it("returns red tag first"):
+            expect(self.response.json["tags"]).to(contain_only("red"))
+
+    with context("without team in params"):
+        with before.each:
+            self.response = self.context.client().get(
+                f"/tags/suggested")
+
+        with it("returns a 422 status code"):
+            expect(self.response.status_code).to(equal(422))
