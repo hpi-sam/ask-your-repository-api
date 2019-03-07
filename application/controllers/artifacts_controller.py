@@ -41,7 +41,12 @@ def _search_artifacts(params):
     search_args = params.get('search')
     if search_args is not None:
         params['search'] = SynonymGenerator(search_args).get_synonyms()
-        artifacts = ElasticArtifact.search(params)
+        elastic_artifacts = ElasticArtifact.search(params)
+
+        artifacts = []
+        for elastic_artifact in elastic_artifacts:
+            neo_artifact = Artifact.find_by(id_=elastic_artifact.id)
+            artifacts.append(neo_artifact)
     else:
         artifacts = _find_multiple_by(params)
     return artifacts
