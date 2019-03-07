@@ -9,7 +9,9 @@ from mamba import description, before, after, it
 from neomodel import db
 
 from specs.factories.elasticsearch import es_search_response_synonyms
+from specs.factories.artifact_factory import ArtifactFactory
 from specs.spec_helpers import Context
+from specs.factories.uuid_fixture import get_uuid
 
 with description('/images') as self:
     with before.each:
@@ -27,8 +29,10 @@ with description('/images') as self:
             return has_entries(
                 query=has_entries(bool=has_entries(should=has_entries(match=has_entries(tags=contains_string(tag))))))
 
-
         with before.each:
+            ArtifactFactory.create_artifact(id_=get_uuid(0), user_tags=["group", "team"])
+            ArtifactFactory.create_artifact(id_=get_uuid(1), user_tags=["group"])
+
             with Mock() as elastic_mock:
                 elastic_mock.search(body=self.contains_tag("group"), doc_type='image', index='artifact',
                                     search_type=anything()).returns(es_search_response_synonyms())
@@ -39,8 +43,8 @@ with description('/images') as self:
         with it('returns a 200 status code'):
             expect(self.response.status_code).to(equal(200))
 
-        with it('respond with correct tags'):
-            expect(self.response.json["images"][0]["tags"]).to(equal(["team", "group"]))
+        with it('responds with image that matches synonym of given search term'):
+            expect(self.response.json["images"][1]["tags"]).to(equal(["group"]))
 
         with it('calls es search with synonyms'):
             expect(current_app.es).to(have_been_satisfied)

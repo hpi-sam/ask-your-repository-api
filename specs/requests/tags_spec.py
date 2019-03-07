@@ -8,17 +8,12 @@ from flask import current_app
 from mamba import description, context, before, after, it
 from neomodel import db
 
-from application.models import Artifact
+from specs.factories.artifact_factory import ArtifactFactory
 from specs.factories.elasticsearch import es_search_all_response
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
-
-
-def create_artifact_with(id):
-    Artifact(id_=id, file_url='asdf').save()
-
 
 with description('/images') as self:
     with before.each:
@@ -37,7 +32,7 @@ with description('/images') as self:
             with description('POST'):
                 with context("the resource exists"):
                     with before.each:
-                        create_artifact_with(get_uuid(0))
+                        ArtifactFactory.create_artifact(id_=get_uuid(0))
 
                         self.response = self.context.client().post(f"/images/{get_uuid(0)}/tags",
                                                                    json={"tags": [
