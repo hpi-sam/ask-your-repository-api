@@ -8,6 +8,7 @@ from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
+from application.models import Artifact
 
 from specs.factories.artifact_factory import ArtifactFactory
 from specs.factories.user_factory import UserFactory
@@ -137,6 +138,10 @@ with description('/images') as self:
 
                 with it('connects the user and returns the user_id'):
                     expect(self.response.json).to(have_key('author', {'username': self.user.username}))
+
+                with it('persists the user in the database'):
+                    uid = self.response.json['id']
+                    expect(Artifact.find(uid).author.username).to(equal(self.user.username))
 
         with description('UPDATE MANY'):
             with context('valid request'):
