@@ -5,7 +5,7 @@ Uses socket.io to communicate with the frontend
 
 from webargs.flaskparser import use_args
 
-from application.models.elastic.elastic_artifact import ElasticArtifact
+from application.models import Artifact
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
@@ -21,8 +21,10 @@ class PresentationsController(ApplicationController):
     @use_args(presentations_validator.create_args())
     def create(self, params):
         """ Creates a new presentation with remotely requested images """
+        artifacts = []
+        for artifact_id in params['file_ids']:
+            artifacts.append(Artifact.find_by(id_=artifact_id))
 
-        artifacts = ElasticArtifact.find_all(params["file_ids"])
         socketio.emit('START_PRESENTATION',
                       room=str(params["team_id"]),
                       data=respond_with(artifacts)

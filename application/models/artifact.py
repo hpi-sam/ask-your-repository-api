@@ -4,7 +4,7 @@ from neomodel import (StructuredNode, StringProperty, DateTimeProperty,
                       RelationshipTo, RelationshipFrom, cardinality)
 
 from application.models.mixins import DefaultPropertyMixin, DefaultHelperMixin
-from application.schemas.artifact_schema import NeoArtifactSchema
+from application.schemas.artifact_schema import ArtifactSchema
 from .elastic import ElasticSyncer
 
 
@@ -12,7 +12,7 @@ from .elastic import ElasticSyncer
 class Artifact(StructuredNode, DefaultPropertyMixin,
                DefaultHelperMixin):
     """ The class that manages artifacts """
-    schema = NeoArtifactSchema
+    schema = ArtifactSchema
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 

@@ -1,26 +1,15 @@
-""" Elastic search artifact model wraps api into crud methods"""
-from application.models.elastic.esmodel import ESModel
-from application.schemas.artifact_schema import ArtifactSchema
+""" Find Artifacts in Elasticsearch """
+from flask import current_app
 
 
-class ElasticArtifact(ESModel):
-    """ Handles saving and searching """
+class ElasticSearcher:  # pylint:disable=too-few-public-methods
+    """ use search() to find things """
 
-    index = "artifact"
-    schema = ArtifactSchema
+    def __init__(self, index, type):
+        self.index = index
+        self.type = type
 
-    def __init__(self, params):
-        """ Initializes the artifact """
-        super().__init__(params)
-        self.file_url = params.get("file_url", None)
-        self.tags = params.get("tags", [])
-        self.file_date = params.get("file_date", None)
-        self.team_id = params.get("team_id", None)
-        if "score" in params:
-            self.score = params["score"]
-
-    @classmethod
-    def search(cls, params):
+    def search(self, params):
         """ Finds multiple artifacts by params.  """
         date_range = {}
         if "start_date" in params:
@@ -28,15 +17,21 @@ class ElasticArtifact(ESModel):
         if "end_date" in params:
             date_range["lte"] = params["end_date"]
 
-        body = cls.search_body_helper(params["search"], date_range,
-                                      params["limit"], params["offset"], params['team_id'])
+        body = self._search_body_helper(params["search"], date_range,
+                                        params["limit"], params["offset"], params['team_id'])
 
-        return super(ElasticArtifact, cls).search(
-            {"types": params["types"], "search_body": body})
+        result = current_app.es.search(
+            # search_type is counteracting the sharding effect that messes with idf:
+            # https://www.compose.com/articles/how-scoring-works-in-elasticsearch/
+            search_type="dfs_query_then_fetch",
+            index=self.index,
+            doc_type=self.type,
+            body=body)['hits']
 
-    @classmethod
-    def search_body_helper(
-            cls,
+        return result['hits']
+
+    def _search_body_helper(
+            self,
             search,
             daterange,
             limit=10,

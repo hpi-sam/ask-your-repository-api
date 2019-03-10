@@ -1,9 +1,10 @@
 """ Logic for synchronizing Neo with Elasticsearch"""
-from elasticsearch.exceptions import NotFoundError
-from flask import current_app
+
+from elasticsearch import exceptions  # pylint:disable=no-name-in-module
+from flask import current_app  # pylint:disable=wrong-import-order
 
 import application.models.artifact
-from application.schemas.artifact_schema import NeoArtifactSchema
+from application.schemas.artifact_schema import ArtifactSchema
 
 
 class ElasticSyncer:
@@ -55,7 +56,7 @@ class ElasticSyncer:
     def _update_or_create(self, artifact):
         try:
             self._update_artifact(artifact)
-        except NotFoundError:
+        except exceptions.NotFoundError:
             self._create_elastic_artifact(artifact)
 
     def delete(self):
@@ -70,42 +71,45 @@ class ElasticSyncer:
     def _safe_delete(self, artifact):
         try:
             self._delete_artifact(artifact)
-        except NotFoundError:
+        except exceptions.NotFoundError:
             return
 
     def _update_artifact(self, artifact):
         params = self._artifact_dump_refactored(artifact)
-        self._elastic().update_artifact(params)
+        self._elastic().update(params)
 
     def _delete_artifact(self, artifact):
-        self._elastic().delete_artifact(artifact.id_)
+        self._elastic().delete(artifact.id_)
 
     def _create_elastic_artifact(self, artifact):
         params = self._artifact_dump_refactored(artifact)
-        self._elastic().create_artifact(params)
+        self._elastic().create(params)
 
     def _artifact_dump_refactored(self, artifact):
-        return NeoArtifactSchema(model=application.models.artifact.Artifact,
-                                 decorate=False).dump(artifact).data
+        return ArtifactSchema(model=application.models.artifact.Artifact,
+                              decorate=False).dump(artifact).data
 
     def _elastic(self):
         return ElasticAccess('artifact', 'image')
 
 
 class ElasticAccess:
+    """ Access to basic crud on elasticsearch """
 
     def __init__(self, index, type):
         self.index = index
         self.type = type
 
-    def create_artifact(self, data):
+    def create(self, data):
+        """ create a document """
         current_app.es.index(
             index=self.index,
             doc_type=self.type,
             id=data.pop('id_'),
             body=data)
 
-    def update_artifact(self, data):
+    def update(self, data):
+        """ update a document """
         current_app.es.update(
             index=self.index,
             doc_type=self.type,
@@ -114,7 +118,8 @@ class ElasticAccess:
                 "doc": data
             })
 
-    def delete_artifact(self, id):
+    def delete(self, id):  # pylint:disable= invalid-name
+        """ delete a document """
         current_app.es.delete(
             refresh='wait_for',
             index=self.index,
