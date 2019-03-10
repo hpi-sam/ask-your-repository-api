@@ -13,7 +13,7 @@ from webargs.flaskparser import use_args
 from flask_jwt_extended import jwt_optional, get_jwt_identity
 
 from application.models import Artifact, Team
-from application.models.elastic.elastic_artifact import ElasticArtifact
+from application.models.elastic.elastic_searcher import ElasticSearcher
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
@@ -42,13 +42,17 @@ def _search_artifacts(params):
     search_args = params.get('search')
     if search_args is not None:
         params['search'] = SynonymGenerator(search_args).get_synonyms()
-        elastic_artifacts = ElasticArtifact.search(params)
+        elastic_artifacts = ElasticSearcher('artifact', 'image').search(params)
 
         artifacts = []
         for elastic_artifact in elastic_artifacts:
-            neo_artifact = Artifact.find_by(id_=elastic_artifact.id)
-            setattr(neo_artifact, 'score', elastic_artifact.score)
-            artifacts.append(neo_artifact)
+            try:
+                neo_artifact = Artifact.find_by(id_=elastic_artifact['_id'])
+                setattr(neo_artifact, 'score', elastic_artifact['_score'])
+                artifacts.append(neo_artifact)
+            except Artifact.DoesNotExist:
+                pass
+                # es and neo out of sync have to resync
     else:
         artifacts = _find_multiple_by(params)
     return artifacts

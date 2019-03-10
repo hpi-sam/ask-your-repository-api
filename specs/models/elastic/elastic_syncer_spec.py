@@ -9,7 +9,6 @@ from neomodel import db
 
 from application.models import Artifact
 from application.models.elastic import ElasticSyncer
-from specs.factories.elasticsearch import es_get_response
 from specs.spec_helpers import Context
 
 OFF = False
