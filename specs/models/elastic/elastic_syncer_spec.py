@@ -33,8 +33,8 @@ with describe('ElasticSyncer') as self:
                     ElasticSyncer.set_sync_status(ON)
                     self.syncer = ElasticSyncer.for_artifact(self.artifact)
                     with Mock() as elastic_mock:
-                        elastic_mock.get(doc_type=anything(), id=self.artifact.id_,
-                                         index='artifact').raises(NotFoundError)
+                        elastic_mock.update(doc_type=anything(), id=self.artifact.id_,
+                                            index='artifact', body=anything()).raises(NotFoundError)
                         elastic_mock.index(body=anything(), doc_type=anything(),
                                            id=anything(), index='artifact')
                     current_app.es = elastic_mock
@@ -49,8 +49,6 @@ with describe('ElasticSyncer') as self:
                     ElasticSyncer.set_sync_status(ON)
                     self.syncer = ElasticSyncer.for_artifact(self.artifact)
                     with Mock() as elastic_mock:
-                        elastic_mock.get(doc_type=anything(), id=self.artifact.id_,
-                                         index='artifact').returns(es_get_response(0))
                         elastic_mock.update(body=anything(), doc_type=anything(),
                                             id=anything(), index='artifact')
                     current_app.es = elastic_mock
@@ -67,10 +65,8 @@ with describe('ElasticSyncer') as self:
                     ElasticSyncer.set_sync_status(ON)
                     self.syncer = ElasticSyncer.for_artifact(self.artifact)
                     with Mock() as elastic_mock:
-                        elastic_mock.get(doc_type=anything(), id=self.artifact.id_,
-                                         index='artifact').returns(es_get_response(0))
                         elastic_mock.delete(doc_type=anything(), id=anything(),
-                                            index='artifact', refresh='wait_for')
+                                            index='artifact', refresh='wait_for').raises(NotFoundError)
                     current_app.es = elastic_mock
                     self.syncer.delete()
 
@@ -83,8 +79,8 @@ with describe('ElasticSyncer') as self:
                     ElasticSyncer.set_sync_status(ON)
                     self.syncer = ElasticSyncer.for_artifact(self.artifact)
                     with Mock() as elastic_mock:
-                        elastic_mock.get(doc_type=anything(), id=self.artifact.id_,
-                                         index='artifact').raises(NotFoundError)
+                        elastic_mock.delete(doc_type=anything(), id=anything(),
+                                            index='artifact', refresh='wait_for')
                     current_app.es = elastic_mock
                     self.syncer.delete()
 

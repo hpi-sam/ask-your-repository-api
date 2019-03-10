@@ -1,10 +1,9 @@
 """ Logic for synchronizing Neo with Elasticsearch"""
+from elasticsearch.exceptions import NotFoundError
 from flask import current_app
 
 import application.models.artifact
-from application.errors import NotFound
-from application.models.elastic.elastic_artifact import ElasticArtifact
-from application.schemas.artifact_schema import NeoArtifactSchema, ArtifactSchema
+from application.schemas.artifact_schema import NeoArtifactSchema
 
 
 class ElasticSyncer:
@@ -56,7 +55,7 @@ class ElasticSyncer:
     def _update_or_create(self, artifact):
         try:
             self._update_artifact(artifact)
-        except NotFound:
+        except NotFoundError:
             self._create_elastic_artifact(artifact)
 
     def delete(self):
@@ -71,29 +70,53 @@ class ElasticSyncer:
     def _safe_delete(self, artifact):
         try:
             self._delete_artifact(artifact)
-        except NotFound:
+        except NotFoundError:
             return
 
     def _update_artifact(self, artifact):
-        elastic_artifact = ElasticArtifact.find(artifact.id_)
-        elastic_artifact.update(self._artifact_dump(artifact))
+        params = self._artifact_dump_refactored(artifact)
+        self._elastic().update_artifact(params)
 
     def _delete_artifact(self, artifact):
-        elastic_artifact = ElasticArtifact.find(artifact.id_)
-        elastic_artifact.delete()
+        self._elastic().delete_artifact(artifact.id_)
 
     def _create_elastic_artifact(self, artifact):
-        params = self._artifact_dump(artifact)
-        ElasticArtifact(params).save()
+        params = self._artifact_dump_refactored(artifact)
+        self._elastic().create_artifact(params)
 
-    def _artifact_dump(self, artifact):
-        data = NeoArtifactSchema(model=application.models.artifact.Artifact,
+    def _artifact_dump_refactored(self, artifact):
+        return NeoArtifactSchema(model=application.models.artifact.Artifact,
                                  decorate=False).dump(artifact).data
-        data['type'] = 'image'
-        data["id"] = data.pop("id_")
-        data["tags"] = data.pop("tags")
-        data["user_tags"] = data.pop("user_tags")
-        data["label_tags"] = data.pop("label_tags")
-        data["text_tags"] = data.pop("text_tags")
-        load_result = ArtifactSchema(model=ElasticArtifact, create_objects=False).load(data)
-        return load_result.data
+
+    def _elastic(self):
+        return ElasticAccess('artifact', 'image')
+
+
+class ElasticAccess:
+
+    def __init__(self, index, type):
+        self.index = index
+        self.type = type
+
+    def create_artifact(self, data):
+        current_app.es.index(
+            index=self.index,
+            doc_type=self.type,
+            id=data.pop('id_'),
+            body=data)
+
+    def update_artifact(self, data):
+        current_app.es.update(
+            index=self.index,
+            doc_type=self.type,
+            id=data.pop('id_'),
+            body={
+                "doc": data
+            })
+
+    def delete_artifact(self, id):
+        current_app.es.delete(
+            refresh='wait_for',
+            index=self.index,
+            doc_type=self.type,
+            id=str(id))
