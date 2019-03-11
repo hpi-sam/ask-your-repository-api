@@ -13,7 +13,7 @@ from flask_socketio import emit
 from webargs.flaskparser import use_args
 
 from application.models import Artifact, Team
-from application.models.elastic import ElasticSearcher
+from application.models.elastic import ElasticSearcher, ArtifactSearchBuilder
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
@@ -56,6 +56,8 @@ def _search_artifacts(params):
     else:
         artifacts = _find_multiple_by(params)
     return artifacts
+
+
 
 
 def _find_multiple_by(params):
