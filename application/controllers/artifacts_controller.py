@@ -8,12 +8,12 @@ from pathlib import Path
 
 import werkzeug
 from flask import current_app
+from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_socketio import emit
 from webargs.flaskparser import use_args
-from flask_jwt_extended import jwt_optional, get_jwt_identity
 
 from application.models import Artifact, Team
-from application.models.elastic.elastic_searcher import ElasticSearcher
+from application.models.elastic import ElasticSearcher
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
@@ -42,7 +42,7 @@ def _search_artifacts(params):
     search_args = params.get('search')
     if search_args is not None:
         params['search'] = SynonymGenerator(search_args).get_synonyms()
-        elastic_artifacts = ElasticSearcher('artifact', 'image').search(params)
+        elastic_artifacts = ElasticSearcher.build_artifact_searcher(params).search()
 
         artifacts = []
         for elastic_artifact in elastic_artifacts:
@@ -67,7 +67,6 @@ def _find_multiple_by(params):
     _from = params.get('offset', 0)
     _to = params.get('limit', 10) + _from
     return artifacts.order_by('created_at')[_from:_to]
-
 
 
 class ArtifactsController(ApplicationController):
@@ -95,7 +94,6 @@ class ArtifactsController(ApplicationController):
                           )
 
         return {"images": respond_with(artifacts)}, 200
-
 
     @jwt_optional
     @use_args(artifacts_validator.create_args())
