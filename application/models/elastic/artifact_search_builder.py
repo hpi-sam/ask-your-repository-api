@@ -1,11 +1,6 @@
-""" Encapsulates how to search for artifacts """
+class ArtifactSearchBuilder:
 
-
-class ArtifactSearchBuilder:  # pylint:disable=too-few-public-methods
-    """ Builds elasticsearch search request bodies """
-
-    def __init__(self, team_id=None, offset=0,  # pylint:disable=too-many-arguments
-                 limit=10, search="", date_range=None):
+    def __init__(self, team_id=None, offset=0, limit=10, search="", date_range=None):
         self.team_id = team_id
         self.offset = offset
         self.limit = limit
@@ -14,7 +9,6 @@ class ArtifactSearchBuilder:  # pylint:disable=too-few-public-methods
         self.body = {}
 
     def build(self):
-        """ build the search body in attribute .body """
         self._add_limit_offset()
         self.body["sort"] = self._sort()
         self.body["query"] = self._query()
@@ -50,4 +44,4 @@ class ArtifactSearchBuilder:  # pylint:disable=too-few-public-methods
         return {"term": {"team_id.keyword": str(self.team_id)}}
 
     def _date_filter(self):
-        return {"range": {"created_at": self.date_range}}
+        return {"range": {"created_at": self.date_range}},
