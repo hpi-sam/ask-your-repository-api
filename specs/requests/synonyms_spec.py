@@ -4,7 +4,7 @@ from doublex import Mock
 from doublex_expects import have_been_satisfied
 from expects import expect, equal
 from flask import current_app
-from hamcrest import anything, has_entries, contains_string
+from hamcrest import anything, has_entries, contains_string, has_item
 from mamba import description, before, after, it
 from neomodel import db
 
@@ -27,7 +27,8 @@ with description('/images') as self:
     with description('Synonyms'):
         def contains_tag(self, tag):
             return has_entries(
-                query=has_entries(bool=has_entries(should=has_entries(match=has_entries(tags=contains_string(tag))))))
+                query=has_entries(bool=has_entries(should=has_item(has_entries(
+                    multi_match=has_entries(query=contains_string(tag)))))))
 
         with before.each:
             ArtifactFactory.create_artifact(id_=get_uuid(0), user_tags=["group", "team"])

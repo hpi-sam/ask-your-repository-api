@@ -13,7 +13,7 @@ from flask_socketio import emit
 from webargs.flaskparser import use_args
 
 from application.models import Artifact, Team
-from application.models.elastic import ElasticSearcher, ArtifactSearchBuilder
+from application.models.elastic import ElasticSearcher
 from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
@@ -41,7 +41,7 @@ def synchronized_search(params):
 def _search_artifacts(params):
     search_args = params.get('search')
     if search_args is not None:
-        params['search'] = SynonymGenerator(search_args).get_synonyms()
+        params['synonyms'] = SynonymGenerator(search_args).get_synonyms()
         elastic_artifacts = ElasticSearcher.build_artifact_searcher(params).search()
 
         artifacts = []
@@ -56,8 +56,6 @@ def _search_artifacts(params):
     else:
         artifacts = _find_multiple_by(params)
     return artifacts
-
-
 
 
 def _find_multiple_by(params):
