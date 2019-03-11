@@ -1,12 +1,15 @@
 """ Find Artifacts in Elasticsearch """
 from flask import current_app
-from .artifact_search_builder import  ArtifactSearchBuilder
+
+from .artifact_search_builder import ArtifactSearchBuilder
+
 
 class ElasticSearcher:  # pylint:disable=too-few-public-methods
     """ use search() to find things """
 
     @classmethod
     def build_artifact_searcher(cls, params):
+        """ Build a searcher for the artifact index """
         date_range = {}
         if "start_date" in params:
             date_range["gte"] = params["start_date"]
@@ -17,7 +20,8 @@ class ElasticSearcher:  # pylint:disable=too-few-public-methods
                                                date_range=date_range,
                                                limit=params["limit"],
                                                offset=params["offset"],
-                                               team_id=params["team_id"])
+                                               team_id=params["team_id"],
+                                               synonyms=params['synonyms'])
         return cls('artifact', 'image', search_builder)
 
     def __init__(self, index, type, search_builder):
