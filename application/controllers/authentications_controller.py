@@ -14,7 +14,8 @@ from ..extensions import bcrypt
 
 
 def validate_user(user, password):
-    return user and bcrypt.check_password_hash(user.password, password)
+    print(user.password)
+    return user and bcrypt.check_password_hash(user.password, password.encode('utf-8'))
 
 class AuthenticationsController(ApplicationController):
     """ Controller for authentication """
