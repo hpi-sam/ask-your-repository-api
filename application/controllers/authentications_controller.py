@@ -12,6 +12,10 @@ from ..responders import respond_with
 from ..validators import authentications_validator
 from ..extensions import bcrypt
 
+
+def validate_user(user, password):
+    return user and bcrypt.check_password_hash(user.password, password)
+
 class AuthenticationsController(ApplicationController):
     """ Controller for authentication """
 
@@ -19,7 +23,7 @@ class AuthenticationsController(ApplicationController):
     def create(self, params):
         """ Returns a cookie and a csrf token for double submit CSRF protection. """
         user = User.find_by_email_or_username(params["email_or_username"])
-        if not self._validate_user(user, params["password"]):
+        if not validate_user(user, params["password"]):
             return {"error": "Bad username or password"}, 401
         return self._build_login_response(user)
 
@@ -31,10 +35,6 @@ class AuthenticationsController(ApplicationController):
         response = make_response(resp, 200)
         response.mimetype = 'application/json'
         return response
-
-    @staticmethod
-    def _validate_user(user, password):
-        return user and bcrypt.check_password_hash(user.password, password)
 
     @staticmethod
     def _build_login_response(user):
