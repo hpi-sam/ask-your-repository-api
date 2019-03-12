@@ -7,7 +7,6 @@ authors = ["Jascha Beste <jascha.beste@student.hpi.de>"]
 [tool.poetry.dependencies]
 python = ">=3.7"
 Flask = "==1.0.2"
-flask-restful = "*"
 elasticsearch = "*"
 python-dotenv = "*"
 gunicorn = "*"
@@ -22,6 +21,7 @@ shovel = "*"
 neomodel = "==3.2.9" # version 3.3.0 is broken with flask!
 flask-jwt-extended = "^3.17"
 flask-bcrypt = "^0.7.1"
+flask-apispec = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"

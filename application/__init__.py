@@ -9,9 +9,8 @@ All logic and features should go in this module
 import os
 
 from elasticsearch import Elasticsearch
-from flask import Flask, Blueprint
+from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from neomodel import config
 
@@ -26,21 +25,34 @@ def create_app(config_filename=None):
     """
     app = Flask(__name__, instance_relative_config=True)
     CORS(app, supports_credentials=True)
-    api_bp = Blueprint('api', __name__)
-    api = Api(api_bp)
-    create_routes(api)
+    create_routes(app)
     app.config.from_pyfile(config_filename)
     app.es = (Elasticsearch(app.config['ELASTICSEARCH_URL'])
               if app.config['ELASTICSEARCH_URL'] else None)
     config.DATABASE_URL = app.config['NEO4J_URL']
-    app.register_blueprint(api_bp)
     JWTManager(app)
     register_extensions(app)
+    register_error_handlers(app)
 
     if not os.path.isdir(app.config['UPLOAD_FOLDER']):
         os.mkdir(app.config['UPLOAD_FOLDER'])
 
     return app
+
+
+def register_error_handlers(app):
+    """ Return validation errors as json as suggested here:
+        https://webargs.readthedocs.io/en/latest/framework_support.html """
+
+    @app.errorhandler(422)
+    @app.errorhandler(400)
+    def handle_error(err):
+        headers = err.data.get("headers", None)
+        messages = err.data.get("messages", ["Invalid request."])
+        if headers:
+            return jsonify({"errors": messages}), err.code, headers
+        return jsonify({"errors": messages}), err.code
+    return handle_error
 
 
 def register_extensions(app):

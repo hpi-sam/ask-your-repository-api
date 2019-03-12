@@ -1,20 +1,21 @@
 """
 Handles all logic of the user api
 """
-from neomodel import exceptions
+from flask_apispec import MethodResource
 from flask_jwt_extended import jwt_required
+from neomodel import exceptions
 from webargs.flaskparser import use_args
 
-from .application_controller import ApplicationController
 from ..models.user import User
 from ..responders import respond_with, no_content
 from ..validators import users_validator
 
-class UsersController(ApplicationController):
-    """ Controller for users """
 
+class UsersByIDController(MethodResource):
+    """Access Users by id"""
     @jwt_required
-    def show(self, object_id):
+    def get(self, object_id):
+        """ get a single user """
         try:
             user = User.find_by(id_=object_id)
             return respond_with(user), 200
@@ -22,24 +23,20 @@ class UsersController(ApplicationController):
             return {"error": "not found"}, 404
 
     @jwt_required
-    @use_args(users_validator.index_args())
-    def index(self, params):  # pylint: disable=W0613
-        """Logic for querying several users"""
-        users = User.all()
-        return {"users": respond_with(users)}, 200
-
-    @use_args(users_validator.create_args())
-    def create(self, params):
-        """Logic for creating a user"""
+    @use_args(users_validator.update_args())
+    def patch(self, params, object_id):
+        """Logic for updating a user"""
+        object_id = params.pop("id")
         try:
-            user = User(**params).save()
-        except exceptions.UniqueProperty:
-            return {"error": "Username or Email already taken"}, 409
-        return respond_with(user), 200
+            user = User.find_by(id_=object_id)
+            user.update(**params)
+            return respond_with(user), 200
+        except User.DoesNotExist:  # pylint:disable=no-member
+            return {"error": "not found"}, 404
 
     @jwt_required
     @use_args(users_validator.update_args())
-    def update(self, params, object_id):
+    def put(self, params, object_id):
         """Logic for updating a user"""
         object_id = params.pop("id")
         try:
@@ -67,3 +64,23 @@ class UsersController(ApplicationController):
             return no_content()
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
+
+
+class UsersController(MethodResource):
+    """ Controller for users """
+
+    @jwt_required
+    @use_args(users_validator.index_args())
+    def get(self, params):  # pylint: disable=W0613
+        """Logic for querying several users"""
+        users = User.all()
+        return {"users": respond_with(users)}, 200
+
+    @use_args(users_validator.create_args())
+    def post(self, params):
+        """Logic for creating a user"""
+        try:
+            user = User(**params).save()
+        except exceptions.UniqueProperty:
+            return {"error": "Username or Email already taken"}, 409
+        return respond_with(user), 200

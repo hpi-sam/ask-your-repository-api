@@ -6,6 +6,25 @@ optional = false
 python-versions = "*"
 version = "4.1.0"
 
+[package.extras]
+relative = ["python-dateutil (>=2.7.3)"]
+
+[[package]]
+category = "main"
+description = "A pluggable API specification generator. Currently supports the OpenAPI Specification (f.k.a. the Swagger specification)."
+name = "apispec"
+optional = false
+python-versions = "*"
+version = "1.0.0"
+
+[package.extras]
+dev = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.18.0)", "pytest", "mock", "flake8 (3.7.5)", "pre-commit (1.14.3)", "tox", "flake8-bugbear (18.8.0)"]
+lint = ["flake8 (3.7.5)", "pre-commit (1.14.3)", "flake8-bugbear (18.8.0)"]
+tests = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.18.0)", "pytest", "mock"]
+validation = ["prance (>=0.11)"]
+webframeworks-tests = ["apispec-webframeworks (>=0.3.0)"]
+yaml = ["PyYAML (>=3.10)"]
+
 [[package]]
 category = "dev"
 description = "Command Arguments for Humans."
@@ -49,6 +68,9 @@ version = "3.1.6"
 [package.dependencies]
 cffi = ">=1.1"
 six = ">=1.4.1"
+
+[package.extras]
+tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)"]
 
 [[package]]
 category = "main"
@@ -121,6 +143,10 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.16.0"
 
+[package.extras]
+DNSSEC = ["pycryptodome", "ecdsa (>=0.13)"]
+IDNA = ["idna (>=2.1)"]
+
 [[package]]
 category = "dev"
 description = "Dodgy: Searches for dodgy looking lines in Python code"
@@ -164,6 +190,10 @@ version = "6.3.1"
 [package.dependencies]
 urllib3 = ">=1.21.1"
 
+[package.extras]
+develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyaml", "nosexcover", "sphinx", "sphinx-rtd-theme"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
+
 [[package]]
 category = "main"
 description = "Highly concurrent networking library"
@@ -199,6 +229,26 @@ Jinja2 = ">=2.10"
 Werkzeug = ">=0.14"
 click = ">=5.1"
 itsdangerous = ">=0.24"
+
+[package.extras]
+dev = ["pytest (>=3)", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
+docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
+dotenv = ["python-dotenv"]
+
+[[package]]
+category = "main"
+description = "Build and document REST APIs with Flask and apispec"
+name = "flask-apispec"
+optional = false
+python-versions = "*"
+version = "0.8.0"
+
+[package.dependencies]
+apispec = ">=1.0.0"
+flask = ">=0.10.1"
+marshmallow = ">=2.0.0"
+six = ">=1.9.0"
+webargs = ">=0.18.0"
 
 [[package]]
 category = "main"
@@ -237,6 +287,9 @@ Flask = "*"
 PyJWT = "*"
 Werkzeug = ">=0.14"
 
+[package.extras]
+asymmetric_crypto = ["cryptography (>=2.3)"]
+
 [[package]]
 category = "main"
 description = "Simple framework for creating REST APIs"
@@ -250,6 +303,9 @@ Flask = ">=0.8"
 aniso8601 = ">=0.82"
 pytz = "*"
 six = ">=1.3.0"
+
+[package.extras]
+docs = ["sphinx"]
 
 [[package]]
 category = "main"
@@ -278,6 +334,11 @@ name = "gunicorn"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "19.9.0"
+
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+tornado = ["tornado (>=0.2)"]
 
 [[package]]
 category = "main"
@@ -314,6 +375,9 @@ version = "2.10"
 [package.dependencies]
 MarkupSafe = ">=0.23"
 
+[package.extras]
+i18n = ["Babel (>=0.8)"]
+
 [[package]]
 category = "dev"
 description = "A fast and thorough lazy object proxy."
@@ -349,6 +413,12 @@ name = "marshmallow"
 optional = false
 python-versions = "*"
 version = "2.18.0"
+
+[package.extras]
+dev = ["python-dateutil", "simplejson", "pytest", "pytz", "flake8 (3.6.0)", "tox"]
+lint = ["flake8 (3.6.0)"]
+reco = ["python-dateutil", "simplejson"]
+tests = ["pytest", "pytz"]
 
 [[package]]
 category = "dev"
@@ -413,6 +483,14 @@ version = "3.4"
 singledispatch = "*"
 six = "*"
 
+[package.extras]
+all = ["numpy", "python-crfsuite", "matplotlib", "gensim", "pyparsing", "scipy", "requests", "scikit-learn", "twython"]
+corenlp = ["requests"]
+machine_learning = ["gensim", "numpy", "python-crfsuite", "scikit-learn", "scipy"]
+plot = ["matplotlib"]
+tgrep = ["pyparsing"]
+twitter = ["twython"]
+
 [[package]]
 category = "dev"
 description = "Python style guide checker"
@@ -453,6 +531,14 @@ pylint-plugin-utils = ">=0.2.6"
 pyyaml = "*"
 requirements-detector = ">=0.6"
 setoptconf = ">=0.2.0"
+
+[package.extras]
+build_tools = ["nose", "coverage", "coveralls", "mock"]
+with_everything = ["coverage", "coveralls", "frosted (>=1.4.1)", "mock", "mypy (>=0.600)", "nose", "pyroma (>=2.4)", "vulture (>=0.6,<0.25)"]
+with_frosted = ["frosted (>=1.4.1)"]
+with_mypy = ["mypy (>=0.600)"]
+with_pyroma = ["pyroma (>=2.4)"]
+with_vulture = ["vulture (>=0.6,<0.25)"]
 
 [[package]]
 category = "dev"
@@ -510,6 +596,11 @@ optional = false
 python-versions = "*"
 version = "1.7.1"
 
+[package.extras]
+crypto = ["cryptography (>=1.4)"]
+flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
+test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
+
 [[package]]
 category = "dev"
 description = "python code static checker"
@@ -548,6 +639,9 @@ version = "2.0.2"
 [package.dependencies]
 pylint = ">=2.0"
 pylint-plugin-utils = ">=0.4"
+
+[package.extras]
+with_django = ["django"]
 
 [[package]]
 category = "dev"
@@ -593,6 +687,9 @@ optional = false
 python-versions = "*"
 version = "0.10.1"
 
+[package.extras]
+cli = ["click (>=5.0)"]
+
 [[package]]
 category = "main"
 description = "Engine.IO server"
@@ -603,6 +700,10 @@ version = "3.3.0"
 
 [package.dependencies]
 six = ">=1.9.0"
+
+[package.extras]
+asyncio_client = ["aiohttp (>=3.4)", "websockets (>=7.0)"]
+client = ["urllib3 (>=1.24)", "websocket-client (>=0.54.0)"]
 
 [[package]]
 category = "main"
@@ -615,6 +716,10 @@ version = "3.1.2"
 [package.dependencies]
 python-engineio = ">=3.2.0"
 six = ">=1.9.0"
+
+[package.extras]
+asyncio_client = ["python-engineio (>=3.2.0)"]
+client = ["python-engineio (>=3.2.0)"]
 
 [[package]]
 category = "main"
@@ -646,6 +751,10 @@ chardet = ">=3.0.2,<3.1.0"
 idna = ">=2.5,<2.9"
 urllib3 = ">=1.21.1,<1.25"
 
+[package.extras]
+security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
+
 [[package]]
 category = "dev"
 description = "Python tool to find and list requirements of a Python project"
@@ -672,6 +781,9 @@ name = "setoptconf"
 optional = false
 python-versions = "*"
 version = "0.2.0"
+
+[package.extras]
+YAML = ["pyyaml"]
 
 [[package]]
 category = "main"
@@ -735,6 +847,10 @@ optional = false
 python-versions = "*"
 version = "1.22"
 
+[package.extras]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
+
 [[package]]
 category = "main"
 description = "Declarative parsing and validation of HTTP request objects, with built-in support for popular web frameworks, including Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, and aiohttp."
@@ -747,6 +863,12 @@ version = "5.1.2"
 marshmallow = ">=2.15.2"
 simplejson = ">=2.1.0"
 
+[package.extras]
+dev = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "flake8 (3.6.0)", "pre-commit (1.13.0)", "tox", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
+frameworks = ["Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "aiohttp (>=3.0.0)"]
+lint = ["flake8 (3.6.0)", "pre-commit (1.13.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
+tests = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)"]
+
 [[package]]
 category = "main"
 description = "The comprehensive WSGI web application library."
@@ -754,6 +876,11 @@ name = "werkzeug"
 optional = false
 python-versions = "*"
 version = "0.14.1"
+
+[package.extras]
+dev = ["coverage", "pytest", "sphinx", "tox"]
+termcolor = ["termcolor"]
+watchdog = ["watchdog"]
 
 [[package]]
 category = "dev"
@@ -764,11 +891,12 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "d3698a72a46cf8825f922c0357ef9aaf83cdb01356fe13f2c31c96771d81dbfe"
+content-hash = "745b790511de174bb0caf71fdf802372139398ce561cb7931175c81fcbd83d5e"
 python-versions = ">=3.7"
 
 [metadata.hashes]
 aniso8601 = ["03c0ffeeb04edeca1ed59684cc6836dc377f58e52e315dc7be3af879909889f4", "ac30cceff24aec920c37b8d74d7d8a5dd37b1f62a90b4f268a6234cabe147080"]
+apispec = ["57a7b81fd19fff0663a7e5ffd196eaea79b5364151ed2b65533be36d55e0229c", "b45def53903516e67e8584ee41f34bc60c3e4acace6892b69340293ea20f3caa"]
 args = ["a785b8d837625e9b61c39108532d95b85274acd679693b71ebb5156848fcf814"]
 astroid = ["292fa429e69d60e4161e7612cb7cc8fa3609e2e309f80c224d93a76d5e7b58be", "c7013d119ec95eb626f7a2011f0b63d0c9a095df9ad06d8507b37084eada1a8d"]
 autopep8 = ["33d2b5325b7e1afb4240814fe982eea3a92ebea712869bfd08b3c0393404248c"]
@@ -788,6 +916,7 @@ elasticsearch = ["7546cc08e3899716e12fe67d12d7cfe9a64647014d1134b014c3c392b63cad
 eventlet = ["c584163e006e613707e224552fafc63e4e0aa31d7de0ab18b481ac0b385254c8", "d9d31a3c8dbcedbcce5859a919956d934685b17323fc80e1077cb344a2ffa68d"]
 expects = ["419902ccafe81b7e9559eeb6b7a07ef9d5c5604eddb93000f0642b3b2d594f4c"]
 flask = ["2271c0070dbcb5275fad4a82e29f23ab92682dc45f9dfbc22c02ba9b9322ce48", "a080b744b7e345ccfcbc77954861cb05b3c63786e93f2b3875e0913d44b43f05"]
+flask-apispec = ["04a5e8f53db88953a9725f37f6a0da7d61ffcd36f43c078b149336460fe7d1be", "62f9a4b90dc9797ebdc8e2141e5282fe95a54ffa8545b40c1b5a3ac0b0c3d757"]
 flask-bcrypt = ["d71c8585b2ee1c62024392ebdbc447438564e2c8c02b4e57b56a4cafd8d13c5f"]
 flask-cors = ["7ad56ee3b90d4955148fc25a2ecaa1124fc84298471e266a7fea59aeac4405a5", "7e90bf225fdf163d11b84b59fb17594d0580a16b97ab4e1146b1fb2737c1cfec"]
 flask-jwt-extended = ["97c66f197b4b175173bf955b9a845d03d62e521e512e88f6abff707e6859e7c3"]
