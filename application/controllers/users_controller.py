@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
+from .authentications_controller import validate_user
 from ..models.user import User
 from ..responders import respond_with, no_content
 from ..validators import users_validator
@@ -58,5 +59,22 @@ class UsersController(ApplicationController):
             user = User.find_by(id_=object_id)
             user.delete()
             return no_content()
+        except User.DoesNotExist:  # pylint:disable=no-member
+            return {"error": "not found"}, 404
+
+    @jwt_required
+    @use_args(users_validator.update_args())
+    def change_password(self, params, object_id):
+        """Logic for changing the password of a user"""
+        object_id = params.pop("id")
+        old_password = params.pop("old_password")
+        new_password = params.pop("new_password")
+        try:
+            user = User.find_by(id_=object_id)
+            if (validate_user(user, oldPassword)){
+                user.update(password=new_password)
+                return respond_with(user), 200
+            }
+            return {"error": "old password is not correct"}, 422
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
