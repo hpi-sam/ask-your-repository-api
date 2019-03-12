@@ -21,7 +21,14 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
         return (cls.find_by(username=email_or_username, force=False)
                 or cls.find_by(email=email_or_username, force=False))
 
+    def generate_password(self, password):
+        return bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def update_password(self, password):
+        self.password = self.generate_password(password)
+        self.save()
+
     def pre_save(self):
         super()
         if self.does_not_exist():
-            self.password = bcrypt.generate_password_hash(self.password).decode('utf-8')
+            self.password = self.generate_password(self.password)

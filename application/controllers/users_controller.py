@@ -63,18 +63,15 @@ class UsersController(ApplicationController):
             return {"error": "not found"}, 404
 
     @jwt_required
-    @use_args(users_validator.update_args())
+    @use_args(users_validator.change_password_args())
     def change_password(self, params, object_id):
         """Logic for changing the password of a user"""
         object_id = params.pop("id")
-        old_password = params.pop("old_password")
-        new_password = params.pop("new_password")
         try:
             user = User.find_by(id_=object_id)
-            if (validate_user(user, oldPassword)){
-                user.update(password=new_password)
+            if validate_user(user, params["old_password"]):
+                user.update_password(password=params["new_password"])
                 return respond_with(user), 200
-            }
             return {"error": "old password is not correct"}, 422
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
