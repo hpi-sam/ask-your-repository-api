@@ -8,13 +8,13 @@ from pathlib import Path
 
 import werkzeug
 from flask import current_app
+from flask_apispec.views import MethodResource
 from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_socketio import emit
 from webargs.flaskparser import use_args
 
 from application.models import Artifact, Team
 from application.models.elastic import ElasticSearcher
-from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
 from ..models.artifact_builder import ArtifactBuilder
@@ -69,12 +69,10 @@ def _find_multiple_by(params):
     return artifacts.order_by('created_at')[_from:_to]
 
 
-class ArtifactsController(ApplicationController):
-    """ Controller for Artifacts """
-
-    method_decorators = [check_es_connection]
-
-    def show(self, object_id):
+class ArtifactsByIDController(MethodResource):
+    """ Access Artifacts by id """
+    @check_es_connection
+    def get(self, object_id):
         """Logic for getting a single artifact"""
         try:
             artifact = Artifact.find_by(id_=object_id)
@@ -82,41 +80,8 @@ class ArtifactsController(ApplicationController):
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
-    @use_args(artifacts_validator.search_args())
-    def index(self, params):
-        """Logic for querying several artifacts"""
-        artifacts = _search_artifacts(params)
-
-        if params['notify_clients']:
-            socketio.emit('START_PRESENTATION',
-                          room=str(params["team_id"]),
-                          data=respond_with(artifacts)
-                          )
-
-        return {"images": respond_with(artifacts)}, 200
-
-    @jwt_optional
-    @use_args(artifacts_validator.create_args())
-    def create(self, params):
-        """Logic for creating an artifact"""
-        metadata = self._upload_file(params)
-        self._add_user_to_params(metadata)
-        artifact = self._create_artifact(params, metadata)
-        ImageRecognizer.auto_add_tags(artifact)
-        return respond_with(artifact), 200
-
-    def _add_user_to_params(self, params):
-        user_id = get_jwt_identity()
-        params['user_id'] = user_id
-
-    def _create_artifact(self, params, metadata):
-        params.update(metadata)
-        artifact = ArtifactBuilder().build_with(**params)
-        artifact.save()
-        return artifact
-
     @use_args(artifacts_validator.update_args())
-    def update(self, params, object_id):
+    def put(self, params, object_id):
         """Logic for updating an artifact"""
         object_id = params.pop("id")
         try:
@@ -127,20 +92,17 @@ class ArtifactsController(ApplicationController):
         except Artifact.DoesNotExist:
             return {"error": "not found"}, 404
 
-    @use_args(artifacts_validator.update_many_args())
-    def update_many(self, params):
-        """ Logic for updating multiple artifacts at once """
-
-        for update_data in params["artifacts"]:
-            object_id = update_data.pop("id")
-            try:
-                artifact = Artifact.find_by(id_=object_id)
-                builder = ArtifactBuilder.for_artifact(artifact)
-                builder.update_with(override_tags=False, **update_data)
-            except Artifact.DoesNotExist:
-                return {"error": f"failed at <{object_id}>: not found"}, 404
-
-        return no_content()
+    @use_args(artifacts_validator.update_args())
+    def patch(self, params, object_id):
+        """Logic for updating an artifact"""
+        object_id = params.pop("id")
+        try:
+            artifact = Artifact.find_by(id_=object_id)
+            builder = ArtifactBuilder.for_artifact(artifact)
+            builder.update_with(**params)
+            return no_content()
+        except Artifact.DoesNotExist:
+            return {"error": "not found"}, 404
 
     @use_args(artifacts_validator.delete_args())
     def delete(self, params, object_id):
@@ -158,6 +120,61 @@ class ArtifactsController(ApplicationController):
     def _delete_files_starting_with(self, start_string):
         for p in Path(current_app.config['UPLOAD_FOLDER']).glob(f"{start_string}*"):
             p.unlink()
+
+
+class ArtifactsController(MethodResource):
+    """ Controller for Artifacts """
+
+    method_decorators = [check_es_connection]
+
+    @check_es_connection
+    @use_args(artifacts_validator.search_args())
+    def get(self, params):
+        """Logic for querying several artifacts"""
+        artifacts = _search_artifacts(params)
+
+        if params['notify_clients']:
+            socketio.emit('START_PRESENTATION',
+                          room=str(params["team_id"]),
+                          data=respond_with(artifacts)
+                          )
+
+        return {"images": respond_with(artifacts)}, 200
+
+    @jwt_optional
+    @use_args(artifacts_validator.create_args())
+    def post(self, params):
+        """Logic for creating an artifact"""
+        metadata = self._upload_file(params)
+        self._add_user_to_params(metadata)
+        artifact = self._create_artifact(params, metadata)
+        ImageRecognizer.auto_add_tags(artifact)
+        return respond_with(artifact), 200
+
+    def _add_user_to_params(self, params):
+        user_id = get_jwt_identity()
+        params['user_id'] = user_id
+
+    def _create_artifact(self, params, metadata):
+        params.update(metadata)
+        artifact = ArtifactBuilder().build_with(**params)
+        artifact.save()
+        return artifact
+
+    @use_args(artifacts_validator.update_many_args())
+    def patch(self, params):
+        """ Logic for updating multiple artifacts at once """
+
+        for update_data in params["artifacts"]:
+            object_id = update_data.pop("id")
+            try:
+                artifact = Artifact.find_by(id_=object_id)
+                builder = ArtifactBuilder.for_artifact(artifact)
+                builder.update_with(override_tags=False, **update_data)
+            except Artifact.DoesNotExist:
+                return {"error": f"failed at <{object_id}>: not found"}, 404
+
+        return no_content()
 
     def _upload_file(self, params):
         file_saver = FileSaver(params['file'])

@@ -3,23 +3,23 @@ Handles logic for presentation http requests.
 Uses socket.io to communicate with the frontend
 """
 
+from flask_apispec.views import MethodResource
 from webargs.flaskparser import use_args
 
 from application.models import Artifact
-from .application_controller import ApplicationController
 from ..error_handling.es_connection import check_es_connection
 from ..extensions import socketio
 from ..responders import respond_with, no_content
 from ..validators import presentations_validator
 
 
-class PresentationsController(ApplicationController):
+class PresentationsController(MethodResource):
     """ Controller to handle presentation http request """
 
     method_decorators = [check_es_connection]
 
     @use_args(presentations_validator.create_args())
-    def create(self, params):
+    def post(self, params):
         """ Creates a new presentation with remotely requested images """
         artifacts = []
         for artifact_id in params['file_ids']:

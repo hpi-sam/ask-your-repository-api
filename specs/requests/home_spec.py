@@ -32,8 +32,8 @@ with description('/') as self:
 
         with it('returns database status on'):
             expect(self.response.json).to(have_keys({
-                "service name": "artefact service",
-                "database status": "on"}))
+                "service_name": "artefact service",
+                "database_status": "on"}))
 
     with context('databse unavailable'):
         with before.each:
@@ -45,5 +45,5 @@ with description('/') as self:
 
         with it('returns database status off'):
             expect(self.response.json).to(have_keys({
-                "service name": "artefact service",
-                "database status": "off"}))
+                "service_name": "artefact service",
+                "database_status": "off"}))
