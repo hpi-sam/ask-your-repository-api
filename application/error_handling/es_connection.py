@@ -1,6 +1,6 @@
 """ Define error handling if elasticsearch is unavailable """
 
-from flask import current_app
+from flask import current_app, abort
 
 
 def check_es_connection(func):
@@ -8,7 +8,7 @@ def check_es_connection(func):
 
     def func_wrapper(*args, **kwargs):
         if not current_app.es:
-            return {"error": "search engine not available"}, 503
+            return abort(503, "search engine not available")
         return func(*args, **kwargs)
 
     return func_wrapper

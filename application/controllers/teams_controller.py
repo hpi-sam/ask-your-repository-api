@@ -1,15 +1,15 @@
 """
 Handles all logic of the artefacts api
 """
-from flask import current_app
+from flask import current_app, abort
+from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_socketio import join_room, leave_room
-from webargs.flaskparser import use_args
 
 from ..extensions import socketio
 from ..models import Team, User
-from ..responders import respond_with
+from ..schemas.team_schema import TeamSchema
 from ..validators import teams_validator
 
 
@@ -29,51 +29,60 @@ def on_exit_team_space(data):
 
 class TeamsByIDController(MethodResource):
     """Access teams by id"""
-    def get(self, object_id):
+
+    @use_kwargs(teams_validator.get_args())
+    @marshal_with(TeamSchema(decorate=True))
+    def get(self, **params):
         """ get a single team """
         try:
-            team = Team.find_by(id_=object_id)
-            return respond_with(team), 200
+            team = Team.find_by(id_=params['id'])
+            return team
         except Team.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'team not found')
 
-    @use_args(teams_validator.update_args())
-    def patch(self, params, object_id):
+    @use_kwargs(teams_validator.update_args())
+    @marshal_with(TeamSchema(decorate=True))
+    def patch(self, **params):
         """Logic for updating a team"""
         try:
-            team = Team.find_by(id_=object_id)
+            id = params['id']
+            team = Team.find_by(id_=id)
             team.update(name=params["name"])
-            return respond_with(team), 200
+            return team
         except Team.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'team not found')
 
-    @use_args(teams_validator.update_args())
-    def put(self, params, object_id):
+    @use_kwargs(teams_validator.update_args())
+    @marshal_with(TeamSchema(decorate=True))
+    def put(self, **params):
         """Logic for updating a team"""
         try:
-            team = Team.find_by(id_=object_id)
-            team.update(name=params["name"])
-            return respond_with(team), 200
+            id = params.pop('id')
+            team = Team.find_by(id_=id)
+            team.update(**params)
+            return team
         except Team.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'team not found')
 
 
 class TeamsController(MethodResource):
     """ Controller for teams """
 
     @jwt_required
-    @use_args(teams_validator.index_args())
-    def get(self, params):  # pylint: disable=W0613
+    @use_kwargs(teams_validator.index_args())
+    @marshal_with(TeamSchema(decorate=True, many=True))
+    def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several teams"""
         user = User.find_by(id_=get_jwt_identity())
         teams = list(user.teams)
-        return {"teams": respond_with(teams)}, 200
+        return teams
 
     @jwt_required
-    @use_args(teams_validator.create_args())
-    def post(self, params):
+    @use_kwargs(teams_validator.create_args())
+    @marshal_with(TeamSchema(decorate=True))
+    def post(self, **params):
         """Logic for creating a team"""
-        team = Team(name=params["name"]).save()
+        team = Team(**params).save()
         user = User.find_by(id_=get_jwt_identity())
         team.members.connect(user)  # pylint:disable=no-member
-        return respond_with(team), 200
+        return team

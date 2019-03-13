@@ -1,46 +1,51 @@
 """
 Handles all logic of the user api
 """
-from flask_apispec import MethodResource
+from flask import abort
+from flask_apispec import MethodResource, marshal_with, use_kwargs
 from flask_jwt_extended import jwt_required
 from neomodel import exceptions
-from webargs.flaskparser import use_args
 
 from ..models.user import User
-from ..responders import respond_with, no_content
+from ..responders import no_content
+from ..schemas.user_schema import UserSchema
 from ..validators import users_validator
 
 
 class UsersByIDController(MethodResource):
     """Access Users by id"""
+
     @jwt_required
-    def get(self, object_id):
+    @use_kwargs(users_validator.get_args())
+    @marshal_with(UserSchema(decorate=True))
+    def get(self, **params):
         """ get a single user """
         try:
-            user = User.find_by(id_=object_id)
-            return respond_with(user), 200
+            return User.find_by(id_=params['id'])
         except User.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'user not found')
 
     @jwt_required
-    @use_args(users_validator.update_args())
-    def patch(self, params, object_id):
+    @use_kwargs(users_validator.update_args())
+    @marshal_with(UserSchema(decorate=True))
+    def patch(self, **params):
         """Logic for updating a user"""
-        object_id = params.pop("id")
+        id = params.pop("id")
         try:
-            user = User.find_by(id_=object_id)
+            user = User.find_by(id_=id)
             user.update(**params)
-            return respond_with(user), 200
+            return user
         except User.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'user not found')
 
     @jwt_required
-    @use_args(users_validator.update_args())
-    def put(self, params, object_id):
+    @use_kwargs(users_validator.update_args())
+    @marshal_with(UserSchema(decorate=True))
+    def put(self, **params):
         """Logic for updating a user"""
-        object_id = params.pop("id")
+        id = params.pop("id")
         try:
-            user = User.find_by(id_=object_id)
+            user = User.find_by(id_=id)
             if "password" in params:
                 password = params.pop("password")
                 old_password = params.pop("old_password", None)
@@ -49,38 +54,40 @@ class UsersByIDController(MethodResource):
                 if not success:
                     return {"error": "old password is not correct"}, 422
             user.update(**params)
-            return respond_with(user), 200
+            return user
         except User.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'user not found')
 
     @jwt_required
-    @use_args(users_validator.delete_args())
-    def delete(self, params, object_id):
+    @use_kwargs(users_validator.delete_args())
+    @marshal_with(None, 204)
+    def delete(self, **params):
         """Logic for deleting a user"""
-        object_id = params["id"]
+        id = params["id"]
         try:
-            user = User.find_by(id_=object_id)
+            user = User.find_by(id_=id)
             user.delete()
             return no_content()
         except User.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
+            return abort(404, 'user not found')
 
 
 class UsersController(MethodResource):
     """ Controller for users """
 
     @jwt_required
-    @use_args(users_validator.index_args())
-    def get(self, params):  # pylint: disable=W0613
+    @use_kwargs(users_validator.index_args())
+    @marshal_with(UserSchema(decorate=True, many=True))
+    def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several users"""
-        users = User.all()
-        return {"users": respond_with(users)}, 200
+        return User.all()
 
-    @use_args(users_validator.create_args())
-    def post(self, params):
+    @use_kwargs(users_validator.create_args())
+    @marshal_with(UserSchema(decorate=True))
+    def post(self, **params):
         """Logic for creating a user"""
         try:
             user = User(**params).save()
         except exceptions.UniqueProperty:
-            return {"error": "Username or Email already taken"}, 409
-        return respond_with(user), 200
+            return abort(409, "Username or Email already taken")
+        return user

@@ -3,6 +3,12 @@
 from webargs import fields, ValidationError
 
 
+def get_args():
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+    }
+
+
 def index_args():
     """Defines and validates params for index"""
     return {}
@@ -27,11 +33,13 @@ def update_args():
         "old_password": fields.String()
     }
 
+
 def delete_args():
     """Defines and validates params for delete"""
     return {
         "id": fields.UUID(required=True, load_from='object_id', location='view_args')
     }
+
 
 def validate_user_name(user_name):
     if not isinstance(user_name, str):
