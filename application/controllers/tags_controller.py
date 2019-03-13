@@ -1,17 +1,17 @@
 """
 Handles all logic of the artefacts api
 """
-from webargs.flaskparser import use_args
+from flask import abort
+from flask_apispec import marshal_with, use_kwargs
 from flask_apispec.views import MethodResource
-from flask_apispec import marshal_with
 from marshmallow import fields, Schema
 
 from ..error_handling.es_connection import check_es_connection
 from ..models import Artifact, Team
 from ..models.artifact_builder import ArtifactBuilder
-from ..validators import tags_validator
-from ..tagging import tag_suggestions
 from ..responders import no_content
+from ..tagging import tag_suggestions
+from ..validators import tags_validator
 
 
 class SuggestedTagsSchema(Schema):
@@ -24,9 +24,9 @@ class TagsController(MethodResource):
 
     method_decorators = [check_es_connection]
 
-    @use_args(tags_validator.add_tags_args())
+    @use_kwargs(tags_validator.add_tags_args())
     @marshal_with(None, 201)
-    def add_tags(self, params, object_id):
+    def add_tags(self, **params):
         """ Adds tags to an existing artifact """
         object_id = str(params.pop('id'))
 
@@ -40,13 +40,13 @@ class TagsController(MethodResource):
             builder.update_with(tags=new_list)
             return no_content()
         except Artifact.DoesNotExist:
-            return {"error": "not found"}, 404
+            return abort(404, 'artifact not found')
 
-    @use_args(tags_validator.suggested_tags_args())
+    @use_kwargs(tags_validator.suggested_tags_args())
     @marshal_with(SuggestedTagsSchema)
-    def suggested_tags(self, params):
+    def suggested_tags(self, **params):
         """ Takes an array of tags and suggests tags based on that """
         current_tags = params['tags']
         team = Team.find(params['team_id'])
         current_tags = [tag for tag in current_tags if tag != ""]
-        return {'tags': tag_suggestions.find_tags(team, params['limit'], current_tags)}, 200
+        return {"tags": tag_suggestions.find_tags(team, params['limit'], current_tags)}

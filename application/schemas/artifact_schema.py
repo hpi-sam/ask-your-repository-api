@@ -1,10 +1,10 @@
 """ Defines schema for database artifact objects """
 from flask import current_app
-from marshmallow import fields
+from marshmallow import post_dump, fields
 
 from .tag_schema import TagSchema
-from ..base import BaseSchema, output_decorator
 from .user_schema import UserSchema
+from ..base import BaseSchema, output_decorator
 
 
 class ArtifactSchema(BaseSchema):
@@ -34,3 +34,9 @@ class ArtifactSchema(BaseSchema):
         """ Schema: fileserver/id_filename """
         return current_app.config["FILE_SERVER"] + \
                "/" + file_url
+
+    @post_dump(pass_many=True)
+    def dump_artifacts(self, data, many):  # pylint:ignore=unused-argument
+        if many:
+            return {'images': data, 'images_count': len(data)}
+        return data

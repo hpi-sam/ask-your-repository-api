@@ -8,6 +8,12 @@ def index_args():
     return {}
 
 
+def get_args():
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+    }
+
+
 def create_args():
     """Defines and validates params for create"""
     return {"name": fields.Function(

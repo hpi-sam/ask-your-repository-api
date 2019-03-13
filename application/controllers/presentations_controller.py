@@ -3,8 +3,8 @@ Handles logic for presentation http requests.
 Uses socket.io to communicate with the frontend
 """
 
+from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
-from webargs.flaskparser import use_args
 
 from application.models import Artifact
 from ..error_handling.es_connection import check_es_connection
@@ -18,8 +18,9 @@ class PresentationsController(MethodResource):
 
     method_decorators = [check_es_connection]
 
-    @use_args(presentations_validator.create_args())
-    def post(self, params):
+    @marshal_with(None, 204)
+    @use_kwargs(presentations_validator.create_args())
+    def post(self, **params):
         """ Creates a new presentation with remotely requested images """
         artifacts = []
         for artifact_id in params['file_ids']:

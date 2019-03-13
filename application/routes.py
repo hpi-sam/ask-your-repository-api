@@ -12,8 +12,9 @@ def create_routes(app):
     from .controllers.teams_controller import TeamsController, TeamsByIDController
     from .controllers.users_controller import UsersController, UsersByIDController
 
-    app.add_url_rule('/images', view_func=ArtifactsController.as_view('artifacts'))
-    app.add_url_rule('/images/<object_id>', view_func=ArtifactsByIDController.as_view('artifact'))
+    app.add_url_rule('/images', view_func=ArtifactsController.as_view('artifactscontroller'))
+    app.add_url_rule('/images/<object_id>',
+                     view_func=ArtifactsByIDController.as_view('artifactsbyidcontroller'))
 
     app.add_url_rule('/authentications',
                      view_func=AuthenticationsController.as_view('authentications'))

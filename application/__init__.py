@@ -46,13 +46,20 @@ def register_error_handlers(app):
 
     @app.errorhandler(422)
     @app.errorhandler(400)
-    def handle_error(err):
+    def handle_validation_error(err):  # pylint:disable=unused-variable
         headers = err.data.get("headers", None)
         messages = err.data.get("messages", ["Invalid request."])
         if headers:
             return jsonify({"errors": messages}), err.code, headers
         return jsonify({"errors": messages}), err.code
-    return handle_error
+
+    @app.errorhandler(404)
+    def handle_not_found_error(err):  # pylint:disable=unused-variable
+        return jsonify({"error": err.description}), err.code
+
+    @app.errorhandler(503)
+    def handle_database_error(err):  # pylint:disable=unused-variable
+        return jsonify({"error": err.description}), err.code
 
 
 def register_extensions(app):

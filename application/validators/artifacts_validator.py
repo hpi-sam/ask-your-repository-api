@@ -1,8 +1,14 @@
 """ Defines validators for artifact requests """
 
-from webargs import fields, ValidationError
+from webargs import ValidationError, fields
 
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+
+def get_args():
+    return {
+        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+    }
 
 
 def search_args():

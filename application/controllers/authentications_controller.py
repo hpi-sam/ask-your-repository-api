@@ -2,15 +2,16 @@
 Handles all logic of the user api
 """
 from flask import jsonify, make_response
+from flask_apispec import use_kwargs
+from flask_apispec.views import MethodResource
 from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
                                 set_access_cookies, get_csrf_token)
-from webargs.flaskparser import use_args
 
-from flask_apispec.views import MethodResource
-
+from ..extensions import bcrypt
 from ..models.user import User
 from ..responders import respond_with
 from ..validators import authentications_validator
+
 
 
 def validate_user(user, password):
@@ -20,8 +21,8 @@ def validate_user(user, password):
 class AuthenticationsController(MethodResource):
     """ Controller for authentication """
 
-    @use_args(authentications_validator.create_args())
-    def post(self, params):
+    @use_kwargs(authentications_validator.create_args())
+    def post(self, **params):
         """ Returns a cookie and a csrf token for double submit CSRF protection. """
         user = User.find_by_email_or_username(params["email_or_username"])
         if not validate_user(user, params["password"]):
@@ -29,7 +30,7 @@ class AuthenticationsController(MethodResource):
         return self._build_login_response(user)
 
     @jwt_required
-    def delete(self): # pylint: disable=W0613
+    def delete(self):  # pylint: disable=W0613
         """ Unsets the cookie in response """
         resp = jsonify({'logout': True})
         unset_jwt_cookies(resp)
