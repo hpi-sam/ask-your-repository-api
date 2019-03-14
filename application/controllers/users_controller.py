@@ -45,6 +45,13 @@ class UsersController(ApplicationController):
         object_id = params.pop("id")
         try:
             user = User.find_by(id_=object_id)
+            if "password" in params:
+                password = params.pop("password")
+                old_password = params.pop("old_password", None)
+                success = user.update_password(password, old_password)
+                print(success)
+                if not success:
+                    return {"error": "old password is not correct"}, 422
             user.update(**params)
             return respond_with(user), 200
         except User.DoesNotExist:  # pylint:disable=no-member
@@ -59,19 +66,5 @@ class UsersController(ApplicationController):
             user = User.find_by(id_=object_id)
             user.delete()
             return no_content()
-        except User.DoesNotExist:  # pylint:disable=no-member
-            return {"error": "not found"}, 404
-
-    @jwt_required
-    @use_args(users_validator.change_password_args())
-    def change_password(self, params, object_id):
-        """Logic for changing the password of a user"""
-        object_id = params.pop("id")
-        try:
-            user = User.find_by(id_=object_id)
-            if validate_user(user, params["old_password"]):
-                user.update_password(password=params["new_password"])
-                return respond_with(user), 200
-            return {"error": "old password is not correct"}, 422
         except User.DoesNotExist:  # pylint:disable=no-member
             return {"error": "not found"}, 404
