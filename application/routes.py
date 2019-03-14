@@ -20,7 +20,7 @@ def create_routes(api):
     add_resource(api, '/images', ArtifactsController)
     add_method(api, '/images', "update_many", ArtifactsController, method="patch")
     add_resource(api, '/teams', TeamsController)
-    add_resource(api, '/users', UsersController)    
+    add_resource(api, '/users', UsersController)
     add_resource(api, '/authentications', AuthenticationsController, only=["create"])
     add_method(api, '/authentications', "delete", AuthenticationsController, method="delete")
     add_resource(api, '/presentations', PresentationsController, only=["create"])

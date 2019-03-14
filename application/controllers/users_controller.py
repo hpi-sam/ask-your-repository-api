@@ -6,7 +6,6 @@ from flask_jwt_extended import jwt_required
 from webargs.flaskparser import use_args
 
 from .application_controller import ApplicationController
-from .authentications_controller import validate_user
 from ..models.user import User
 from ..responders import respond_with, no_content
 from ..validators import users_validator

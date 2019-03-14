@@ -13,6 +13,7 @@ from ..validators import authentications_validator
 
 
 def validate_user(user, password):
+    """ Validates that a password is correct for the user """
     return user and user.check_password(password)
 
 class AuthenticationsController(ApplicationController):

@@ -176,3 +176,33 @@ with description('/users') as self:
 
                 with it('responds with 422 invalid request'):
                     expect(self.response.status_code).to(equal(422))
+
+        with description('change password'):
+            with description('with valid old password'):
+                with before.each:
+                    self.user = UserFactory.create_user()
+                    self.context.client().login(self.user)
+                    self.response = self.context.client().patch(
+                        f'/users/{self.user.id_}',
+                        data={'password': 'newpw', 'old_password': 'test'})
+
+                with it('responds with 200'):
+                    expect(self.response.status_code).to(equal(200))
+
+                with it('user has new password'):
+                    uid = self.response.json['id']
+                    expect(User.find(self.user.id_).check_password('newpw')).to(equal(True))
+
+            with description('with invalid old password'):
+                with before.each:
+                    self.user = UserFactory.create_user()
+                    self.context.client().login(self.user)
+                    self.response = self.context.client().patch(
+                        f'/users/{self.user.id_}',
+                        data={'password': 'newpw', 'old_password': 'wrongpw'})
+
+                with it('responds with 422'):
+                    expect(self.response.status_code).to(equal(422))
+
+                with it('user has old password'):
+                    expect(User.find(self.user.id_).check_password('test')).to(equal(True))
