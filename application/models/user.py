@@ -22,12 +22,15 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
                 or cls.find_by(email=email_or_username, force=False))
 
     def generate_password(self, password):
+        """ Hash a password """
         return bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
+        """ Get password from hash """
         return bcrypt.check_password_hash(self.password, password.encode('utf-8'))
 
     def update_password(self, password, old_password):
+        """ Update a password of a user to a new password """
         if old_password and self.check_password(old_password):
             self.password = self.generate_password(password)
             self.save()
