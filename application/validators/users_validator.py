@@ -23,15 +23,8 @@ def update_args():
         "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
         "username": fields.Function(deserialize=validate_user_name),
         "email": fields.Email(),
-        "password": fields.String()
-    }
-
-def change_password_args():
-    """Defines and validates params for update"""
-    return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
-        "old_password": fields.String(required=True),
-        "new_password": fields.String(required=True)
+        "password": fields.String(),
+        "old_password": fields.String()
     }
 
 def delete_args():
