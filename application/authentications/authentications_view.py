@@ -28,6 +28,10 @@ class AuthenticationsView(MethodResource):
         if "id_token" in params:
             user = _get_user_from_google_token(params["id_token"])
         else:
+            if "email_or_username" not in params:
+                return {"error": "email_or_username missing"}, 422
+            if "password" not in params:
+                return {"error": "password missing"}, 422
             user = User.find_by_email_or_username(params["email_or_username"])
             if not validate_user(user, params["password"]):
                 return {"error": "Bad username or password"}, 401
@@ -77,7 +81,9 @@ def _validate_id_token(token):
     See https://developers.google.com/identity/sign-in/web/backend-auth?hl=de for reference.
     """
     try:
-        id_info = id_token.verify_oauth2_token(token, requests.Request(), current_app.config['CLIENT_ID'])
+        id_info = id_token.verify_oauth2_token(token,
+                                               requests.Request(),
+                                               current_app.config['CLIENT_ID'])
         if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             raise ValueError('Wrong issuer.')
 
@@ -85,4 +91,3 @@ def _validate_id_token(token):
         return id_info['sub'], id_info['email']
     except ValueError:
         pass
-
