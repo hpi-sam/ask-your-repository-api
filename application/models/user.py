@@ -11,6 +11,8 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     username = StringProperty(required=True, unique_index=True)
     email = StringProperty(required=True, unique_index=True)
     password = StringProperty(required=True)
+    google_id = StringProperty()
+    google_refresh_token = StringProperty()
 
     teams = RelationshipFrom('.Team', 'HAS_MEMBER', cardinality=cardinality.ZeroOrMore)
     artifacts = RelationshipFrom('.Artifact', 'CREATED_BY', cardinality=cardinality.ZeroOrMore)
