@@ -13,7 +13,7 @@ class StatusSchema(Schema):
     database_status = fields.String()
 
 
-class HomeController(): # pylint:disable=too-few-public-methods
+class HomeView: # pylint:disable=too-few-public-methods
     """ Defines Routes on collection """
 
     @marshal_with(StatusSchema)

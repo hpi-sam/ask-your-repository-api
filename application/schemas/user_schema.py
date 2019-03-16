@@ -21,3 +21,7 @@ class UserSchema(BaseSchema):
         if many:
             return {'users': data, 'users_count': len(data)}
         return data
+
+
+user_schema = UserSchema(decorate=True)
+users_schema = UserSchema(decorate=True, many=True)

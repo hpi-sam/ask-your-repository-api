@@ -8,16 +8,16 @@ from neomodel import exceptions
 
 from ..models.user import User
 from ..responders import no_content
-from ..schemas.user_schema import UserSchema
+from ..schemas.user_schema import user_schema, users_schema
 from ..validators import users_validator
 
 
-class UsersByIDController(MethodResource):
+class UserView(MethodResource):
     """Access Users by id"""
 
     @jwt_required
     @use_kwargs(users_validator.get_args())
-    @marshal_with(UserSchema(decorate=True))
+    @marshal_with(user_schema)
     def get(self, **params):
         """ get a single user """
         try:
@@ -27,12 +27,11 @@ class UsersByIDController(MethodResource):
 
     @jwt_required
     @use_kwargs(users_validator.update_args())
-    @marshal_with(UserSchema(decorate=True))
+    @marshal_with(user_schema)
     def patch(self, **params):
         """Logic for updating a user"""
-        id = params.pop("id")
         try:
-            user = User.find_by(id_=id)
+            user = User.find_by(id_=params.pop("id"))
             user.update(**params)
             return user
         except User.DoesNotExist:  # pylint:disable=no-member
@@ -40,12 +39,11 @@ class UsersByIDController(MethodResource):
 
     @jwt_required
     @use_kwargs(users_validator.update_args())
-    @marshal_with(UserSchema(decorate=True))
+    @marshal_with(user_schema)
     def put(self, **params):
         """Logic for updating a user"""
-        id = params.pop("id")
         try:
-            user = User.find_by(id_=id)
+            user = User.find_by(id_=params.pop("id"))
             if "password" in params:
                 password = params.pop("password")
                 old_password = params.pop("old_password", None)
@@ -72,18 +70,18 @@ class UsersByIDController(MethodResource):
             return abort(404, 'user not found')
 
 
-class UsersController(MethodResource):
+class UsersView(MethodResource):
     """ Controller for users """
 
     @jwt_required
     @use_kwargs(users_validator.index_args())
-    @marshal_with(UserSchema(decorate=True, many=True))
+    @marshal_with(users_schema)
     def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several users"""
         return User.all()
 
     @use_kwargs(users_validator.create_args())
-    @marshal_with(UserSchema(decorate=True))
+    @marshal_with(user_schema)
     def post(self, **params):
         """Logic for creating a user"""
         try:

@@ -13,7 +13,7 @@ from ..responders import respond_with, no_content
 from ..validators import presentations_validator
 
 
-class PresentationsController(MethodResource):
+class PresentationsView(MethodResource):
     """ Controller to handle presentation http request """
 
     method_decorators = [check_es_connection]

@@ -67,7 +67,7 @@ with description('/images') as self:
             with it('responds with correct error messages'):
                 expect(self.response.json).to(have_key('errors'))
                 # sending a single tag is fine it will be parsed to an array with only one element
-                expect(self.response.json['errors']).to(have_key('object_id'))
+                expect(self.response.json['errors']).to(have_key('id'))
 
 with description("images /tags/suggested GET"):
     with before.all:

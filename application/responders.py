@@ -1,4 +1,4 @@
-""" Define responders that can be used in controllers """
+""" Define responders that can be used in views """
 
 from flask import make_response
 

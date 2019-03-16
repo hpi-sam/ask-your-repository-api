@@ -22,3 +22,7 @@ class TeamSchema(BaseSchema):
         if many:
             return {'teams': data, 'teams_count': len(data)}
         return data
+
+
+team_schema = TeamSchema(decorate=True)
+teams_schema = TeamSchema(decorate=True, many=True)

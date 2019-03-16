@@ -10,7 +10,7 @@ def index_args():
 
 def get_args():
     return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "id": fields.UUID(required=True, location='view_args'),
     }
 
 
@@ -25,7 +25,7 @@ def create_args():
 def update_args():
     """Defines and validates params for update"""
     return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "id": fields.UUID(required=True, location='view_args'),
         "name": fields.String(required=True, validate=validate.Length(min=1))
     }
 
