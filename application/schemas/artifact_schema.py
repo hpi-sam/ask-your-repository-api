@@ -40,3 +40,7 @@ class ArtifactSchema(BaseSchema):
         if many:
             return {'images': data, 'images_count': len(data)}
         return data
+
+
+artifact_schema = ArtifactSchema(decorate=True)
+artifacts_schema = ArtifactSchema(decorate=True, many=True)

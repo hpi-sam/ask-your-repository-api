@@ -19,7 +19,7 @@ class SuggestedTagsSchema(Schema):
     tags = fields.List(fields.String())
 
 
-class TagsController(MethodResource):
+class TagsView(MethodResource):
     """ Controller for Artifacts """
 
     method_decorators = [check_es_connection]
@@ -28,10 +28,8 @@ class TagsController(MethodResource):
     @marshal_with(None, 201)
     def add_tags(self, **params):
         """ Adds tags to an existing artifact """
-        object_id = str(params.pop('id'))
-
         try:
-            artifact = Artifact.find_by(id_=object_id)
+            artifact = Artifact.find_by(id_=params.pop('id'))
             builder = ArtifactBuilder.for_artifact(artifact)
             existing_tags = artifact.tags or []
 

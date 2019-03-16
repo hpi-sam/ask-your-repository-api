@@ -13,12 +13,12 @@ from ..responders import respond_with
 from ..validators import authentications_validator
 
 
-
 def validate_user(user, password):
     """ Validates that a password is correct for the user """
     return user and user.check_password(password)
 
-class AuthenticationsController(MethodResource):
+
+class AuthenticationsView(MethodResource):
     """ Controller for authentication """
 
     @use_kwargs(authentications_validator.create_args())

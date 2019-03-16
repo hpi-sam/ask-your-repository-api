@@ -19,7 +19,7 @@ from ..extensions import socketio
 from ..models.artifact_builder import ArtifactBuilder
 from ..recognition.image_recognition import ImageRecognizer
 from ..responders import respond_with, no_content
-from ..schemas.artifact_schema import ArtifactSchema
+from ..schemas.artifact_schema import artifact_schema, artifacts_schema
 from ..socketio_parser import use_args as socketio_args
 from ..synonyms.synonyms import SynonymGenerator
 from ..validators import artifacts_validator
@@ -69,11 +69,11 @@ def _find_multiple_by(params):
     return artifacts.order_by('created_at')[_from:_to]
 
 
-class ArtifactsByIDController(MethodResource):
+class ArtifactView(MethodResource):
     """ Access Artifacts by id """
 
     @use_kwargs(artifacts_validator.get_args())
-    @marshal_with(ArtifactSchema(decorate=True))
+    @marshal_with(artifact_schema)
     def get(self, **params):
         """Logic for getting a single artifact"""
         try:
@@ -86,9 +86,8 @@ class ArtifactsByIDController(MethodResource):
     @marshal_with(None, code=204)
     def put(self, **params):
         """Logic for updating an artifact"""
-        object_id = params.pop("id")
         try:
-            artifact = Artifact.find_by(id_=object_id)
+            artifact = Artifact.find_by(id_=params.pop("id"))
             builder = ArtifactBuilder.for_artifact(artifact)
             builder.update_with(**params)
             return no_content()
@@ -99,9 +98,8 @@ class ArtifactsByIDController(MethodResource):
     @marshal_with(None, code=204)
     def patch(self, **params):
         """Logic for updating an artifact"""
-        object_id = params.pop("id")
         try:
-            artifact = Artifact.find_by(id_=object_id)
+            artifact = Artifact.find_by(id_=params.pop("id"))
             builder = ArtifactBuilder.for_artifact(artifact)
             builder.update_with(**params)
             return no_content()
@@ -112,9 +110,8 @@ class ArtifactsByIDController(MethodResource):
     @marshal_with(None, 204)
     def delete(self, **params):
         """Logic for deleting an artifact"""
-        object_id = params["id"]
         try:
-            artifact = Artifact.find_by(id_=object_id)
+            artifact = Artifact.find_by(id_=params['id'])
             filename_without_ext = os.path.splitext(artifact.file_url)[0]
             self._delete_files_starting_with(filename_without_ext)
             artifact.delete()
@@ -127,14 +124,14 @@ class ArtifactsByIDController(MethodResource):
             p.unlink()
 
 
-class ArtifactsController(MethodResource):
+class ArtifactsView(MethodResource):
     """ Controller for Artifacts """
 
     method_decorators = [check_es_connection]
 
     @check_es_connection
     @use_kwargs(artifacts_validator.search_args())
-    @marshal_with(ArtifactSchema(decorate=True, many=True))
+    @marshal_with(artifacts_schema)
     def get(self, **params):
         """Logic for querying several artifacts"""
         artifacts = _search_artifacts(params)
@@ -149,7 +146,7 @@ class ArtifactsController(MethodResource):
 
     @jwt_optional
     @use_kwargs(artifacts_validator.create_args())
-    @marshal_with(ArtifactSchema(decorate=True))
+    @marshal_with(artifact_schema)
     def post(self, **params):
         """Logic for creating an artifact"""
         metadata = self._upload_file(params)
@@ -174,13 +171,13 @@ class ArtifactsController(MethodResource):
         """ Logic for updating multiple artifacts at once """
 
         for update_data in params["artifacts"]:
-            object_id = update_data.pop("id")
+            id = update_data.pop("id")
             try:
-                artifact = Artifact.find_by(id_=object_id)
+                artifact = Artifact.find_by(id_=id)
                 builder = ArtifactBuilder.for_artifact(artifact)
                 builder.update_with(override_tags=False, **update_data)
             except Artifact.DoesNotExist:
-                return abort(404, f"failed at <{object_id}>: not found")
+                return abort(404, f"failed at <{id}>: not found")
 
         return no_content()
 

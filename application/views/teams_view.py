@@ -9,7 +9,7 @@ from flask_socketio import join_room, leave_room
 
 from ..extensions import socketio
 from ..models import Team, User
-from ..schemas.team_schema import TeamSchema
+from ..schemas.team_schema import team_schema, teams_schema
 from ..validators import teams_validator
 
 
@@ -27,11 +27,11 @@ def on_exit_team_space(data):
     leave_room(str(data["team_id"]))
 
 
-class TeamsByIDController(MethodResource):
+class TeamView(MethodResource):
     """Access teams by id"""
 
     @use_kwargs(teams_validator.get_args())
-    @marshal_with(TeamSchema(decorate=True))
+    @marshal_with(team_schema)
     def get(self, **params):
         """ get a single team """
         try:
@@ -41,7 +41,7 @@ class TeamsByIDController(MethodResource):
             return abort(404, 'team not found')
 
     @use_kwargs(teams_validator.update_args())
-    @marshal_with(TeamSchema(decorate=True))
+    @marshal_with(team_schema)
     def patch(self, **params):
         """Logic for updating a team"""
         try:
@@ -53,24 +53,23 @@ class TeamsByIDController(MethodResource):
             return abort(404, 'team not found')
 
     @use_kwargs(teams_validator.update_args())
-    @marshal_with(TeamSchema(decorate=True))
+    @marshal_with(team_schema)
     def put(self, **params):
         """Logic for updating a team"""
         try:
-            id = params.pop('id')
-            team = Team.find_by(id_=id)
+            team = Team.find_by(id_=params.pop('id'))
             team.update(**params)
             return team
         except Team.DoesNotExist:  # pylint:disable=no-member
             return abort(404, 'team not found')
 
 
-class TeamsController(MethodResource):
+class TeamsView(MethodResource):
     """ Controller for teams """
 
     @jwt_required
     @use_kwargs(teams_validator.index_args())
-    @marshal_with(TeamSchema(decorate=True, many=True))
+    @marshal_with(teams_schema)
     def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several teams"""
         user = User.find_by(id_=get_jwt_identity())
@@ -79,7 +78,7 @@ class TeamsController(MethodResource):
 
     @jwt_required
     @use_kwargs(teams_validator.create_args())
-    @marshal_with(TeamSchema(decorate=True))
+    @marshal_with(team_schema)
     def post(self, **params):
         """Logic for creating a team"""
         team = Team(**params).save()

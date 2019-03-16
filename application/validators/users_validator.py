@@ -5,7 +5,7 @@ from webargs import fields, ValidationError
 
 def get_args():
     return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "id": fields.UUID(required=True,location='view_args'),
     }
 
 
@@ -26,7 +26,7 @@ def create_args():
 def update_args():
     """Defines and validates params for update"""
     return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args'),
+        "id": fields.UUID(required=True, load_from='id', location='view_args'),
         "username": fields.Function(deserialize=validate_user_name),
         "email": fields.Email(),
         "password": fields.String(),
@@ -37,7 +37,7 @@ def update_args():
 def delete_args():
     """Defines and validates params for delete"""
     return {
-        "id": fields.UUID(required=True, load_from='object_id', location='view_args')
+        "id": fields.UUID(required=True, location='view_args')
     }
 
 

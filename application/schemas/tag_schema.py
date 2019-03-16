@@ -7,3 +7,6 @@ from ..base import BaseSchema
 class TagSchema(BaseSchema):
     """ Schema for importing and exporting Tag objects """
     name = fields.String()
+
+
+tag_schema = TagSchema()
