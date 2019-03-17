@@ -16,16 +16,11 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 
-    user_tags = RelationshipTo('application.models.Tag',
-                               'TAGGED_WITH', cardinality=cardinality.ZeroOrMore)
-    label_tags = RelationshipTo('application.models.Tag',
-                                'LABELED_WITH', cardinality=cardinality.ZeroOrMore)
-    text_tags = RelationshipTo('application.models.Tag',
-                               'CONTAINS_TEXT', cardinality=cardinality.ZeroOrMore)
-    team = RelationshipFrom('application.models.Team',
-                            'UPLOADED', cardinality=cardinality.ZeroOrOne)
-    user = RelationshipTo('application.models.User',
-                          'CREATED_BY', cardinality=cardinality.ZeroOrOne)
+    user_tags = RelationshipTo('application.models.Tag', 'TAGGED_WITH', cardinality=cardinality.ZeroOrMore)
+    label_tags = RelationshipTo('application.models.Tag', 'LABELED_WITH', cardinality=cardinality.ZeroOrMore)
+    text_tags = RelationshipTo('application.models.Tag', 'CONTAINS_TEXT', cardinality=cardinality.ZeroOrMore)
+    team = RelationshipFrom('application.models.Team', 'UPLOADED', cardinality=cardinality.ZeroOrOne)
+    user = RelationshipTo('application.models.User', 'CREATED_BY', cardinality=cardinality.ZeroOrOne)
 
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema

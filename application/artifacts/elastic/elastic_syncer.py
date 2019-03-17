@@ -75,17 +75,17 @@ class ElasticSyncer:
             return
 
     def _update_artifact(self, artifact):
-        params = self._artifact_dump_refactored(artifact)
+        params = self._artifact_dump(artifact)
         self._elastic().update(params)
 
     def _delete_artifact(self, artifact):
         self._elastic().delete(artifact.id_)
 
     def _create_elastic_artifact(self, artifact):
-        params = self._artifact_dump_refactored(artifact)
+        params = self._artifact_dump(artifact)
         self._elastic().create(params)
 
-    def _artifact_dump_refactored(self, artifact):
+    def _artifact_dump(self, artifact):
         return ArtifactSchema(model=application.artifacts.artifact.Artifact,
                               decorate=False).dump(artifact).data
 
