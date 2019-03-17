@@ -45,13 +45,7 @@ class TeamView(MethodResource):
     @marshal_with(TEAM_SCHEMA)
     def patch(self, **params):
         """Logic for updating a team"""
-        try:
-            id = params['id']
-            team = Team.find_by(id_=id)
-            team.update(name=params["name"])
-            return team
-        except Team.DoesNotExist:  # pylint:disable=no-member
-            return abort(404, 'team not found')
+        return self.put(**params)
 
     @use_kwargs(teams_validator.update_args())
     @marshal_with(TEAM_SCHEMA)
