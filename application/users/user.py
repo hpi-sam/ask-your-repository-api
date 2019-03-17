@@ -13,10 +13,8 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     email = StringProperty(required=True, unique_index=True)
     password = StringProperty(required=True)
 
-    teams = RelationshipFrom('application.models.Team', 'HAS_MEMBER',
-                             cardinality=cardinality.ZeroOrMore)
-    artifacts = RelationshipFrom('application.models.Artifact', 'CREATED_BY',
-                                 cardinality=cardinality.ZeroOrMore)
+    teams = RelationshipFrom('application.models.Team', 'HAS_MEMBER', cardinality=cardinality.ZeroOrMore)
+    artifacts = RelationshipFrom('application.models.Artifact', 'CREATED_BY', cardinality=cardinality.ZeroOrMore)
 
     @classmethod
     def find_by_email_or_username(cls, email_or_username):
@@ -24,7 +22,7 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
         return (cls.find_by(username=email_or_username, force=False)
                 or cls.find_by(email=email_or_username, force=False))
 
-    def generate_password(self, password):
+    def hash_password(self, password):
         """ Hash a password """
         return bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -34,10 +32,12 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     def update(self, **properties):
         if 'password' in properties:
-            properties['password'] = self.generate_password(properties['password'])
+            # This ensures that every saved password is hashed
+            # If user.password is accessed directly this isn't ensured
+            properties['password'] = self.hash_password(properties['password'])
         super().update(**properties)
 
     def pre_save(self):
         super()
         if self.does_not_exist():
-            self.password = self.generate_password(self.password)
+            self.password = self.hash_password(self.password)
