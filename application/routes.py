@@ -4,13 +4,13 @@
 def create_routes(app):
     """ Creates Routes. Called in __init__ """
 
-    from .views.home_view import HomeView
-    from .views.artifacts_view import ArtifactsView, ArtifactView
-    from .views.authentications_view import AuthenticationsView
-    from .views.presentations_view import PresentationsView
-    from .views.tags_view import TagsView
-    from .views.teams_view import TeamsView, TeamView
-    from .views.users_view import UsersView, UserView
+    from application.home.home_view import HomeView
+    from application.artifacts.artifacts_view import ArtifactsView, ArtifactView
+    from application.authentications.authentications_view import AuthenticationsView
+    from application.presentations.presentations_view import PresentationsView
+    from application.artifacts.tags.tags_view import TagsView
+    from application.teams.teams_view import TeamsView, TeamView
+    from application.users.users_view import UsersView, UserView
 
     app.add_url_rule('/images', view_func=ArtifactsView.as_view('artifactscontroller'))
     app.add_url_rule('/images/<id>',

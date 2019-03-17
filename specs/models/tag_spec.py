@@ -5,7 +5,7 @@ from expects import expect, equal, be_a, raise_error, contain_only, contain
 from mamba import describe, it, before, after
 from neomodel import db, UniqueProperty
 
-from application.models import Tag
+from application.artifacts.tags.tag import Tag
 from specs.models.custom_matcher import be_uuid
 from specs.spec_helpers import Context
 

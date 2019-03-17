@@ -8,7 +8,7 @@ from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
-from application.models import Artifact
+from application.artifacts.artifact import Artifact
 
 from specs.factories.artifact_factory import ArtifactFactory
 from specs.factories.user_factory import UserFactory

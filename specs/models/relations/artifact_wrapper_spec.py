@@ -4,8 +4,8 @@ from expects import expect, be_none, be_a, equal, contain
 from mamba import description, before, after, it, context
 from neomodel import db
 
-from application.models.artifact import Artifact
-from application.models.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact import Artifact
+from application.artifacts.artifact_builder import ArtifactBuilder
 from specs.spec_helpers import Context
 
 with description('Artifact Wrapper') as self:

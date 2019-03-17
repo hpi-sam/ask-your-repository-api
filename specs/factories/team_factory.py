@@ -1,4 +1,4 @@
-from application.models import Team
+from application.teams.team import Team
 from specs.factories.user_factory import UserFactory
 
 
