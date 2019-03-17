@@ -1,7 +1,7 @@
 """Defines schema for database Team objects"""
 from marshmallow import fields
 
-from application.base import BaseSchema
+from application.base_schema import BaseSchema
 
 
 class TagSchema(BaseSchema):
