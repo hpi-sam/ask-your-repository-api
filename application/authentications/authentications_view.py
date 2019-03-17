@@ -7,10 +7,9 @@ from flask_apispec.views import MethodResource
 from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
                                 set_access_cookies, get_csrf_token)
 
-from application.extensions import bcrypt
-from application.users.user import User
-from application.responders import respond_with
 from application.authentications import authentications_validator
+from application.responders import respond_with
+from application.users.user import User
 
 
 def validate_user(user, password):

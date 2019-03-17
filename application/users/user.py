@@ -32,13 +32,10 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
         """ Get password from hash """
         return bcrypt.check_password_hash(self.password, password.encode('utf-8'))
 
-    def update_password(self, password, old_password):
-        """ Update a password of a user to a new password """
-        if old_password and self.check_password(old_password):
-            self.password = self.generate_password(password)
-            self.save()
-            return True
-        return False
+    def update(self, **properties):
+        if 'password' in properties:
+            properties['password'] = self.generate_password(properties['password'])
+        super().update(**properties)
 
     def pre_save(self):
         super()
