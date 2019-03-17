@@ -6,10 +6,10 @@ from flask_apispec import MethodResource, marshal_with, use_kwargs
 from flask_jwt_extended import jwt_required
 from neomodel import exceptions
 
-from application.users.user import User
 from application.responders import no_content
-from application.users.user_schema import USER_SCHEMA, USERS_SCHEMA
 from application.users import users_validator
+from application.users.user import User
+from application.users.user_schema import USER_SCHEMA, USERS_SCHEMA
 
 
 class UserView(MethodResource):
@@ -32,6 +32,9 @@ class UserView(MethodResource):
         """Logic for updating a user"""
         try:
             user = User.find_by(id_=params.pop("id"))
+            if "password" in params:
+                if not user.check_password(params.pop('old_password', None)):
+                    return users_validator.raise_old_password_was_wrong()
             user.update(**params)
             return user
         except User.DoesNotExist:  # pylint:disable=no-member
@@ -42,19 +45,7 @@ class UserView(MethodResource):
     @marshal_with(USER_SCHEMA)
     def put(self, **params):
         """Logic for updating a user"""
-        try:
-            user = User.find_by(id_=params.pop("id"))
-            if "password" in params:
-                password = params.pop("password")
-                old_password = params.pop("old_password", None)
-                success = user.update_password(password, old_password)
-                print(success)
-                if not success:
-                    return {"error": "old password is not correct"}, 422
-            user.update(**params)
-            return user
-        except User.DoesNotExist:  # pylint:disable=no-member
-            return abort(404, 'user not found')
+        return self.patch(**params)
 
     @jwt_required
     @use_kwargs(users_validator.delete_args())

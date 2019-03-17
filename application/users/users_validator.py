@@ -1,6 +1,7 @@
 """ Defines validators for user requests """
 
-from webargs import fields, validate
+from webargs import fields, validate, ValidationError
+from webargs.flaskparser import abort
 
 
 def get_args():
@@ -40,3 +41,9 @@ def delete_args():
     return {
         "id": fields.UUID(required=True, location='view_args')
     }
+
+
+def raise_old_password_was_wrong():
+    """ Raises a valid HTTPException """
+    return abort(422, exc=ValidationError("old password is not correct"),
+                 messages={'old_password': ['Was not correct']})
