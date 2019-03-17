@@ -1,8 +1,8 @@
-""" Defines all Routes """
+"""Defines all Routes"""
 
 
 def create_routes(app):
-    """ Creates Routes. Called in __init__ """
+    """Creates Routes. Called in __init__"""
 
     from application.home.home_view import HomeView
     from application.artifacts import ARTIFACTS

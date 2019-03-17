@@ -19,7 +19,7 @@ class UserView(MethodResource):
     @use_kwargs(users_validator.get_args())
     @marshal_with(USER_SCHEMA)
     def get(self, **params):
-        """ get a single user """
+        """get a single user"""
         try:
             return User.find_by(id_=params['id'])
         except User.DoesNotExist:  # pylint:disable=no-member
@@ -62,7 +62,7 @@ class UserView(MethodResource):
 
 
 class UsersView(MethodResource):
-    """ Controller for users """
+    """Controller for users"""
 
     @jwt_required
     @use_kwargs(users_validator.index_args())

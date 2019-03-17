@@ -1,4 +1,4 @@
-""" Defines validators for team requests """
+"""Defines validators for team requests"""
 
 from webargs import fields, validate
 
@@ -9,7 +9,7 @@ def index_args():
 
 
 def get_args():
-    """ Defines and validates params for show """
+    """Defines and validates params for show"""
     return {
         "id": fields.UUID(required=True, location='view_args'),
     }

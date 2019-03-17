@@ -16,14 +16,14 @@ from application.teams import teams_validator
 
 @socketio.on("ENTER_TEAM_SPACE")
 def on_enter_team_space(data):
-    """ Logic for connecting to a Team with socketio """
+    """Logic for connecting to a Team with socketio"""
     current_app.logger.info("Join Room: " + data["team_id"])
     join_room(str(data["team_id"]))
 
 
 @socketio.on("EXIT_TEAM_SPACE")
 def on_exit_team_space(data):
-    """ Logic for leaving a Team with socketio """
+    """Logic for leaving a Team with socketio"""
     current_app.logger.info("Leave Room: " + data["team_id"])
     leave_room(str(data["team_id"]))
 
@@ -34,7 +34,7 @@ class TeamView(MethodResource):
     @use_kwargs(teams_validator.get_args())
     @marshal_with(TEAM_SCHEMA)
     def get(self, **params):
-        """ get a single team """
+        """get a single team"""
         try:
             team = Team.find_by(id_=params['id'])
             return team
@@ -66,7 +66,7 @@ class TeamView(MethodResource):
 
 
 class TeamsView(MethodResource):
-    """ Controller for teams """
+    """Controller for teams"""
 
     @jwt_required
     @use_kwargs(teams_validator.index_args())

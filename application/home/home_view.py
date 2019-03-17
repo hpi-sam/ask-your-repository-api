@@ -8,13 +8,13 @@ from marshmallow import Schema, fields
 
 
 class StatusSchema(Schema):
-    """ Schema for the service status """
+    """Schema for the service status"""
     service_name = fields.String()
     database_status = fields.String()
 
 
 class HomeView: # pylint:disable=too-few-public-methods
-    """ Defines Routes on collection """
+    """Defines Routes on collection"""
 
     @marshal_with(StatusSchema)
     def show_status(self):

@@ -1,4 +1,4 @@
-""" Provides Artifact functionality and routes """
+"""Provides Artifact functionality and routes"""
 from flask import Blueprint
 
 from .artifacts_view import ArtifactView, ArtifactsView

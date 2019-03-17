@@ -1,4 +1,4 @@
-""" Defines wrapper for Routes and Resources """
+"""Defines wrapper for Routes and Resources"""
 
 from flask import current_app
 from marshmallow import Schema, post_load, post_dump
@@ -20,7 +20,7 @@ def output_decorator(decorator_function):
 
 
 class BaseSchema(Schema):
-    """ Initialize Schemas with Schema(Model) """
+    """Initialize Schemas with Schema(Model)"""
 
     def __init__(self, *args, model=None, decorate=False, create_objects=True, **kwargs):
         super().__init__(*args, **kwargs)
@@ -30,7 +30,7 @@ class BaseSchema(Schema):
 
     @post_load
     def make_resource(self, data):
-        """ Builds an instance of the Model on schema.load """
+        """Builds an instance of the Model on schema.load"""
         if self.create_objects:
             return self.model(data)
         return data

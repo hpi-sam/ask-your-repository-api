@@ -1,9 +1,9 @@
-""" Generate Synonyms """
+"""Generate Synonyms"""
 from textblob import Word
 
 
 class SynonymGenerator:  # pylint:disable=too-few-public-methods
-    """ Generate synonyms/related words based on a search """
+    """Generate synonyms/related words based on a search"""
 
     def __init__(self, params):
         self.params = params
@@ -14,7 +14,7 @@ class SynonymGenerator:  # pylint:disable=too-few-public-methods
         self.synonyms_list = ""
 
     def get_synonyms(self):
-        """ Get synonyms for this configured generator """
+        """Get synonyms for this configured generator"""
         self._create_synsets()
         self._combine_synsets()
         self.synonyms_list = self._parse_synsets_to_string(self.synonyms)

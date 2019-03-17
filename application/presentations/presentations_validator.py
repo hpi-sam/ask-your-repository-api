@@ -1,4 +1,4 @@
-""" Defines validators for presentation requests """
+"""Defines validators for presentation requests"""
 
 from webargs import fields
 

@@ -1,4 +1,4 @@
-""" Provides Authentication functionality and routes """
+"""Provides Authentication functionality and routes"""
 from flask import Blueprint
 
 from .authentications_view import AuthenticationsView

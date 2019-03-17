@@ -41,8 +41,8 @@ def create_app(config_filename=None):
 
 
 def register_error_handlers(app):
-    """ Return validation errors as json as suggested here:
-        https://webargs.readthedocs.io/en/latest/framework_support.html """
+    """Return validation errors as json as suggested here:
+        https://webargs.readthedocs.io/en/latest/framework_support.html"""
 
     @app.errorhandler(422)
     @app.errorhandler(400)
@@ -63,6 +63,6 @@ def register_error_handlers(app):
 
 
 def register_extensions(app):
-    """ Registers all flask extensions """
+    """Registers all flask extensions"""
     socketio.init_app(app)
     bcrypt.init_app(app)

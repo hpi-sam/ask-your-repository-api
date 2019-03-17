@@ -13,16 +13,16 @@ from application.users.user import User
 
 
 def validate_user(user, password):
-    """ Validates that a password is correct for the user """
+    """Validates that a password is correct for the user"""
     return user and user.check_password(password)
 
 
 class AuthenticationsView(MethodResource):
-    """ Controller for authentication """
+    """Controller for authentication"""
 
     @use_kwargs(authentications_validator.create_args())
     def post(self, **params):
-        """ Returns a cookie and a csrf token for double submit CSRF protection. """
+        """Returns a cookie and a csrf token for double submit CSRF protection."""
         user = User.find_by_email_or_username(params["email_or_username"])
         if not validate_user(user, params["password"]):
             return {"error": "Bad username or password"}, 401
@@ -30,7 +30,7 @@ class AuthenticationsView(MethodResource):
 
     @jwt_required
     def delete(self):  # pylint: disable=W0613
-        """ Unsets the cookie in response """
+        """Unsets the cookie in response"""
         resp = jsonify({'logout': True})
         unset_jwt_cookies(resp)
         response = make_response(resp, 200)

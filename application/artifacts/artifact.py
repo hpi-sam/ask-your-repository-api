@@ -1,4 +1,4 @@
-""" Access to Artifacts via Neo4J """
+"""Access to Artifacts via Neo4J"""
 
 from neomodel import (StructuredNode, StringProperty, DateTimeProperty,
                       RelationshipTo, RelationshipFrom, cardinality)
@@ -11,7 +11,7 @@ from application.artifacts.elastic import ElasticSyncer
 # pylint:disable=abstract-method
 class Artifact(StructuredNode, DefaultPropertyMixin,
                DefaultHelperMixin):
-    """ The class that manages artifacts """
+    """The class that manages artifacts"""
     schema = ArtifactSchema
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
@@ -31,13 +31,13 @@ class Artifact(StructuredNode, DefaultPropertyMixin,
 
     @property
     def team_id(self):
-        """ Returns this artifacts teams id """
+        """Returns this artifacts teams id"""
         team = self.team.single()  # pylint:disable=no-member
         return team.id_ if team else None
 
     @property
     def author(self):
-        """ Returns this artifacts author """
+        """Returns this artifacts author"""
         return self.user.single()  # pylint:disable=no-member
 
     def post_save(self):

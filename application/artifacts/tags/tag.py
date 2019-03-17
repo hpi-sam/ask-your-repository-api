@@ -1,4 +1,4 @@
-""" Access to Tag object from Neo4J """
+"""Access to Tag object from Neo4J"""
 from neomodel import StructuredNode, StringProperty, RelationshipFrom, cardinality
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
@@ -6,7 +6,7 @@ from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 
 # pylint:disable=abstract-method
 class Tag(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
-    """ The class that manages Tags """
+    """The class that manages Tags"""
     name = StringProperty(required=True, unique_index=True)
 
     user_tagged_artifacts = RelationshipFrom('application.models.Artifact', 'TAGGED_WITH',

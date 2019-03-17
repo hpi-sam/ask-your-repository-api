@@ -1,8 +1,8 @@
-""" Encapsulates how to search for artifacts """
+"""Encapsulates how to search for artifacts"""
 
 
 class ArtifactSearchBuilder:  # pylint:disable=too-few-public-methods
-    """ Builds elasticsearch search request bodies """
+    """Builds elasticsearch search request bodies"""
 
     SEARCH_CONFIG = {
         "text_prio": 1,
@@ -22,7 +22,7 @@ class ArtifactSearchBuilder:  # pylint:disable=too-few-public-methods
         self.body = {}
 
     def build(self):
-        """ build the search body in attribute .body """
+        """build the search body in attribute .body"""
         self._add_limit_offset()
         self.body["sort"] = self._sort()
         self.body["query"] = self._query()

@@ -1,9 +1,9 @@
-""" Find suggested tags """
+"""Find suggested tags"""
 from neomodel import db
 
 
 def find_tags(team, limit, tags=None):
-    """ find tags in a given team
+    """find tags in a given team
     :param team: instance of Team model, only tags used in that team will be returned
     :param limit: how many tags to fetch
     :param tags: refines the search to favor related tags
@@ -14,7 +14,7 @@ def find_tags(team, limit, tags=None):
 
 
 def tags_by_team(team, limit, excluded_tags=None):
-    """ Find tags by a given team with excluded tags """
+    """Find tags by a given team with excluded tags"""
     query = _collect_artifacts_query() + _collect_tags_query()
     result, meta = team.cypher(query, {'limit': limit, 'tags': excluded_tags or []})  # pylint:disable=unused-variable
     tags = [sorted_tag[0] for sorted_tag in result]
@@ -30,7 +30,7 @@ def _collect_artifacts_query():
 
 
 def tags_by_team_and_tags(team, limit, tags):
-    """ Find tags... """
+    """Find tags..."""
     query = _collect_artifacts_with_tags_query() + _collect_tags_query()
     tag_dictionary = {}
     for _ in range(1, len(tags) + 1):

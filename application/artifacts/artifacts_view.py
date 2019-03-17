@@ -29,7 +29,7 @@ from .artifact import Artifact
 @socketio.on("SYNCHRONIZED_SEARCH")
 @socketio_args(artifacts_validator.search_args())
 def synchronized_search(params):
-    """ Called from client when presentation mode is on """
+    """Called from client when presentation mode is on"""
     artifacts = _search_artifacts(params)
 
     emit('START_PRESENTATION',
@@ -71,7 +71,7 @@ def _find_multiple_by(params):
 
 
 class ArtifactView(MethodResource):
-    """ Access Artifacts by id """
+    """Access Artifacts by id"""
 
     @use_kwargs(artifacts_validator.get_args())
     @marshal_with(ARTIFACT_SCHEMA)
@@ -126,7 +126,7 @@ class ArtifactView(MethodResource):
 
 
 class ArtifactsView(MethodResource):
-    """ Controller for Artifacts """
+    """Controller for Artifacts"""
 
     method_decorators = [check_es_connection]
 
@@ -169,7 +169,7 @@ class ArtifactsView(MethodResource):
     @use_kwargs(artifacts_validator.update_many_args())
     @marshal_with(None, 204)
     def patch(self, **params):
-        """ Logic for updating multiple artifacts at once """
+        """Logic for updating multiple artifacts at once"""
 
         for update_data in params["artifacts"]:
             id = update_data.pop("id")

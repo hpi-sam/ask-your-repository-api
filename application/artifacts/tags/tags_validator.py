@@ -1,4 +1,4 @@
-""" Defines validators for tags requests """
+"""Defines validators for tags requests"""
 
 from webargs import fields
 
@@ -12,7 +12,7 @@ def add_tags_args():
 
 
 def suggested_tags_args():
-    """ Defines and validates suggested tags params """
+    """Defines and validates suggested tags params"""
     return {
         "team_id": fields.UUID(required=True),
         "tags": fields.List(fields.String(), missing=[]),

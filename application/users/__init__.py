@@ -1,4 +1,4 @@
-""" Provides User functionality and routes """
+"""Provides User functionality and routes"""
 from flask import Blueprint
 
 from .users_view import UserView, UsersView
