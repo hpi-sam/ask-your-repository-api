@@ -1,7 +1,7 @@
 """Defines schema for database Team objects"""
 from marshmallow import fields, post_dump
 
-from application.base import BaseSchema, output_decorator
+from application.base_schema import BaseSchema, output_decorator
 
 
 class UserSchema(BaseSchema):

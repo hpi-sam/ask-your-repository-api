@@ -2,7 +2,7 @@
 from marshmallow import fields, post_dump
 
 from application.users.user_schema import UserSchema
-from application.base import BaseSchema, output_decorator
+from application.base_schema import BaseSchema, output_decorator
 
 
 class TeamSchema(BaseSchema):

@@ -4,7 +4,7 @@ from marshmallow import post_dump, fields
 
 from application.artifacts.tags.tag_schema import TagSchema
 from application.users.user_schema import UserSchema
-from application.base import BaseSchema, output_decorator
+from application.base_schema import BaseSchema, output_decorator
 
 
 class ArtifactSchema(BaseSchema):
