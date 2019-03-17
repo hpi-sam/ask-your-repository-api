@@ -1,4 +1,4 @@
-""" Defines validators for authentication requests """
+"""Defines validators for authentication requests"""
 
 from webargs import fields
 

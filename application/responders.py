@@ -1,10 +1,10 @@
-""" Define responders that can be used in views """
+"""Define responders that can be used in views"""
 
 from flask import make_response
 
 
 def respond_with(resource):
-    """ Responds with a collection of - or single json """
+    """Responds with a collection of - or single json"""
     if isinstance(resource, (list,)):
         if resource:
             return (resource[0].schema(model=resource.__class__, decorate=True)
@@ -14,8 +14,8 @@ def respond_with(resource):
 
 
 def no_content():
-    """ Creates an empty response with
-    application/json mimetype """
+    """Creates an empty response with
+    application/json mimetype"""
 
     response = make_response('', 204)
     response.mimetype = 'application/json'

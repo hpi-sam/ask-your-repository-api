@@ -1,4 +1,4 @@
-""" Defines validators for user requests """
+"""Defines validators for user requests"""
 
 from webargs import fields, validate, ValidationError
 from webargs.flaskparser import abort
@@ -44,6 +44,6 @@ def delete_args():
 
 
 def raise_old_password_was_wrong():
-    """ Raises a valid HTTPException """
+    """Raises a valid HTTPException"""
     return abort(422, exc=ValidationError("old password is not correct"),
                  messages={'old_password': ['Was not correct']})

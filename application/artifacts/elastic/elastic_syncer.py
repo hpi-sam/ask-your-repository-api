@@ -1,4 +1,4 @@
-""" Logic for synchronizing Neo with Elasticsearch"""
+"""Logic for synchronizing Neo with Elasticsearch"""
 
 from elasticsearch import exceptions  # pylint:disable=no-name-in-module
 from flask import current_app  # pylint:disable=wrong-import-order
@@ -8,16 +8,16 @@ from application.artifacts.artifact_schema import ArtifactSchema
 
 
 class ElasticSyncer:
-    """ Synchronization class """
+    """Synchronization class"""
 
     @classmethod
     def sync_enabled(cls):
-        """ Check if synchonization is enabled """
+        """Check if synchonization is enabled"""
         return current_app.config["ES_SYNC"]
 
     @classmethod
     def set_sync_status(cls, sync):
-        """ Set synchronization to enabled or disabled"""
+        """Set synchronization to enabled or disabled"""
         current_app.config["ES_SYNC"] = sync
 
     def __init__(self):
@@ -25,27 +25,27 @@ class ElasticSyncer:
 
     @classmethod
     def for_artifact(cls, artifact):
-        """ Create a Syncer for one artifact """
+        """Create a Syncer for one artifact"""
         syncer = cls()
         syncer.artifacts = [artifact]
         return syncer
 
     @classmethod
     def for_artifacts(cls, artifacts):
-        """ Create a Syncer for multiple artifacts """
+        """Create a Syncer for multiple artifacts"""
         syncer = cls()
         syncer.artifacts = artifacts
         return syncer
 
     @classmethod
     def sync_everything(cls):
-        """ Synchronize all artifacts from neo to elasticsearch """
+        """Synchronize all artifacts from neo to elasticsearch"""
         syncer = cls()
         syncer.artifacts = application.artifacts.artifact.Artifact.all()
         syncer.sync()
 
     def sync(self):
-        """ Start the syncrhonization process """
+        """Start the syncrhonization process"""
         if ElasticSyncer.sync_enabled():
             self._sync_all(self.artifacts)
 
@@ -60,7 +60,7 @@ class ElasticSyncer:
             self._create_elastic_artifact(artifact)
 
     def delete(self):
-        """ Delete the artifacts this syncer was created for in ES """
+        """Delete the artifacts this syncer was created for in ES"""
         if ElasticSyncer.sync_enabled():
             self._delete_all(self.artifacts)
 
@@ -94,14 +94,14 @@ class ElasticSyncer:
 
 
 class ElasticAccess:
-    """ Access to basic crud on elasticsearch """
+    """Access to basic crud on elasticsearch"""
 
     def __init__(self, index, type):
         self.index = index
         self.type = type
 
     def create(self, data):
-        """ create a document """
+        """create a document"""
         current_app.es.index(
             index=self.index,
             doc_type=self.type,
@@ -109,7 +109,7 @@ class ElasticAccess:
             body=data)
 
     def update(self, data):
-        """ update a document """
+        """update a document"""
         current_app.es.update(
             index=self.index,
             doc_type=self.type,
@@ -119,7 +119,7 @@ class ElasticAccess:
             })
 
     def delete(self, id):  # pylint:disable= invalid-name
-        """ delete a document """
+        """delete a document"""
         current_app.es.delete(
             refresh='wait_for',
             index=self.index,

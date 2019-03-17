@@ -1,4 +1,4 @@
-""" Provides presentation functionality and routes """
+"""Provides presentation functionality and routes"""
 from flask import Blueprint
 
 from .presentations_view import PresentationsView

@@ -1,4 +1,4 @@
-""" Access to User objects in Ne4J """
+"""Access to User objects in Ne4J"""
 from neomodel import StructuredNode, StringProperty, RelationshipFrom, cardinality
 
 from application.extensions import bcrypt
@@ -7,7 +7,7 @@ from application.users.user_schema import UserSchema
 
 
 class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
-    """ The class that manages Users """
+    """The class that manages Users"""
     schema = UserSchema
     username = StringProperty(required=True, unique_index=True)
     email = StringProperty(required=True, unique_index=True)
@@ -23,11 +23,11 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
                 or cls.find_by(email=email_or_username, force=False))
 
     def hash_password(self, password):
-        """ Hash a password """
+        """Hash a password"""
         return bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        """ Get password from hash """
+        """Get password from hash"""
         return bcrypt.check_password_hash(self.password, password.encode('utf-8'))
 
     def update(self, **properties):

@@ -1,4 +1,4 @@
-""" Abstracting Sync of Neo and Elastic"""
+"""Abstracting Sync of Neo and Elastic"""
 
 from application.artifacts.artifact import Artifact
 from application.artifacts.tags.tag import Tag
@@ -8,11 +8,11 @@ from application.artifacts.property_builder import PropertyBuilder
 
 
 class ArtifactBuilder:
-    """ This class helps with building Artifacts """
+    """This class helps with building Artifacts"""
 
     @classmethod
     def for_artifact(cls, neo):
-        """ Create an ArtifactBuilder for a specific Artifact """
+        """Create an ArtifactBuilder for a specific Artifact"""
         builder = cls()
         builder.neo = neo
         return builder
@@ -21,7 +21,7 @@ class ArtifactBuilder:
         self.neo = None
 
     def build_with(self, **properties):
-        """ builds self.neo and saves it"""
+        """builds self.neo and saves it"""
         props = PropertyBuilder(**properties)
         neo_properties = props.node_properties
         self.neo = Artifact(**neo_properties).save()

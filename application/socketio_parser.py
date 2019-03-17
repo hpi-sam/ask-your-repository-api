@@ -1,4 +1,4 @@
-""" Custom Parser to validate socketio requests with webargs """
+"""Custom Parser to validate socketio requests with webargs"""
 
 from webargs.core import Parser, get_value, dict2schema
 
@@ -9,11 +9,11 @@ except ImportError:
 
 
 class SocketioParser(Parser):
-    """ Only parses requests that are json / dictionaries """
+    """Only parses requests that are json / dictionaries"""
     DEFAULT_LOCATIONS = ["json"]
 
     def parse_json(self, params, name, field):
-        """ Parses a single element of the socketio request json """
+        """Parses a single element of the socketio request json"""
         return get_value(params, name, field)
 
     # pylint: disable=too-many-arguments
@@ -25,7 +25,7 @@ class SocketioParser(Parser):
             validate=None,
             error_status_code=None,
             error_headers=None):
-        """ Creates a decorator funtion for socketio on-methods """
+        """Creates a decorator funtion for socketio on-methods"""
         locations = locations or self.locations
         # Optimization: If argmap is passed as a dictionary, we only need
         # to generate a Schema once

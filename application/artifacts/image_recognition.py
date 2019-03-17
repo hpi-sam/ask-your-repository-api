@@ -9,7 +9,7 @@ from application.artifacts.artifact_schema import ArtifactSchema
 
 
 class ImageRecognizer:
-    """ Send images to google to gather additional tags """
+    """Send images to google to gather additional tags"""
     @classmethod
     def auto_add_tags(cls, artifact):
         """Adds automatically generated tags to the artifact.
@@ -75,7 +75,7 @@ class ImageRecognizer:
 
     @classmethod
     def add_tags_artifact(cls, artifact, label_annotations, text_annotations):
-        """ Adds annotations to an artifact """
+        """Adds annotations to an artifact"""
         builder = ArtifactBuilder.for_artifact(artifact)
         builder.update_with(override_tags=False,
                             label_tags=label_annotations, text_tags=text_annotations)

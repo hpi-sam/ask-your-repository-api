@@ -1,4 +1,4 @@
-""" Provides Team functionality and routes """
+"""Provides Team functionality and routes"""
 from flask import Blueprint
 
 from .teams_view import TeamView, TeamsView

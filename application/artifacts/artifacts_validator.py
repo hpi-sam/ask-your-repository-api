@@ -1,4 +1,4 @@
-""" Defines validators for artifact requests """
+"""Defines validators for artifact requests"""
 
 from webargs import ValidationError, fields
 
@@ -6,7 +6,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
 def get_args():
-    """ Defines and validates params for show """
+    """Defines and validates params for show"""
     return {
         "id": fields.UUID(required=True, location='view_args')
     }

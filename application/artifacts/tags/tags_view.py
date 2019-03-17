@@ -15,19 +15,19 @@ from application.artifacts.tags import tag_suggestions, tags_validator
 
 
 class SuggestedTagsSchema(Schema):
-    """ Schema for returning suggested tags """
+    """Schema for returning suggested tags"""
     tags = fields.List(fields.String())
 
 
 class TagsView(MethodResource):
-    """ Controller for Artifacts """
+    """Controller for Artifacts"""
 
     method_decorators = [check_es_connection]
 
     @use_kwargs(tags_validator.add_tags_args())
     @marshal_with(None, 201)
     def add_tags(self, **params):
-        """ Adds tags to an existing artifact """
+        """Adds tags to an existing artifact"""
         try:
             artifact = Artifact.find_by(id_=params.pop('id'))
             builder = ArtifactBuilder.for_artifact(artifact)
@@ -43,7 +43,7 @@ class TagsView(MethodResource):
     @use_kwargs(tags_validator.suggested_tags_args())
     @marshal_with(SuggestedTagsSchema)
     def suggested_tags(self, **params):
-        """ Takes an array of tags and suggests tags based on that """
+        """Takes an array of tags and suggests tags based on that"""
         current_tags = params['tags']
         team = Team.find(params['team_id'])
         current_tags = [tag for tag in current_tags if tag != ""]
