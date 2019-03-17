@@ -87,13 +87,7 @@ class ArtifactView(MethodResource):
     @marshal_with(None, code=204)
     def put(self, **params):
         """Logic for updating an artifact"""
-        try:
-            artifact = Artifact.find_by(id_=params.pop("id"))
-            builder = ArtifactBuilder.for_artifact(artifact)
-            builder.update_with(**params)
-            return no_content()
-        except Artifact.DoesNotExist:
-            return abort(404, 'artifact not found')
+        return self.patch(**params)
 
     @use_kwargs(artifacts_validator.update_args())
     @marshal_with(None, code=204)
