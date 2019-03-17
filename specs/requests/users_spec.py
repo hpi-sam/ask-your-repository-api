@@ -5,7 +5,7 @@ from expects import expect, have_key, have_len, contain_only, equal, be, be_empt
 from mamba import description, before, after, it
 from neomodel import db
 
-from application.models.user import User
+from application.users.user import User
 from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 

@@ -1,5 +1,5 @@
-from application.models import Artifact
-from application.models.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact import Artifact
+from application.artifacts.artifact_builder import ArtifactBuilder
 
 class ArtifactFactory:
     @classmethod

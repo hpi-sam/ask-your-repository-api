@@ -5,7 +5,7 @@ from expects import expect, equal, be_a, raise_error, contain_only, contain
 from mamba import describe, it, before, after
 from neomodel import db
 
-from application.models import Team
+from application.teams.team import Team
 from specs.models.custom_matcher import be_uuid
 from specs.spec_helpers import Context
 

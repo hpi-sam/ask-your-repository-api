@@ -7,8 +7,8 @@ from hamcrest import anything
 from mamba import describe, it, before, after, context
 from neomodel import db
 
-from application.models import Artifact
-from application.models.elastic import ElasticSyncer
+from application.artifacts.artifact import Artifact
+from application.artifacts.elastic import ElasticSyncer
 from specs.spec_helpers import Context
 
 OFF = False

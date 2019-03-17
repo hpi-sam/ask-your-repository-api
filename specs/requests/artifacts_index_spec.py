@@ -4,7 +4,9 @@ from flask import current_app
 from mamba import description, context, before, after, it
 from neomodel import db
 
-from application.models import Artifact, Team, Tag
+from application.artifacts.artifact import Artifact
+from application.teams.team import Team
+from application.artifacts.tags.tag import Tag
 from specs.factories.elasticsearch import es_search_response
 from specs.factories.request_generator import build_request
 from specs.spec_helpers import Context

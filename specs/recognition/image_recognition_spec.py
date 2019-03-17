@@ -3,8 +3,8 @@ from doublex_expects import have_been_called
 from expects import expect, contain
 from mamba import description, before, it
 
-from application.models.artifact_builder import ArtifactBuilder
-from application.recognition.image_recognition import ImageRecognizer
+from application.artifacts.artifact_builder import ArtifactBuilder
+from application.artifacts.image_recognition import ImageRecognizer
 from specs.factories.image_recognition import vision_api_response
 from specs.spec_helpers import Context
 

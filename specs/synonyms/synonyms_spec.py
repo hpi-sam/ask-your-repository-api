@@ -1,7 +1,7 @@
 from expects import expect, equal
 from mamba import description, before, it
 
-from application.synonyms.synonyms import SynonymGenerator
+from application.artifacts.synonyms import SynonymGenerator
 
 with description('all functions return correct value') as self:
     with before.each:
