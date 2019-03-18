@@ -1,6 +1,10 @@
 FROM python:3.7-alpine
 
-RUN apk add libffi-dev zlib build-base
+RUN apk add libffi-dev build-base
+
+# pillow dependencies
+RUN apk add jpeg-dev zlib-dev
+
 RUN pip install poetry
 
 COPY . /src
