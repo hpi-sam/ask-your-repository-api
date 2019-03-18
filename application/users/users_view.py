@@ -7,8 +7,9 @@ from flask_jwt_extended import jwt_required
 from neomodel import exceptions
 
 from application.responders import no_content
+from application.authentications.authentications_view import validate_id_token
 from application.users import users_validator
-from application.users.user import User
+from application.users.user import User, get_google_credentials
 from application.users.user_schema import USER_SCHEMA, USERS_COLLECTION_SCHEMA
 
 
@@ -32,6 +33,13 @@ class UserView(MethodResource):
         """Logic for updating a user"""
         try:
             user = User.find_by(id_=params.pop("id"))
+            if 'id_token' in params:
+                id_token = params.pop('id_token')
+                google_id, _ = validate_id_token(id_token)
+                params["google_id"] = google_id
+            if 'auth_code' in params:
+                auth_code = params.pop('auth_code')
+                params['google_api_credentials'] = get_google_credentials(auth_code)
             if "password" in params:
                 if not user.check_password(params.pop('old_password', None)):
                     return users_validator.raise_old_password_was_wrong()

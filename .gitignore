@@ -9,3 +9,4 @@ __pycache__
 uploads/
 htmlcov
 .venv
+credentials.json

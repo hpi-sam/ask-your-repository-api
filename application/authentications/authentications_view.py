@@ -67,7 +67,7 @@ def _get_user_from_google_token(token):
     :param token: id_token returned by google login
     :return: instance of User
     """
-    google_id, email = _validate_id_token(token)
+    google_id, email = validate_id_token(token)
     user = User.find_by(google_id=google_id, force=False)
     if not user:
         user = User.find_by(email=email, force=False)
@@ -76,7 +76,7 @@ def _get_user_from_google_token(token):
     return user
 
 
-def _validate_id_token(token):
+def validate_id_token(token):
     """Validates a google id_token.
     See https://developers.google.com/identity/sign-in/web/backend-auth?hl=de for reference.
     """

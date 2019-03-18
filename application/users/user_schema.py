@@ -9,6 +9,8 @@ class UserSchema(BaseSchema):
     id_ = fields.UUID(missing=None)
     username = fields.String()
     email = fields.String()
+    google_id = fields.String()
+    connected_to_drive = fields.Bool()
 
     def __init__(self, *args, add_collection_key=False, **kwargs):
         super().__init__(*args, **kwargs)
