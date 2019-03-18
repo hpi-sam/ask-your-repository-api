@@ -32,7 +32,9 @@ def update_args():
         "username": fields.String(validate=validate.Length(min=1)),
         "email": fields.Email(),
         "password": fields.String(),
-        "old_password": fields.String()
+        "old_password": fields.String(),
+        "id_token": fields.String(),
+        "auth_code": fields.String()
     }
 
 

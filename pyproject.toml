@@ -23,6 +23,8 @@ flask-jwt-extended = "^3.17"
 flask-bcrypt = "^0.7.1"
 flask-apispec = "^0.8.0"
 google-auth = "^1.6"
+google-auth-oauthlib = "^0.2.0"
+google-auth-httplib2 = "^0.0.3"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
