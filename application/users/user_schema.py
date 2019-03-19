@@ -10,6 +10,10 @@ class UserSchema(BaseSchema):
     username = fields.String()
     email = fields.String()
 
+    def __init__(self, *args, add_collection_key=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_collection_key = add_collection_key
+
     @output_decorator
     def transform_fields(self, data):
         """Transforms field for output"""
@@ -19,10 +23,11 @@ class UserSchema(BaseSchema):
     @post_dump(pass_many=True)
     def dump_users(self, data, many):
         """add a key for the returned collection"""
-        if many:
+        if many and self.add_collection_key:
             return {'users': data, 'users_count': len(data)}
         return data
 
 
 USER_SCHEMA = UserSchema(decorate=True)
 USERS_SCHEMA = UserSchema(decorate=True, many=True)
+USERS_COLLECTION_SCHEMA = UserSchema(decorate=True, many=True, add_collection_key=True)
