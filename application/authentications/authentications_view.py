@@ -6,12 +6,12 @@ from flask_apispec import use_kwargs
 from flask_apispec.views import MethodResource
 from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
                                 set_access_cookies, get_csrf_token)
-from google.oauth2 import id_token
-from google.auth.transport import requests
 
 from application.authentications import authentications_validator
 from application.responders import respond_with
 from application.users.user import User
+from application.users.oauth_providers.oauth_provider import OAuthProvider
+from application.users.oauth_providers.google_oauth import validate_google_id_token
 
 
 def validate_user(user, password):
@@ -67,27 +67,15 @@ def _get_user_from_google_token(token):
     :param token: id_token returned by google login
     :return: instance of User
     """
-    google_id, email = validate_id_token(token)
-    user = User.find_by(google_id=google_id, force=False)
-    if not user:
+    google_id, email = validate_google_id_token(token)
+    google_auth = OAuthProvider.find_by(name='google', user_id=google_id, force=False)
+    if not google_auth:
         user = User.find_by(email=email, force=False)
         if not user:
-            user = User.create(email=email, username=email, google_id=google_id)
+            user = User.create(email=email, username=email)
+        google_auth = OAuthProvider(name='google', user_id=google_id)
+        google_auth.connect(user)
+        google_auth.save()
+    else:
+        user = google_auth.user.single()
     return user
-
-
-def validate_id_token(token):
-    """Validates a google id_token.
-    See https://developers.google.com/identity/sign-in/web/backend-auth?hl=de for reference.
-    """
-    try:
-        id_info = id_token.verify_oauth2_token(token,
-                                               requests.Request(),
-                                               current_app.config['CLIENT_ID'])
-        if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise ValueError('Wrong issuer.')
-
-        # ID token is valid. Get the user's Google Account ID  and email from the decoded token.
-        return id_info['sub'], id_info['email']
-    except ValueError:
-        pass
