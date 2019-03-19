@@ -21,7 +21,10 @@ class TeamSchema(BaseSchema):
     def dump_teams(self, data, many):
         """add a key for the returned collection"""
         if many:
+            for team in data:
+                team["members"] = team["members"]["users"]
             return {'teams': data, 'teams_count': len(data)}
+        data["members"] = data["members"]["users"]
         return data
 
 
