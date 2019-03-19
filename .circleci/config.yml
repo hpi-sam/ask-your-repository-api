@@ -51,11 +51,13 @@ jobs:
       - run: docker build -t bp2018hg1/elija:$CIRCLE_WORKFLOW_ID -t bp2018hg1/elija:latest .
       - run: docker push bp2018hg1/elija:$CIRCLE_WORKFLOW_ID
       - run: docker push bp2018hg1/elija:latest
-  deploy:
-    docker:
-      - image: dtzar/helm-kubectl:2.11.0
+  deploy_staging:
+    machine: true
     steps:
-      - run: kubectl set image deployment elija elija=bp2018hg1/elija:$CIRCLE_WORKFLOW_ID --server=$KUBERNETES_SERVER --token=$KUBERNETES_BEARER_TOKEN
+      - add_ssh_keys:
+          fingerprints:
+            - $STAGING_DEPLOY_FINGERPRINT
+      - run: ssh root@$STAGING_DEPLOY_HOST "cd $STAGING_DEPLOY_HOME; ./deploy-scripts/elija"
 workflows:
   version: 2
   pipeline:
@@ -71,7 +73,7 @@ workflows:
           filters:
             branches:
               only: master
-      - deploy:
+      - deploy_staging:
           requires:
             - build
           filters:
