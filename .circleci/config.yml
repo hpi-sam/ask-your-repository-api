@@ -57,7 +57,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - $STAGING_DEPLOY_FINGERPRINT
-      - run: ssh root@$STAGING_DEPLOY_HOST "cd $STAGING_DEPLOY_HOME; ./deploy-scripts/elija"
+      - run: ssh root@$STAGING_DEPLOY_HOST "cd $STAGING_DEPLOY_HOME; ./deploy elija bp2018hg1/elija:$CIRCLE_WORKFLOW_ID"
 workflows:
   version: 2
   pipeline:
