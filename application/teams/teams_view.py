@@ -1,11 +1,13 @@
 """
 Handles all logic of the artefacts api
 """
+import os
 from flask import current_app, abort
+from flask_socketio import join_room, leave_room
+import requests
 from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_socketio import join_room, leave_room
+from flask_jwt_extended import jwt_required, get_jwt_identity, jwt_optional
 
 from application.extensions import socketio
 from application.teams.team import Team
@@ -62,11 +64,13 @@ class TeamView(MethodResource):
 class TeamsView(MethodResource):
     """Controller for teams"""
 
-    @jwt_required
     @use_kwargs(teams_validator.index_args())
     @marshal_with(TEAMS_SCHEMA)
     def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several teams"""
+
+        if get_jwt_identity() is None:
+            return Team.all()
         user = User.find_by(id_=get_jwt_identity())
         teams = list(user.teams)
         return teams
