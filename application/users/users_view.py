@@ -9,7 +9,7 @@ from neomodel import exceptions
 from application.responders import no_content
 from application.users import users_validator
 from application.users.user import User
-from application.users.user_schema import USER_SCHEMA, USERS_SCHEMA
+from application.users.user_schema import USER_SCHEMA, USERS_COLLECTION_SCHEMA
 
 
 class UserView(MethodResource):
@@ -66,7 +66,7 @@ class UsersView(MethodResource):
 
     @jwt_required
     @use_kwargs(users_validator.index_args())
-    @marshal_with(USERS_SCHEMA)
+    @marshal_with(USERS_COLLECTION_SCHEMA)
     def get(self, **params):  # pylint: disable=W0613
         """Logic for querying several users"""
         return User.all()
