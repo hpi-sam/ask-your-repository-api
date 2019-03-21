@@ -1,11 +1,7 @@
 """Defines schema for database Team objects"""
 from marshmallow import fields, post_dump
 from application.base_schema import BaseSchema, output_decorator
-
-
-class GoogleOAuthSchema(BaseSchema):
-    user_id = fields.String()
-    has_offline_access = fields.Bool()
+from application.users.oauth.google_oauth_schema import GoogleOAuthSchema
 
 
 class UserSchema(BaseSchema):
@@ -14,6 +10,7 @@ class UserSchema(BaseSchema):
     username = fields.String()
     email = fields.String()
     google = fields.Nested(GoogleOAuthSchema)
+    has_password = fields.Bool()
 
     def __init__(self, *args, add_collection_key=False, **kwargs):
         super().__init__(*args, **kwargs)
