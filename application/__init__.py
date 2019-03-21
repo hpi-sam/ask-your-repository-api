@@ -61,6 +61,10 @@ def register_error_handlers(app):
     def handle_database_error(err):  # pylint:disable=unused-variable
         return jsonify({"error": err.description}), err.code
 
+    @app.errorhandler(502)
+    def handle_bad_gateway_error(err):  # pylint:disable=unused-variable
+        return jsonify({"error": err.description}), err.code
+
 
 def register_extensions(app):
     """Registers all flask extensions"""

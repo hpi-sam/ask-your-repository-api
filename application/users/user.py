@@ -17,8 +17,11 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     teams = RelationshipFrom('application.models.Team', 'HAS_MEMBER', cardinality=cardinality.ZeroOrMore)
     artifacts = RelationshipFrom('application.models.Artifact', 'CREATED_BY', cardinality=cardinality.ZeroOrMore)
-    oauth_providers = RelationshipTo('application.models.OAuthProvider', 'HAS_OAUTH_PROVIDER',
-                                     cardinality=cardinality.ZeroOrMore)
+    google_rel = RelationshipTo('application.models.GoogleOAuth', 'HAS_GOOGLE_OAUTH', cardinality=cardinality.ZeroOrOne)
+
+    @property
+    def google(self):
+        return self.google_rel.single()
 
     @classmethod
     def find_by_email_or_username(cls, email_or_username):

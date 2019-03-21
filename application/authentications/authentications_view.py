@@ -10,8 +10,7 @@ from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_coo
 from application.authentications import authentications_validator
 from application.responders import respond_with
 from application.users.user import User
-from application.users.oauth_providers.oauth_provider import OAuthProvider
-from application.users.oauth_providers.google_oauth import validate_google_id_token
+from application.users.oauth.google_oauth import validate_google_id_token, GoogleOAuth
 
 
 def validate_user(user, password):
@@ -68,14 +67,13 @@ def _get_user_from_google_token(token):
     :return: instance of User
     """
     google_id, email = validate_google_id_token(token)
-    google_auth = OAuthProvider.find_by(name='google', user_id=google_id, force=False)
+    google_auth = GoogleOAuth.find_by(user_id=google_id, force=False)
     if not google_auth:
         user = User.find_by(email=email, force=False)
         if not user:
-            user = User.create(email=email, username=email)
-        google_auth = OAuthProvider(name='google', user_id=google_id)
-        google_auth.connect(user)
-        google_auth.save()
+            user = User(email=email, username=email).save()
+        google_auth = GoogleOAuth(user_id=google_id).save()
+        google_auth.user_rel.connect(user)
     else:
-        user = google_auth.user.single()
+        user = google_auth.user
     return user
