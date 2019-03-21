@@ -215,8 +215,8 @@ class ImageResizer: #pylint:disable=too-few-public-methods
 
     def _calculate_height(self, width):
         """Calculate height of resized image with given width"""
-        width_percent = (width / float(self.image.size[0]))
-        height = int((float(self.image.size[1]) * float(width_percent)))
+        width_ratio = width / self.image.size[0]
+        height = int(self.image.size[1] * width_ratio)
         return height
 
 class FileSaver:
