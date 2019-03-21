@@ -289,6 +289,30 @@ six = ">=1.9.0"
 
 [[package]]
 category = "main"
+description = "Google Authentication Library: httplib2 transport"
+name = "google-auth-httplib2"
+optional = false
+python-versions = "*"
+version = "0.0.3"
+
+[package.dependencies]
+google-auth = "*"
+httplib2 = ">=0.9.1"
+
+[[package]]
+category = "main"
+description = "Google Authentication Library"
+name = "google-auth-oauthlib"
+optional = false
+python-versions = "*"
+version = "0.2.0"
+
+[package.dependencies]
+google-auth = "*"
+requests-oauthlib = ">=0.7.0"
+
+[[package]]
+category = "main"
 description = "Lightweight in-process concurrent programming"
 name = "greenlet"
 optional = false
@@ -302,6 +326,14 @@ name = "gunicorn"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "19.9.0"
+
+[[package]]
+category = "main"
+description = "A comprehensive HTTP client library."
+name = "httplib2"
+optional = false
+python-versions = "*"
+version = "0.12.1"
 
 [[package]]
 category = "main"
@@ -436,6 +468,14 @@ version = "3.4"
 [package.dependencies]
 singledispatch = "*"
 six = "*"
+
+[[package]]
+category = "main"
+description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
+name = "oauthlib"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "3.0.1"
 
 [[package]]
 category = "dev"
@@ -690,6 +730,18 @@ idna = ">=2.5,<2.9"
 urllib3 = ">=1.21.1,<1.25"
 
 [[package]]
+category = "main"
+description = "OAuthlib authentication support for Requests."
+name = "requests-oauthlib"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.2.0"
+
+[package.dependencies]
+oauthlib = ">=3.0.0"
+requests = ">=2.0.0"
+
+[[package]]
 category = "dev"
 description = "Python tool to find and list requirements of a Python project"
 name = "requirements-detector"
@@ -797,8 +849,8 @@ category = "main"
 description = "The comprehensive WSGI web application library."
 name = "werkzeug"
 optional = false
-python-versions = "*"
-version = "0.14.1"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.15.0"
 
 [[package]]
 category = "dev"
@@ -809,7 +861,7 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "eae2145a2a270f65b3643b70e3c9ff826ad4da4a15011f66175e8038ccaa7e17"
+content-hash = "17148ae80d839600ec453bba7d9220c5970271d5e7c6eab57185117891943f9d"
 python-versions = ">=3.7"
 
 [metadata.hashes]
@@ -840,8 +892,11 @@ flask-cors = ["7ad56ee3b90d4955148fc25a2ecaa1124fc84298471e266a7fea59aeac4405a5"
 flask-jwt-extended = ["68035dba637fd58c0f0b308e49103cba7f6977aa301d958ddbd7b811a91c6dec"]
 flask-socketio = ["8d8f9f104db5ddff1b06ba322d8e158881d590144199c993fe26cf53218c7edd", "f9b9c95c82b62381862fd3bc55cea7fcc08e787f6bb63fdc79a2f258df2bdc9a"]
 google-auth = ["0f7c6a64927d34c1a474da92cfc59e552a5d3b940d3266606c6a28b72888b9e4", "20705f6803fd2c4d1cc2dcb0df09d4dfcb9a7d51fd59e94a3a28231fd93119ed"]
+google-auth-httplib2 = ["098fade613c25b4527b2c08fa42d11f3c2037dda8995d86de0745228e965d445", "f1c437842155680cf9918df9bc51c1182fda41feef88c34004bd1978c8157e08"]
+google-auth-oauthlib = ["226d1d0960f86ba5d9efd426a70b291eaba96f47d071657e0254ea969025728a", "81ba22acada4d13b1d83f9371ab19fd61f1250a542d21cf49e4dcf0637a7344a"]
 greenlet = ["000546ad01e6389e98626c1367be58efa613fa82a1be98b0c6fc24b563acc6d0", "0d48200bc50cbf498716712129eef819b1729339e34c3ae71656964dac907c28", "23d12eacffa9d0f290c0fe0c4e81ba6d5f3a5b7ac3c30a5eaf0126bf4deda5c8", "37c9ba82bd82eb6a23c2e5acc03055c0e45697253b2393c9a50cef76a3985304", "51503524dd6f152ab4ad1fbd168fc6c30b5795e8c70be4410a64940b3abb55c0", "8041e2de00e745c0e05a502d6e6db310db7faa7c979b3a5877123548a4c0b214", "81fcd96a275209ef117e9ec91f75c731fa18dcfd9ffaa1c0adbdaa3616a86043", "853da4f9563d982e4121fed8c92eea1a4594a2299037b3034c3c898cb8e933d6", "8b4572c334593d449113f9dc8d19b93b7b271bdbe90ba7509eb178923327b625", "9416443e219356e3c31f1f918a91badf2e37acf297e2fa13d24d1cc2380f8fbc", "9854f612e1b59ec66804931df5add3b2d5ef0067748ea29dc60f0efdcda9a638", "99a26afdb82ea83a265137a398f570402aa1f2b5dfb4ac3300c026931817b163", "a19bf883b3384957e4a4a13e6bd1ae3d85ae87f4beb5957e35b0be287f12f4e4", "a9f145660588187ff835c55a7d2ddf6abfc570c2651c276d3d4be8a2766db490", "ac57fcdcfb0b73bb3203b58a14501abb7e5ff9ea5e2edfa06bb03035f0cff248", "bcb530089ff24f6458a81ac3fa699e8c00194208a724b644ecc68422e1111939", "beeabe25c3b704f7d56b573f7d2ff88fc99f0138e43480cecdfcaa3b87fe4f87", "d634a7ea1fc3380ff96f9e44d8d22f38418c1c381d5fac680b272d7d90883720", "d97b0661e1aead761f0ded3b769044bb00ed5d33e1ec865e891a8b128bf7c656"]
 gunicorn = ["aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471", "fa2662097c66f920f53f70621c6c58ca4a3c4d3434205e608e121b5b3b71f4f3"]
+httplib2 = ["4ba6b8fd77d0038769bf3c33c9a96a6f752bc4cdf739701fdcaf210121f399d4"]
 idna = ["c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407", "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"]
 isort = ["18c796c2cd35eb1a1d3f012a214a542790a1aed95e29768bdcb9f2197eccbd0b", "96151fca2c6e736503981896495d344781b60d18bfda78dc11b290c6125ebdb6"]
 itsdangerous = ["321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19", "b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749"]
@@ -856,6 +911,7 @@ neo4j-driver = ["6630ecf77db181430e9b1c8656a4a0ccb96b2354492b59bed42837d56e44b26
 neomodel = ["2f7cd8aa60a0069d3cde4938581bfafc690d03820b48cf93aa727b6ec4bd923b"]
 neotime = ["4e0477ba0f24e004de2fa79a3236de2bd941f20de0b5db8d976c52a86d7363eb"]
 nltk = ["286f6797204ffdb52525a1d21ec0a221ec68b8e3fa4f2d25f412ac8e63c70e8d", "e51590c0bf2d9dcb7ce088b03e4f42c94e7cdd2a372c724320dfa8b19de77609"]
+oauthlib = ["0ce32c5d989a1827e3f1148f98b9085ed2370fc939bf524c9c851d8714797298", "3e1e14f6cde7e5475128d30e97edc3bfb4dc857cb884d8714ec161fdbb3b358e"]
 pep8 = ["b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee", "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"]
 pep8-naming = ["1b419fa45b68b61cd8c5daf4e0c96d28915ad14d3d5f35fcc1e7e95324a33a2e", "4eedfd4c4b05e48796f74f5d8628c068ff788b9c2b08471ad408007fc6450e5a"]
 prospector = ["877d8d361a5c0e04c8587718c22c5d671afcf814945c96b3e592836d772943fd"]
@@ -879,6 +935,7 @@ python-socketio = ["aa702157694d55a743fb6f1cc0bd1af58fbfda8a7d71d747d4b12d6dac29
 pytz = ["32b0891edff07e28efe91284ed9c31e123d84bea3fd98e1f72be2508f43ef8d9", "d5f05e487007e29e03409f9398d074e158d920d36eb82eaf66fb1136b0c5374c"]
 pyyaml = ["1adecc22f88d38052fb787d959f003811ca858b799590a5eaa70e63dca50308c", "436bc774ecf7c103814098159fbb84c2715d25980175292c648f2da143909f95", "460a5a4248763f6f37ea225d19d5c205677d8d525f6a83357ca622ed541830c2", "5a22a9c84653debfbf198d02fe592c176ea548cccce47553f35f466e15cf2fd4", "7a5d3f26b89d688db27822343dfa25c599627bc92093e788956372285c6298ad", "9372b04a02080752d9e6f990179a4ab840227c6e2ce15b95e1278456664cf2ba", "a5dcbebee834eaddf3fa7366316b880ff4062e4bcc9787b78c7fbb4a26ff2dd1", "aee5bab92a176e7cd034e57f46e9df9a9862a71f8f37cad167c6fc74c65f5b4e", "c51f642898c0bacd335fc119da60baae0824f2cde95b0330b56c0553439f0673", "c68ea4d3ba1705da1e0d85da6684ac657912679a649e8868bd850d2c299cce13", "e23d0cc5299223dcc37885dae624f382297717e459ea24053709675a976a3e19"]
 requests = ["502a824f31acdacb3a35b6690b5fbf0bc41d63a24a45c4004352b0242707598e", "7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b"]
+requests-oauthlib = ["bd6533330e8748e94bf0b214775fed487d309b8b8fe823dc45641ebcd9a32f57", "d3ed0c8f2e3bbc6b344fa63d6f933745ab394469da38db16bdddb461c7e25140", "dd5a0499abfefd087c6dd96693cbd5bfd28aa009719a7f85ab3fabe3956ef19a"]
 requirements-detector = ["9fbc4b24e8b7c3663aff32e3eba34596848c6b91bd425079b386973bd8d08931"]
 rope = ["031eb54b3eeec89f4304ede816995ed2b93a21e6fba16bd02aff10a0d6c257b7"]
 rsa = ["14ba45700ff1ec9eeb206a2ce76b32814958a98e372006c8fb76ba820211be66", "1a836406405730121ae9823e19c6e806c62bbad73f890574fff50efa4122c487"]
@@ -890,5 +947,5 @@ snowballstemmer = ["919f26a68b2c17a7634da993d91339e288964f93c274f1343e3bbbe2096e
 textblob = ["7ff3c00cb5a85a30132ee6768b8c68cb2b9d76432fec18cd1b3ffe2f8594ec8c", "b0eafd8b129c9b196c8128056caed891d64b7fa20ba570e1fcde438f4f7dd312"]
 urllib3 = ["06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b", "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"]
 webargs = ["15ddf90d7bfe05c9db87c9f22215cacc1228da98a8e7bd62508d9d8020935123", "75c568581af6ef6345156fc8621a7735ce6846bf9d7ec058aa6ea9cc3a620580", "e2381557f0a5e4db37dbbddc2833b0f3aa6dca58b5ced4ca6b14620f685a643f"]
-werkzeug = ["c3fd7a7d41976d9f44db327260e263132466836cef6f91512889ed60ad26557c", "d5da73735293558eb1651ee2fddc4d0dedcfa06538b8813a2e20011583c9e49b"]
+werkzeug = ["590abe38f8be026d78457fe3b5200895b3543e58ac3fc1dd792c6333ea11af64", "ee11b0f0640c56fb491b43b38356c4b588b3202b415a1e03eacf1c5561c961cf"]
 wrapt = ["4aea003270831cceb8a90ff27c4031da6ead7ec1886023b80ce0dfe0adf61533"]
