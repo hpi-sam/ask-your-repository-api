@@ -1,5 +1,4 @@
 """Access to User objects in Ne4J"""
-from flask import current_app
 from neomodel import (StructuredNode, StringProperty,
                       RelationshipFrom, RelationshipTo, cardinality)
 
@@ -13,7 +12,7 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     schema = UserSchema
     username = StringProperty(required=True, unique_index=True)
     email = StringProperty(required=True, unique_index=True)
-    password = StringProperty(required=True)
+    password = StringProperty()
 
     teams = RelationshipFrom('application.models.Team', 'HAS_MEMBER', cardinality=cardinality.ZeroOrMore)
     artifacts = RelationshipFrom('application.models.Artifact', 'CREATED_BY', cardinality=cardinality.ZeroOrMore)
@@ -21,7 +20,13 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     @property
     def google(self):
-        return self.google_rel.single()
+        """Returns GoogleOauth Node"""
+        return self.google_rel.single() # pylint:disable=no-member
+
+    @property
+    def has_password(self):
+        """Password might be empty when a user was created with Google sign in"""
+        return bool(self.password)
 
     @classmethod
     def find_by_email_or_username(cls, email_or_username):
@@ -46,5 +51,5 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     def pre_save(self):
         super()
-        if self.does_not_exist():
+        if self.does_not_exist() and self.password:
             self.password = self.hash_password(self.password)

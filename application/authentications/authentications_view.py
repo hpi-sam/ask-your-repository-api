@@ -1,7 +1,7 @@
 """
 Handles all logic of the user api
 """
-from flask import jsonify, make_response, current_app
+from flask import jsonify, make_response
 from flask_apispec import use_kwargs
 from flask_apispec.views import MethodResource
 from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
@@ -71,9 +71,9 @@ def _get_user_from_google_token(token):
     if not google_auth:
         user = User.find_by(email=email, force=False)
         if not user:
-            user = User(email=email, username=email).save()
+            user = User(email=email, username=email, password=None).save()
         google_auth = GoogleOAuth(user_id=google_id).save()
-        google_auth.user_rel.connect(user)
+        google_auth.user_rel.connect(user)  # pylint:disable=no-member
     else:
         user = google_auth.user
     return user

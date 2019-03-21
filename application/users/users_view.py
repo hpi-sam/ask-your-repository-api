@@ -19,7 +19,7 @@ def check_user(func):
     def wrapped_function(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except User.DoesNotExist:
+        except User.DoesNotExist:  # pylint:disable=no-member
             return abort(404, 'user not found')
     return wrapped_function
 

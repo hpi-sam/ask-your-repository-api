@@ -3,5 +3,5 @@ thereby simplifies importing across packages"""
 from .artifacts.artifact import Artifact  # noqa
 from .teams.team import Team  # noqa
 from .users.user import User  # noqa
-from .users.oauth.google_oauth import GoogleOAuth #noqa
+from .users.oauth.google_oauth import GoogleOAuth  # noqa
 from .artifacts.tags.tag import Tag  # noqa
