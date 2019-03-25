@@ -132,6 +132,31 @@ with description('/authentications') as self:
             with it('returns an error message'):
                 expect(self.response.json).to(equal({"error": "Bad username or password"}))
 
+        with description('with password missing'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/authentications',
+                    data={'email_or_username': 'TestUser'})
+
+            with it('responds with 422'):
+                expect(self.response.status_code).to(equal(422))
+
+            with it('returns an error message'):
+                expect(self.response.json).to(equal({'errors': {
+                    'password': ['missing value for required field']}}))
+
+        with description('with no params missing'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/authentications')
+
+            with it('responds with 422'):
+                expect(self.response.status_code).to(equal(422))
+
+            with it('returns an error message'):
+                expect(self.response.json).to(equal({'errors': {
+                    'login_params': ['id_token or email_or_username missing']}}))
+
     with description('DELETE or logout'):
         with description('when logged in'):
             with before.each:
