@@ -51,5 +51,5 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     def pre_save(self):
         super()
-        if self.does_not_exist() and self.password:
+        if self.does_not_exist() and self.has_password:
             self.password = self.hash_password(self.password)

@@ -31,7 +31,7 @@ class GoogleOauthView(MethodResource):
         return user
 
 
-class OAuthScopesView(MethodResource):
+class GoogleScopesView(MethodResource):
 
     @use_kwargs(google_oauth_validator.revoke_access_args())
     @marshal_with(USER_SCHEMA)

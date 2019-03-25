@@ -21,16 +21,12 @@ def validate_user(user, password):
 class AuthenticationsView(MethodResource):
     """Controller for authentication"""
 
-    @use_kwargs(authentications_validator.create_args())
+    @use_kwargs(authentications_validator.LoginSchema)
     def post(self, **params):
         """Returns a cookie and a csrf token for double submit CSRF protection."""
         if "id_token" in params:
             user = _get_user_from_google_token(params["id_token"])
         else:
-            if "email_or_username" not in params:
-                return {"error": "email_or_username missing"}, 422
-            if "password" not in params:
-                return {"error": "password missing"}, 422
             user = User.find_by_email_or_username(params["email_or_username"])
             if not validate_user(user, params["password"]):
                 return {"error": "Bad username or password"}, 401
