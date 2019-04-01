@@ -16,12 +16,11 @@ def validate_google_id_token(token):
     """Validates a google id_token.
     See https://developers.google.com/identity/sign-in/web/backend-auth?hl=de for reference.
     """
-    try:
-        client_ids = json.load(current_app.config['CLIENT_IDS_PATH'])
-        for client in client_ids:
-            validate_google_id_token_with_client_id(token, client)
-    except FileNotFoundError:
-        pass
+    info = None
+    client_ids = json.load(open(current_app.config['CLIENT_IDS_PATH']))
+    for client in client_ids:
+        info = validate_google_id_token_with_client_id(token, client) or info
+    return info
 
 
 def validate_google_id_token_with_client_id(token, client_id):

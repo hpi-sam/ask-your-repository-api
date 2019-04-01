@@ -1,12 +1,15 @@
 import sys
+
 from expects import expect, have_key, equal
 from mamba import description, before, after, it
 from neomodel import db
 
-from specs.factories.user_factory import UserFactory
-from specs.factories.google_oauth_factory import GoogleOAuthFactory, google_credentials, google_user_data
+from specs.factories.google_oauth_factory import GoogleOAuthFactory, google_credentials, \
+    google_user_data
 from specs.factories.google_oauth_mocks import google_auth_patch, \
-    google_flow_patch, google_credentials_patch, google_revoke_access_patch
+    google_flow_patch, google_credentials_patch, google_revoke_access_patch, \
+    google_client_id_patch_load, google_client_id_patch_open
+from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
@@ -24,7 +27,7 @@ with description('/users/<id>/oauth_providers/google') as self:
             with before.each:
                 user = UserFactory.create_user(username='TestUser2', email='test2@example.com')
                 self.context.client().login(user)
-                with google_auth_patch:
+                with google_auth_patch, google_client_id_patch_load, google_client_id_patch_open:
                     self.response = self.context.client().put(
                         f'/users/{user.id_}/oauths/google',
                         data={'id_token': 'test_id_token'})
@@ -40,7 +43,8 @@ with description('/users/<id>/oauth_providers/google') as self:
     with description('PATCH'):
         with description('valid auth_code'):
             with before.each:
-                user = GoogleOAuthFactory.create_user_with_google(username='TestUser2', email='test2@example.com')
+                user = GoogleOAuthFactory.create_user_with_google(username='TestUser2',
+                                                                  email='test2@example.com')
                 self.context.client().login(user)
                 with google_flow_patch, google_credentials_patch:
                     self.response = self.context.client().patch(
@@ -107,7 +111,8 @@ with description('/users/<id>/oauth_providers/google') as self:
 
         with description('google request access error'):
             with before.each:
-                user = GoogleOAuthFactory.create_user_with_google(username='TestUser2', email='test2@example.com')
+                user = GoogleOAuthFactory.create_user_with_google(username='TestUser2',
+                                                                  email='test2@example.com')
                 google = user.google
                 google.credentials = google_credentials
                 google.save()
