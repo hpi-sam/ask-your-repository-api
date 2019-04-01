@@ -1,11 +1,14 @@
+import json
+
+import google.auth.transport.requests
+import google.oauth2.credentials
+import google.oauth2.id_token
+import google_auth_oauthlib.flow
 import requests
 from flask import current_app
-import google.oauth2.id_token
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
-import google.auth.transport.requests
 from google.auth.exceptions import RefreshError
 from neomodel import StructuredNode, StringProperty, JSONProperty, RelationshipFrom, cardinality
+
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 
 
@@ -14,9 +17,18 @@ def validate_google_id_token(token):
     See https://developers.google.com/identity/sign-in/web/backend-auth?hl=de for reference.
     """
     try:
+        client_ids = json.load(current_app.config['CLIENT_IDS_PATH'])
+        for client in client_ids:
+            validate_google_id_token_with_client_id(token, client)
+    except FileNotFoundError:
+        pass
+
+
+def validate_google_id_token_with_client_id(token, client_id):
+    try:
         id_info = google.oauth2.id_token.verify_oauth2_token(token,
                                                              google.auth.transport.requests.Request(),
-                                                             current_app.config['CLIENT_ID'])
+                                                             client_id)
         if id_info['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             raise ValueError('Wrong issuer.')
 
@@ -57,7 +69,8 @@ class GoogleOAuth(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     user_id = StringProperty(required=True)
     credentials = JSONProperty()
 
-    user_rel = RelationshipFrom('application.models.User', 'HAS_GOOGLE_OAUTH', cardinality=cardinality.One)
+    user_rel = RelationshipFrom('application.models.User', 'HAS_GOOGLE_OAUTH',
+                                cardinality=cardinality.One)
 
     @classmethod
     def create_from_id_token(cls, token):
