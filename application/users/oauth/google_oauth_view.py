@@ -4,7 +4,7 @@ from application.users.users_view import check_user
 from application.users.user import User
 from application.users.user_schema import USER_SCHEMA
 from application.users.oauth import google_oauth_validator
-from application.users.oauth.google_oauth import GoogleOAuth, EmptyCredentialsError, RequestError
+from application.users.oauth.google_oauth import GoogleOAuth, EmptyCredentialsError, RequestError, GoogleOAuthConflict
 
 
 class GoogleOauthView(MethodResource):
@@ -14,9 +14,12 @@ class GoogleOauthView(MethodResource):
     @check_user
     def put(self, **params):
         user = User.find(params['id'])
-        google_oauth = GoogleOAuth.create_from_id_token(params['id_token'])
-        google_oauth.user_rel.connect(user)
-        return user
+        try:
+            google_oauth = GoogleOAuth.create_from_id_token(params['id_token'])
+            google_oauth.user_rel.connect(user)
+            return user
+        except GoogleOAuthConflict as err:
+            abort(409, err.message)
 
     @use_kwargs(google_oauth_validator.update_args())
     @marshal_with(USER_SCHEMA)

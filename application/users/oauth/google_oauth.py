@@ -39,6 +39,12 @@ def credentials_from_dict(credentials):
     return google.oauth2.credentials.Credentials(**credentials)
 
 
+class GoogleOAuthConflict(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
 class EmptyCredentialsError(Exception):
     pass
 
@@ -56,6 +62,10 @@ class GoogleOAuth(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     @classmethod
     def create_from_id_token(cls, token):
         google_id, _ = validate_google_id_token(token)
+        existing_google_oauth = cls.find_by(user_id=google_id, force=False)
+        if existing_google_oauth:
+            raise GoogleOAuthConflict(f"User: {existing_google_oauth.user.username} "
+                                      f"is already connected with that google account")
         return cls(user_id=google_id).save()
 
     @property

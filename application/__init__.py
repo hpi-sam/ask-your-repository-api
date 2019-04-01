@@ -54,15 +54,10 @@ def register_error_handlers(app):
         return jsonify({"errors": messages}), err.code
 
     @app.errorhandler(404)
-    def handle_not_found_error(err):  # pylint:disable=unused-variable
-        return jsonify({"error": err.description}), err.code
-
-    @app.errorhandler(503)
-    def handle_database_error(err):  # pylint:disable=unused-variable
-        return jsonify({"error": err.description}), err.code
-
+    @app.errorhandler(409)
     @app.errorhandler(502)
-    def handle_bad_gateway_error(err):  # pylint:disable=unused-variable
+    @app.errorhandler(503)
+    def handle_not_found_error(err):  # pylint:disable=unused-variable
         return jsonify({"error": err.description}), err.code
 
 
