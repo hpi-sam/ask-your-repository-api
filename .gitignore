@@ -10,3 +10,4 @@ uploads/
 htmlcov
 .venv
 credentials.json
+clientIds.json
