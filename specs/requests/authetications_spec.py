@@ -6,9 +6,10 @@ from mamba import description, before, after, it
 from neomodel import db
 
 from application.users.user import User
-from specs.spec_helpers import Context
-from specs.factories.google_oauth_mocks import google_auth_patch
 from specs.factories.google_oauth_factory import GoogleOAuthFactory, google_user_data
+from specs.factories.google_oauth_mocks import google_auth_patch, google_client_id_patch_load, \
+    google_client_id_patch_open
+from specs.spec_helpers import Context
 
 sys.path.insert(0, 'specs')
 
@@ -57,56 +58,61 @@ with description('/authentications') as self:
                 expect(self.response.json).to(have_key('token'))
 
         with description('with google id_token'):
-            with description('with existing user'):
-                with before.each:
-                    google_oauth = GoogleOAuthFactory.create_google_oauth()
-                    self.user.google_rel.connect(google_oauth)
-                    with google_auth_patch:
-                        self.response = self.context.client().post(
-                            '/authentications',
-                            data={'id_token': 'test_id_token'})
+            with google_client_id_patch_load, google_client_id_patch_open:
+                with description('with existing user'):
+                    with before.each:
+                        google_oauth = GoogleOAuthFactory.create_google_oauth()
+                        self.user.google_rel.connect(google_oauth)
+                        with google_auth_patch, google_client_id_patch_load, \
+                             google_client_id_patch_open:
+                            self.response = self.context.client().post(
+                                '/authentications',
+                                data={'id_token': 'test_id_token'})
 
-                with it('responds with 200'):
-                    expect(self.response.status_code).to(equal(200))
+                    with it('responds with 200'):
+                        expect(self.response.status_code).to(equal(200))
 
-                with it('returns the user with token'):
-                    expect(self.response.json).to(have_key('username', self.user.username))
-                    expect(self.response.json).to(have_key('email', self.user.email))
-                    expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
-                    expect(self.response.json).to(have_key('token'))
+                    with it('returns the user with token'):
+                        expect(self.response.json).to(have_key('username', self.user.username))
+                        expect(self.response.json).to(have_key('email', self.user.email))
+                        expect(self.response.json).to(
+                            have_key('id', uuid.UUID(self.user.id_).urn[9:]))
+                        expect(self.response.json).to(have_key('token'))
 
-                with it('returns has_password: True'):
-                    expect(self.response.json).to(have_key('has_password', True))
+                    with it('returns has_password: True'):
+                        expect(self.response.json).to(have_key('has_password', True))
 
-                with it('returns the user with google auth'):
-                    expect(self.response.json).to(have_key('google', {
-                        'user_id': google_user_data['sub'],
-                        'has_offline_access': False
-                    }))
+                    with it('returns the user with google auth'):
+                        expect(self.response.json).to(have_key('google', {
+                            'user_id': google_user_data['sub'],
+                            'has_offline_access': False
+                        }))
 
-            with description('with new user'):
-                with before.each:
-                    with google_auth_patch:
-                        self.response = self.context.client().post(
-                            '/authentications',
-                            data={'id_token': 'test_id_token'})
+                with description('with new user'):
+                    with before.each:
+                        with google_auth_patch, google_client_id_patch_load, \
+                         google_client_id_patch_open:
+                            self.response = self.context.client().post(
+                                '/authentications',
+                                data={'id_token': 'test_id_token'})
 
-                with it('responds with 200'):
-                    expect(self.response.status_code).to(equal(200))
+                    with it('responds with 200'):
+                        expect(self.response.status_code).to(equal(200))
 
-                with it('returns the user with token'):
-                    expect(self.response.json).to(have_key('username', google_user_data['email']))
-                    expect(self.response.json).to(have_key('email', google_user_data['email']))
-                    expect(self.response.json).to(have_key('token'))
+                    with it('returns the user with token'):
+                        expect(self.response.json).to(
+                            have_key('username', google_user_data['email']))
+                        expect(self.response.json).to(have_key('email', google_user_data['email']))
+                        expect(self.response.json).to(have_key('token'))
 
-                with it('returns has_password: True'):
-                    expect(self.response.json).to(have_key('has_password', False))
+                    with it('returns has_password: True'):
+                        expect(self.response.json).to(have_key('has_password', False))
 
-                with it('returns the user with google auth'):
-                    expect(self.response.json).to(have_key('google', {
-                        'user_id': google_user_data['sub'],
-                        'has_offline_access': False
-                    }))
+                    with it('returns the user with google auth'):
+                        expect(self.response.json).to(have_key('google', {
+                            'user_id': google_user_data['sub'],
+                            'has_offline_access': False
+                        }))
 
         with description('with invalid username or email'):
             with before.each:
@@ -164,8 +170,8 @@ with description('/authentications') as self:
                      email='test@example.com',
                      password='test').save()
                 user_response = self.context.client().post('/authentications',
-                                          data={'email_or_username': 'TestUser',
-                                                'password': 'test'})
+                                                           data={'email_or_username': 'TestUser',
+                                                                 'password': 'test'})
                 token = user_response.json["token"]
 
                 self.response = self.context.client().delete(
@@ -186,4 +192,5 @@ with description('/authentications') as self:
                 expect(self.response.status_code).to(equal(401))
 
             with it('returns message not allowed'):
-                expect(self.response.json).to(equal({'msg': 'Missing cookie "access_token_cookie"'}))
+                expect(self.response.json).to(
+                    equal({'msg': 'Missing cookie "access_token_cookie"'}))
