@@ -40,7 +40,7 @@ with description('/authentications') as self:
                 expect(self.response.json).to(have_key('username', 'TestUser'))
                 expect(self.response.json).to(have_key('email', 'test@example.com'))
                 expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
-                expect(self.response.json).to(have_key('token'))
+                expect(self.response.json).to(have_key('csrf_token'))
 
         with description('with username and password'):
             with before.each:
@@ -55,7 +55,25 @@ with description('/authentications') as self:
                 expect(self.response.json).to(have_key('username', 'TestUser'))
                 expect(self.response.json).to(have_key('email', 'test@example.com'))
                 expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
-                expect(self.response.json).to(have_key('token'))
+                expect(self.response.json).to(have_key('csrf_token'))
+
+        with description('with username and password and set_cookies set to false'):
+            with before.each:
+                self.response = self.context.client().post(
+                    '/authentications',
+                    data={'email_or_username': 'TestUser', 'password': 'test', 'set_cookies': False})
+
+            with it('responds with 200'):
+                expect(self.response.status_code).to(equal(200))
+
+            with it('returns the user with csrf_token'):
+                expect(self.response.json).to(have_key('username', 'TestUser'))
+                expect(self.response.json).to(have_key('email', 'test@example.com'))
+                expect(self.response.json).to(have_key('id', uuid.UUID(self.user.id_).urn[9:]))
+                expect(self.response.json).to(have_key('csrf_token'))
+
+            with it('returns the access token'):
+                expect(self.response.json).to(have_key('access_token'))
 
         with description('with google id_token'):
             with google_client_id_patch_load, google_client_id_patch_open:
@@ -77,7 +95,7 @@ with description('/authentications') as self:
                         expect(self.response.json).to(have_key('email', self.user.email))
                         expect(self.response.json).to(
                             have_key('id', uuid.UUID(self.user.id_).urn[9:]))
-                        expect(self.response.json).to(have_key('token'))
+                        expect(self.response.json).to(have_key('csrf_token'))
 
                     with it('returns has_password: True'):
                         expect(self.response.json).to(have_key('has_password', True))
@@ -103,7 +121,7 @@ with description('/authentications') as self:
                         expect(self.response.json).to(
                             have_key('username', google_user_data['email']))
                         expect(self.response.json).to(have_key('email', google_user_data['email']))
-                        expect(self.response.json).to(have_key('token'))
+                        expect(self.response.json).to(have_key('csrf_token'))
 
                     with it('returns has_password: True'):
                         expect(self.response.json).to(have_key('has_password', False))
@@ -172,7 +190,7 @@ with description('/authentications') as self:
                 user_response = self.context.client().post('/authentications',
                                                            data={'email_or_username': 'TestUser',
                                                                  'password': 'test'})
-                token = user_response.json["token"]
+                token = user_response.json["csrf_token"]
 
                 self.response = self.context.client().delete(
                     '/authentications',
@@ -193,4 +211,5 @@ with description('/authentications') as self:
 
             with it('returns message not allowed'):
                 expect(self.response.json).to(
-                    equal({'msg': 'Missing cookie "access_token_cookie"'}))
+                    equal({'msg': 'Missing JWT in headers or cookies (Missing cookie "access_token_cookie"; '
+                                  'Missing Authorization Header)'}))
