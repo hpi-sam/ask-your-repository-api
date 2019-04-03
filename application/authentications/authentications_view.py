@@ -31,7 +31,7 @@ class AuthenticationsView(MethodResource):
             if not validate_user(user, params["password"]):
                 return {"error": "Bad username or password"}, 401
 
-        return _build_login_response(user)
+        return _build_login_response(user, params["set_cookies"])
 
     @jwt_required
     def delete(self):  # pylint: disable=W0613
@@ -43,14 +43,17 @@ class AuthenticationsView(MethodResource):
         return response
 
 
-def _build_login_response(user):
+def _build_login_response(user, set_cookies):
     access_token = create_access_token(identity=user.id_, expires_delta=False)
     response = respond_with(user)
-    response["token"] = get_csrf_token(access_token)
-    response = jsonify(response)
-    set_access_cookies(response, access_token, 10000000000)
-    response = make_response(response, 200)
-    response.mimetype = 'application/json'
+    response["csrf_token"] = get_csrf_token(access_token)
+    if set_cookies:
+        response = jsonify(response)
+        set_access_cookies(response, access_token, 10000000000)
+        response = make_response(response, 200)
+        response.mimetype = 'application/json'
+    else:
+        response["access_token"] = access_token
 
     return response
 
