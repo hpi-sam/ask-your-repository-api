@@ -8,6 +8,8 @@ class LoginSchema(Schema):
     id_token = fields.String()
     email_or_username = fields.String()
     password = fields.String()
+    set_cookies = fields.Bool(missing=True)
+
 
     @validates_schema
     def validates_login(self, data):
