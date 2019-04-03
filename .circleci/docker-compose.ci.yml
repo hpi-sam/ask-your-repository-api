@@ -34,6 +34,7 @@ services:
       - elija
     environment:
       - REACT_APP_API_URL=http://elija:5000
+      - REACT_APP_GOOGLE_CLIENT_ID=24456970850-u9prmb53vbgthab5qrel3b0rqe7rcjua.apps.googleusercontent.com
       - CYPRESS_API_URL=http://elija:5000
       - CYPRESS_NEO4J_URL=http://:@neo4j_dev:7474
     ports:
