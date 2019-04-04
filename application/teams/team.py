@@ -10,6 +10,7 @@ class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
 
     schema = TeamSchema
     name = StringProperty(required=True)
+    join_key = StringProperty(required=False)
 
     artifacts = RelationshipTo("application.models.Artifact", "UPLOADED", cardinality=cardinality.ZeroOrMore)
     members = RelationshipTo("application.models.User", "HAS_MEMBER", cardinality=cardinality.ZeroOrMore)
