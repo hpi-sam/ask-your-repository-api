@@ -1,5 +1,4 @@
 import uuid
-
 import sys
 import responses
 from flask import current_app
@@ -70,21 +69,27 @@ with description('/teams') as self:
                 team = Team.nodes.get_or_none(id_=self.response.json["id"], name="My Team")
                 expect(list(team.members)).to(contain(self.user))
 
-        with description('notify dialogflow adapter'):
-            with before.each:
-                current_app.config['DIALOGFLOW_NOTIFY'] = True
-                self.DIALOGFLOW_URL = current_app.config['DIALOGFLOW_ADAPTER'] + '/teams'
-                with responses.RequestsMock() as rsps:
-                    self.response_mock = rsps
+            with description('notify dialogflow adapter'):
+                with before.each:
+                    current_app.config['DIALOGFLOW_NOTIFY'] = True
+                    self.DIALOGFLOW_URL = current_app.config['DIALOGFLOW_ADAPTER'] + '/teams'
+                    self.response_mock = responses.RequestsMock()
+                    self.response_mock.__enter__() # starts the mocking context.
+
                     self.response_mock.add(responses.POST, self.DIALOGFLOW_URL, json={'blub': 'blub'}, status=200)
                     self.response = self.context.client().post(
                         "/teams",
                         data={"name": "My Team"})
 
-            with it('notifies dialogflow adapter of team creation'):
-                expect(len(self.response_mock.calls)).to(equal(1))
-                expect(self.response_mock.calls[0].request.url).to(equal(self.DIALOGFLOW_URL))
-                expect(self.response_mock.calls[0].response.status_code).to(equal(200))
+                with after.each:
+                    # ends the mocking context (basically the same as with ...)
+                    self.response_mock.__exit__(None, None, None)
+                    current_app.config['DIALOGFLOW_NOTIFY'] = False
+
+                with it('notifies dialogflow adapter of team creation'):
+                    expect(len(self.response_mock.calls)).to(equal(1))
+                    expect(self.response_mock.calls[0].request.url).to(equal(self.DIALOGFLOW_URL))
+                    expect(self.response_mock.calls[0].response.status_code).to(equal(200))
 
         with description('invalid request'):
             with before.each:
