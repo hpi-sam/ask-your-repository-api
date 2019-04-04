@@ -26,6 +26,7 @@ google-auth = "^1.6"
 google-auth-oauthlib = "^0.2.0"
 google-auth-httplib2 = "^0.0.3"
 Pillow = "*"
+responses = "^0.10.6"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"

@@ -761,6 +761,18 @@ version = "0.6"
 astroid = ">=1.4"
 
 [[package]]
+category = "main"
+description = "A utility library for mocking out the `requests` Python library."
+name = "responses"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.10.6"
+
+[package.dependencies]
+requests = ">=2.0"
+six = "*"
+
+[[package]]
 category = "dev"
 description = "a python refactoring library..."
 name = "rope"
@@ -869,7 +881,7 @@ python-versions = "*"
 version = "1.11.1"
 
 [metadata]
-content-hash = "5bcadfd6fdbac0648584dd616337e814582c3143bcb36591ae2772252885405e"
+content-hash = "8da6d598933f296ebf1c0deafb37c7a6b9a81a5f9e850413557f1d5e6bed71ab"
 python-versions = ">=3.7"
 
 [metadata.hashes]
@@ -946,6 +958,7 @@ pyyaml = ["1adecc22f88d38052fb787d959f003811ca858b799590a5eaa70e63dca50308c", "4
 requests = ["502a824f31acdacb3a35b6690b5fbf0bc41d63a24a45c4004352b0242707598e", "7bf2a778576d825600030a110f3c0e3e8edc51dfaafe1c146e39a2027784957b"]
 requests-oauthlib = ["bd6533330e8748e94bf0b214775fed487d309b8b8fe823dc45641ebcd9a32f57", "d3ed0c8f2e3bbc6b344fa63d6f933745ab394469da38db16bdddb461c7e25140", "dd5a0499abfefd087c6dd96693cbd5bfd28aa009719a7f85ab3fabe3956ef19a"]
 requirements-detector = ["9fbc4b24e8b7c3663aff32e3eba34596848c6b91bd425079b386973bd8d08931"]
+responses = ["502d9c0c8008439cfcdef7e251f507fcfdd503b56e8c0c87c3c3e3393953f790", "97193c0183d63fba8cd3a041c75464e4b09ea0aff6328800d1546598567dde0b"]
 rope = ["6b728fdc3e98a83446c27a91fc5d56808a004f8beab7a31ab1d7224cecc7d969", "c5c5a6a87f7b1a2095fb311135e2a3d1f194f5ecb96900fdd0a9100881f48aaf", "f0dcf719b63200d492b85535ebe5ea9b29e0d0b8aebeb87fe03fc1a65924fdaf"]
 rsa = ["14ba45700ff1ec9eeb206a2ce76b32814958a98e372006c8fb76ba820211be66", "1a836406405730121ae9823e19c6e806c62bbad73f890574fff50efa4122c487"]
 setoptconf = ["5b0b5d8e0077713f5d5152d4f63be6f048d9a1bb66be15d089a11c898c3cf49c"]
