@@ -1,6 +1,7 @@
 """
 Handles all logic of the artefacts api
 """
+import requests
 from flask import current_app, abort
 from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
@@ -79,4 +80,15 @@ class TeamsView(MethodResource):
         team = Team(**params).save()
         user = User.find_by(id_=get_jwt_identity())
         team.members.connect(user)  # pylint:disable=no-member
+        _notify_of_team_creation(team)
         return team
+
+
+def _notify_of_team_creation(team):
+    """Notify registered services of Team creation"""
+    if current_app.config['DIALOGFLOW_NOTIFY']:
+        try:
+            service_url = current_app.config['DIALOGFLOW_ADAPTER'] + '/teams'
+            requests.post(service_url, data={'id': str(team.id_), 'name': team.name})
+        except requests.ConnectionError:
+            current_app.logger.info("Couldn't connect to tobito!")
