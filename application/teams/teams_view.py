@@ -14,6 +14,9 @@ from application.users.user import User
 from application.teams.team_schema import TEAM_SCHEMA, TEAMS_SCHEMA
 from application.teams import teams_validator
 
+import string
+import random
+
 
 @socketio.on("ENTER_TEAM_SPACE")
 def on_enter_team_space(data):
@@ -77,7 +80,8 @@ class TeamsView(MethodResource):
     @marshal_with(TEAM_SCHEMA)
     def post(self, **params):
         """Logic for creating a team"""
-        team = Team(**params).save()
+        key = self.create_join_key()
+        team = Team(**params, join_key=key).save()
         user = User.find_by(id_=get_jwt_identity())
         team.members.connect(user)  # pylint:disable=no-member
         _notify_of_team_creation(team)
