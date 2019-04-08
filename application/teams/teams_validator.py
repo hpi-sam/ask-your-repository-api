@@ -25,7 +25,7 @@ def update_args():
         "name": fields.String(required=True, validate=validate.Length(min=1)),
     }
 
-def updateMember_args():
+def update_member_args():
     """Defines and validates params for update member"""
     return {
         "id": fields.UUID(required=True, location='view_args'),
