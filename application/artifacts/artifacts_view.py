@@ -1,6 +1,7 @@
 """
 Handles all logic of the artifacts api
 """
+import logging
 import datetime
 import os
 import uuid
@@ -121,11 +122,14 @@ class ArtifactsView(MethodResource):
 
     method_decorators = [check_es_connection]
 
+    @jwt_optional
     @check_es_connection
     @use_kwargs(artifacts_validator.search_args())
     @marshal_with(ARTIFACTS_SCHEMA)
     def get(self, **params):
         """Logic for querying several artifacts"""
+        query_logger = logging.getLogger('query_logger')
+        query_logger.info(f"search query: '{params['search']}' team: '{params['team_id']}' user: '{get_jwt_identity()}'")
         artifacts = _search_artifacts(params)
 
         if params["notify_clients"]:
