@@ -111,7 +111,17 @@ class MembersView(MethodResource):
         member = User.find(member_id)
 
         if member in team.members:
+            print('in team')
             return abort(409, 'user already in team')
 
+        print('not in team')
         team.members.connect(member)
         return team
+
+class AllTeamsView(MethodResource):
+    """Controller for members"""
+
+    @marshal_with(TEAMS_SCHEMA)
+    def get(self):  # pylint: disable=W0613
+        """Logic for querying several teams"""
+        return Team.nodes
