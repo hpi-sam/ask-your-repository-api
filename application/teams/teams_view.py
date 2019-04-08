@@ -1,22 +1,24 @@
 """
 Handles all logic of the artefacts api
 """
+<<<<<<< HEAD
 import requests
+=======
+import string
+import random
+
+>>>>>>> Add request tests.
 from flask import current_app, abort
 from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_socketio import join_room, leave_room
 
-from application.responders import no_content
 from application.extensions import socketio
 from application.teams.team import Team
 from application.users.user import User
 from application.teams.team_schema import TEAM_SCHEMA, TEAMS_SCHEMA
 from application.teams import teams_validator
-
-import string
-import random
 
 
 @socketio.on("ENTER_TEAM_SPACE")
@@ -88,7 +90,6 @@ class TeamsView(MethodResource):
         _notify_of_team_creation(team)
         return team
 
-
 def _notify_of_team_creation(team):
     """Notify registered services of Team creation"""
     if current_app.config["DIALOGFLOW_NOTIFY"]:
@@ -97,11 +98,11 @@ def _notify_of_team_creation(team):
             requests.post(service_url, json={"id": str(team.id_), "name": team.name})
         except requests.ConnectionError:
             current_app.logger.info("Couldn't connect to tobito!")
-    
+
 class MembersView(MethodResource):
     """Controller for members"""
 
-    @use_kwargs(teams_validator.updateMember_args())
+    @use_kwargs(teams_validator.update_member_args())
     @marshal_with(TEAM_SCHEMA)
     def post(self, **params):
         """Logic for adding a single team member"""
@@ -111,10 +112,8 @@ class MembersView(MethodResource):
         member = User.find(member_id)
 
         if member in team.members:
-            print('in team')
             return abort(409, 'user already in team')
 
-        print('not in team')
         team.members.connect(member)
         return team
 
