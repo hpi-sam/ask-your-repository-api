@@ -1,13 +1,8 @@
 """
 Handles all logic of the artefacts api
 """
-<<<<<<< HEAD
 import requests
-=======
-import string
-import random
 
->>>>>>> Add request tests.
 from flask import current_app, abort
 from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
@@ -83,8 +78,7 @@ class TeamsView(MethodResource):
     @marshal_with(TEAM_SCHEMA)
     def post(self, **params):
         """Logic for creating a team"""
-        key = self.create_join_key()
-        team = Team(**params, join_key=key).save()
+        team = Team(**params).save()
         user = User.find_by(id_=get_jwt_identity())
         team.members.connect(user)  # pylint:disable=no-member
         _notify_of_team_creation(team)
