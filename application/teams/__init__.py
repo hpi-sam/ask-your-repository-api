@@ -1,7 +1,7 @@
 """Provides Team functionality and routes"""
 from flask import Blueprint
 
-from .teams_view import TeamView, TeamsView
+from .teams_view import TeamView, TeamsView, MembersView
 
 TEAMS = Blueprint("teams", __name__)
 TEAMS.add_url_rule("", view_func=TeamsView.as_view("teamsview"))

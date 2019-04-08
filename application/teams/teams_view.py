@@ -8,6 +8,7 @@ from flask_apispec.views import MethodResource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_socketio import join_room, leave_room
 
+from application.responders import no_content
 from application.extensions import socketio
 from application.teams.team import Team
 from application.users.user import User
@@ -96,3 +97,21 @@ def _notify_of_team_creation(team):
             requests.post(service_url, json={"id": str(team.id_), "name": team.name})
         except requests.ConnectionError:
             current_app.logger.info("Couldn't connect to tobito!")
+    
+class MembersView(MethodResource):
+    """Controller for members"""
+
+    @use_kwargs(teams_validator.updateMember_args())
+    @marshal_with(TEAM_SCHEMA)
+    def post(self, **params):
+        """Logic for adding a single team member"""
+        member_id = params['member']
+        team_id = params['id']
+        team = Team.find(team_id)
+        member = User.find(member_id)
+
+        if member in team.members:
+            return abort(409, 'user already in team')
+
+        team.members.connect(member)
+        return team
