@@ -58,6 +58,14 @@ jobs:
           fingerprints:
             - $STAGING_DEPLOY_FINGERPRINT
       - run: ssh root@$STAGING_DEPLOY_HOST "cd $STAGING_DEPLOY_HOME; ./deploy elija bp2018hg1/elija:$CIRCLE_WORKFLOW_ID"
+  deploy_production:
+    machine: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - $PRODUCTION_DEPLOY_FINGERPRINT
+      - run: ssh root@$PRODUCTION_DEPLOY_HOST "cd $PRODUCTION_DEPLOY_HOME; ./deploy elija bp2018hg1/elija:$CIRCLE_WORKFLOW_ID"
+
 workflows:
   version: 2
   pipeline:
@@ -76,6 +84,19 @@ workflows:
       - deploy_staging:
           requires:
             - build
+          filters:
+            branches:
+              only: master
+      - hold_production_deploy:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - deploy_production:
+          requires:
+            - hold_production_deploy
           filters:
             branches:
               only: master
