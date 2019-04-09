@@ -1,16 +1,11 @@
 """ Entry point for our application """
 import logging
+from application.custom_loggers import setup_file_logger
 
 from application import create_app
 from application.extensions import socketio
 
-query_logger = logging.getLogger('query_logger')
-query_logger.setLevel(logging.DEBUG)
-query_handler = logging.FileHandler('search_queries.log')
-query_formatter = logging.Formatter('%(asctime)s %(message)s')
-query_handler.setFormatter(query_formatter)
-query_handler.setLevel(logging.DEBUG)
-query_logger.addHandler(query_handler)
+setup_file_logger('query_logger', 'search_query.log')
 
 # Call the Application Factory function to construct a Flask application instance
 # using the standard configuration defined in /instance/flask.cfg

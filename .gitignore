@@ -11,4 +11,4 @@ htmlcov
 .venv
 credentials.json
 clientIds.json
-search_queries.log
+search_query.log

@@ -129,7 +129,9 @@ class ArtifactsView(MethodResource):
     def get(self, **params):
         """Logic for querying several artifacts"""
         query_logger = logging.getLogger('query_logger')
-        query_logger.info(f"search query: '{params['search']}' team: '{params['team_id']}' user: '{get_jwt_identity()}'")
+        print('halo i bims d1 logger')
+        query_logger.info(f"search query: '{params['search']}' offset: {params['offset']} limit: {params['limit']} team: '{params['team_id']}' user: '{get_jwt_identity()}'")
+        
         artifacts = _search_artifacts(params)
 
         if params["notify_clients"]:
