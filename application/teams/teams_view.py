@@ -89,6 +89,6 @@ def _notify_of_team_creation(team):
     if current_app.config['DIALOGFLOW_NOTIFY']:
         try:
             service_url = current_app.config['DIALOGFLOW_ADAPTER'] + '/teams'
-            requests.post(service_url, data={'id': str(team.id_), 'name': team.name})
+            requests.post(service_url, json={'id': str(team.id_), 'name': team.name})
         except requests.ConnectionError:
             current_app.logger.info("Couldn't connect to tobito!")

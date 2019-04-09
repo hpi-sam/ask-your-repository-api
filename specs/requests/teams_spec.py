@@ -1,3 +1,4 @@
+import json
 import uuid
 import sys
 import responses
@@ -76,7 +77,7 @@ with description('/teams') as self:
                     self.response_mock = responses.RequestsMock()
                     self.response_mock.__enter__() # starts the mocking context.
 
-                    self.response_mock.add(responses.POST, self.DIALOGFLOW_URL, json={'blub': 'blub'}, status=200)
+                    self.response_mock.add(responses.POST, self.DIALOGFLOW_URL, status=200)
                     self.response = self.context.client().post(
                         "/teams",
                         data={"name": "My Team"})
@@ -90,6 +91,8 @@ with description('/teams') as self:
                     expect(len(self.response_mock.calls)).to(equal(1))
                     expect(self.response_mock.calls[0].request.url).to(equal(self.DIALOGFLOW_URL))
                     expect(self.response_mock.calls[0].response.status_code).to(equal(200))
+                    expect(json.loads(self.response_mock.calls[0].request.body.decode('utf8'))['name']).to(equal('My Team'))
+                    expect(json.loads(self.response_mock.calls[0].request.body.decode('utf8'))).to(have_key('id'))
 
         with description('invalid request'):
             with before.each:
