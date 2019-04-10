@@ -2,6 +2,7 @@
 
 import sys
 import os
+import logging
 from PIL import Image
 
 from doublex import Stub
@@ -67,20 +68,11 @@ with description("/images") as self:
 
             with context("valid request"):
                 with before.each:
-                    self.user = UserFactory.create_user()
-                    self.context.client().login(self.user)
                     self.response = self.context.client().get("/images")
 
                 with it("returns a 200 status code"):
                     expect(self.response.status_code).to(equal(200))
 
-                with it('logs the search query to logfile'):
-                    file_handle = open('search_query.log', "r")
-                    line_list = file_handle.readlines()
-                    file_handle.close()
-                    last_line = line_list[-1]
-                    print(last_line)
-                    expect(last_line).to(contain(str(self.user.id_)))
 
             with context('invalid requests'):
                 with description('paramter: limit | value: asdf'):
