@@ -27,6 +27,7 @@ google-auth-oauthlib = "^0.2.0"
 google-auth-httplib2 = "^0.0.3"
 Pillow = "*"
 responses = "^0.10.6"
+flask-mail = "^0.9.1"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
