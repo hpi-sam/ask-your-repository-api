@@ -14,7 +14,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from neomodel import config
 
-from .extensions import socketio, bcrypt
+from .extensions import socketio, bcrypt, mail
 from .routes import create_routes
 
 
@@ -47,6 +47,8 @@ def register_error_handlers(app):
     @app.errorhandler(422)
     @app.errorhandler(400)
     def handle_validation_error(err):  # pylint:disable=unused-variable
+        if not hasattr(err, "data"):
+            return jsonify({"error": err.description}), err.code
         headers = err.data.get("headers", None)
         messages = err.data.get("messages", ["Invalid request."])
         if headers:
@@ -65,3 +67,4 @@ def register_extensions(app):
     """Registers all flask extensions"""
     socketio.init_app(app)
     bcrypt.init_app(app)
+    mail.init_app(app)
