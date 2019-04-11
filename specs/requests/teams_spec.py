@@ -163,35 +163,3 @@ with description("/teams") as self:
 
                 with it("responds with 422 invalid request"):
                     expect(self.response.status_code).to(equal(422))
-
-    with description('/:id/members'):
-        with description('GET'):
-            with description('member not part of team'):
-                with before.each:
-                    self.team = TeamFactory.create_team(name='Blue')
-                    self.user = create_and_login_test_user(self.context.client())
-                    self.response = self.context.client().post(
-                        "/teams/" + str(self.team.id_) + '/members',
-                        data={"member": str(self.user.id_)})
-
-                with it('responds with 200'):
-                    expect(self.response.status_code).to(equal(200))
-
-                with it('responds with the correct team'):
-                    expect(self.response.json).to(have_key("name", "Blue"))
-
-                with it('includes added member'):
-                    expect(self.response.json).to(have_key("members"))
-                    expect([user['id'] for user in self.response.json['members']]).to(contain(str(self.user.id_)))
-
-            with description('member already part of team'):
-                with before.each:
-                    self.team = TeamFactory.create_team(name='Blue')
-                    TeamFactory.add_members_to_team(self.team, 1)
-                    self.user = self.team.members[0]
-                    self.response = self.context.client().post(
-                        "/teams/" + str(self.team.id_) + '/members',
-                        data={"member": str(self.user.id_)})
-
-                with it('responds with 409'):
-                    expect(self.response.status_code).to(equal(409))
