@@ -31,7 +31,6 @@ with description('/invites') as self:
                 with before.each:
                     self.team = TeamFactory.create_team(name='Blue')
                     self.user = create_and_login_test_user(self.context.client())
-                    print('USER: ' + str(self.user))
                     self.response = self.context.client().post(
                         "/invites/" + str(self.team.join_key))
 
@@ -43,8 +42,8 @@ with description('/invites') as self:
 
                 with it('includes added member'):
                     expect(self.response.json).to(have_key("members"))
-                    expect([user['id'] for user in self.response.json['members']]).to(
-                        contain(str(self.user.id_)))
+                    member_ids = [user['id'] for user in self.response.json['members']]
+                    expect(member_ids).to(contain(str(self.user.id_)))
 
             with description('member already part of team'):
                 with before.each:
