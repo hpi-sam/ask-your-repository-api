@@ -9,8 +9,5 @@ __pycache__
 uploads/
 htmlcov
 .venv
-localhost/
-teams.xlsx
-application/create_accounts.py
 credentials.json
 clientIds.json
