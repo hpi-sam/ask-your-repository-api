@@ -1,3 +1,4 @@
+"""Handle requests on the team resource."""
 from flask import abort
 from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
@@ -10,7 +11,7 @@ from .invites_validator import accept_invite_args
 
 
 class AcceptInvite(MethodResource):
-    """Controller for members"""
+    """Controller for invite links."""
 
     @jwt_required
     @use_kwargs(accept_invite_args())

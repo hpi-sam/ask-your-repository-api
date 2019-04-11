@@ -24,4 +24,3 @@ def update_args():
         "id": fields.UUID(required=True, location="view_args"),
         "name": fields.String(required=True, validate=validate.Length(min=1)),
     }
-
