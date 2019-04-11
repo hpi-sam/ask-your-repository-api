@@ -10,7 +10,7 @@ from application.users.user import User
 from .invites_validator import accept_invite_args
 
 
-class AcceptInvite(MethodResource):
+class InvitesView(MethodResource):
     """Controller for invite links."""
 
     @jwt_required
@@ -18,10 +18,8 @@ class AcceptInvite(MethodResource):
     @marshal_with(TEAM_SCHEMA)
     def post(self, **params):
         """Logic for adding a single team member"""
-        print('JWT: ' + str(get_jwt_identity()))
         user = User.find_by(id_=get_jwt_identity())
-        invite_link = params['join_key']
-        team = Team.find_by(join_key=invite_link, force=False)
+        team = Team.find_by(join_key=params['join_key'], force=False)
 
         if not team:
             return abort(404, 'this invite link is not valid')
