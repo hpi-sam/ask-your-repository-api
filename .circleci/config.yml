@@ -22,7 +22,7 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install poetry && poetry install
-      - run: poetry run prospector
+      - run: poetry run flake8 ./
   e2e:
     machine:
       docker_layer_caching: true
