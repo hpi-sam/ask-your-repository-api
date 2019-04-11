@@ -1,6 +1,4 @@
-"""
-Handles all logic of the artifacts api
-"""
+"""Handle requests on the team resource."""
 import requests
 from flask import current_app, abort
 from flask_apispec import use_kwargs, marshal_with
