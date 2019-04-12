@@ -23,6 +23,7 @@ jobs:
       - checkout
       - run: sudo pip install poetry && poetry install
       - run: poetry run flake8 ./
+      - run: poetry run black --check .
   e2e:
     machine:
       docker_layer_caching: true
