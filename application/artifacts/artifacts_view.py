@@ -11,7 +11,7 @@ from PIL import Image
 import werkzeug
 from flask import current_app, abort
 from flask_apispec import MethodResource, use_kwargs, marshal_with
-from flask_jwt_extended import jwt_optional, get_jwt_identity
+from flask_jwt_extended import jwt_optional, get_jwt_identity, jwt_required
 from flask_socketio import emit
 
 from application.artifacts import artifacts_validator
@@ -122,19 +122,14 @@ class ArtifactsView(MethodResource):
 
     method_decorators = [check_es_connection]
 
-    @jwt_optional
+    @jwt_required
     @check_es_connection
     @use_kwargs(artifacts_validator.search_args())
     @marshal_with(ARTIFACTS_SCHEMA)
     def get(self, **params):
         """Logic for querying several artifacts"""
         query_logger = logging.getLogger('query_logger')
-        query_logger.info("", extra={'search_query': str(params['search']),
-                                     'offset': str(params['offset']),
-                                     'limit': str(params['limit']),
-                                     'team': str(params['team_id']),
-                                     'user': str(get_jwt_identity())})
-        
+        query_logger.info(str(params), extra={'user': str(get_jwt_identity())})
         artifacts = _search_artifacts(params)
 
         if params["notify_clients"]:
