@@ -2,11 +2,10 @@
 
 import sys
 import os
-import logging
 from PIL import Image
 
 from doublex import Stub
-from expects import expect, equal, have_key, have_keys, contain
+from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
@@ -35,6 +34,8 @@ with description("/images") as self:
     with before.each:
         self.context = Context()
         current_app.es = Stub()
+        self.user = UserFactory.create_user()
+        self.context.client().login(self.user)
 
     with after.each:
         clear_upload_dir()
@@ -163,9 +164,6 @@ with description("/images") as self:
 
             with description("logged in"):
                 with before.each:
-                    self.user = UserFactory.create_user()
-                    self.context.client().login(self.user)
-
                     with mock_image_recognition:
                         self.response = self.context.client().post(
                             "/images",

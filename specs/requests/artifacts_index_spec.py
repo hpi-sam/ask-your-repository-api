@@ -1,5 +1,5 @@
 from doublex import Mock, Stub, ANY_ARG
-from expects import expect, have_key, have_len, have_keys, contain
+from expects import expect, have_key, have_len, have_keys, contain, equal
 from flask import current_app
 from mamba import description, context, before, after, it
 from neomodel import db
@@ -9,6 +9,7 @@ from application.teams.team import Team
 from application.artifacts.tags.tag import Tag
 from specs.factories.elasticsearch import es_search_response
 from specs.factories.request_generator import build_request
+from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 
 with description("/images") as self:
@@ -21,12 +22,23 @@ with description("/images") as self:
         if hasattr(self, "context"):
             self.context.delete()
 
-    with description("valid reuest"):
-        with context("20 artifacts offset 5 limit 10 for a team"):
+    with description('not logged in'):
+        with before.each:
+            params = {"offset": 5, "limit": 10}
+            self.response = self.context.client().get(build_request('/images', params))
+        
+        with it('rejects request'):
+            expect(self.response.json['msg']).to(contain("Missing Authorization Header"))
+            expect(self.response.status_code).to(equal(401))
+
+    with description('valid reuest'):
+        with context('20 artifacts offset 5 limit 10 for a team'):
             with before.each:
                 with Mock() as elastic_mock:
                     elastic_mock.search(ANY_ARG).returns(es_search_response())
                 current_app.es = elastic_mock
+                self.user = UserFactory.create_user()
+                self.context.client().login(self.user)
                 self.team = Team(name="Blue").save()
                 self.artifacts = []
                 for i in range(1, 21):
