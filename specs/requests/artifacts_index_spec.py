@@ -26,7 +26,7 @@ with description("/images") as self:
         with before.each:
             params = {"offset": 5, "limit": 10}
             self.response = self.context.client().get(build_request('/images', params))
-        
+
         with it('rejects request'):
             expect(self.response.json['msg']).to(contain("Missing Authorization Header"))
             expect(self.response.status_code).to(equal(401))
