@@ -5,3 +5,4 @@ from .teams.team import Team  # noqa
 from .users.user import User  # noqa
 from .users.oauth.google_oauth import GoogleOAuth  # noqa
 from .artifacts.tags.tag import Tag  # noqa
+from .teams.placeholder_drives.drive import Drive  # noqa
