@@ -10,6 +10,7 @@ from application.models import User
 
 def encode_reset_token(user, expires_delta=None):
     """Encodes a jwt reset token"""
+    _check_flask_jwt_extended()
     verification = password_verification(user.password)
     if not expires_delta:
         expires_delta = datetime.timedelta(days=1)

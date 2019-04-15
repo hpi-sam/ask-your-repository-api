@@ -17,7 +17,7 @@ from application.password_resets import password_resets_validator, password_rese
 class PasswordResets(MethodResource):
     """Routes for resetting a password with a reset link."""
 
-    @use_kwargs(password_resets_validator.create_args())
+    @use_kwargs(password_resets_validator.send_reset_link_args())
     def post(self, **params):
         """Logic for sending a password reset link"""
         user = User.find_by_email_or_username(params["email_or_username"])
@@ -28,7 +28,7 @@ class PasswordResets(MethodResource):
         send_reset_password_email(reset_url, user)
         return no_content()
 
-    @use_kwargs(password_resets_validator.update_args())
+    @use_kwargs(password_resets_validator.update_password_args())
     @marshal_with(USER_SCHEMA)
     def put(self, **params):
         """Logic for changing the users password with a reset link"""
