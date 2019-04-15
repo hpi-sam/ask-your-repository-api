@@ -74,9 +74,8 @@ with description("/images") as self:
                 with it("returns a 200 status code"):
                     expect(self.response.status_code).to(equal(200))
 
-
-            with context('invalid requests'):
-                with description('paramter: limit | value: asdf'):
+            with context("invalid requests"):
+                with description("paramter: limit | value: asdf"):
                     with before.each:
                         self.params = {"limit": "asdf"}
 

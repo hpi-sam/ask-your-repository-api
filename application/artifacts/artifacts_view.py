@@ -128,8 +128,8 @@ class ArtifactsView(MethodResource):
     @marshal_with(ARTIFACTS_SCHEMA)
     def get(self, **params):
         """Logic for querying several artifacts"""
-        query_logger = logging.getLogger('query_logger')
-        query_logger.info(str(params), extra={'user': str(get_jwt_identity())})
+        query_logger = logging.getLogger("query_logger")
+        query_logger.info(str(params), extra={"user": str(get_jwt_identity())})
         artifacts = _search_artifacts(params)
 
         if params["notify_clients"]:

@@ -8,8 +8,11 @@ from application.extensions import socketio
 # using the standard configuration defined in /instance/flask.cfg
 app = create_app("development_config.cfg")  # pylint: disable=invalid-name
 
-setup_file_logger(name='query_logger', filename=app.config['QUERY_LOG_FILE_PATH'],
-                  format="%(asctime)s user: %(user)s, query: %(message)s")
+setup_file_logger(
+    name="query_logger",
+    filename=app.config["QUERY_LOG_FILE_PATH"],
+    format="%(asctime)s user: %(user)s, query: %(message)s",
+)
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")  # pylint: disable=invalid-name

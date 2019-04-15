@@ -22,17 +22,17 @@ with description("/images") as self:
         if hasattr(self, "context"):
             self.context.delete()
 
-    with description('not logged in'):
+    with description("not logged in"):
         with before.each:
             params = {"offset": 5, "limit": 10}
-            self.response = self.context.client().get(build_request('/images', params))
+            self.response = self.context.client().get(build_request("/images", params))
 
-        with it('rejects request'):
-            expect(self.response.json['msg']).to(contain("Missing Authorization Header"))
+        with it("rejects request"):
+            expect(self.response.json["msg"]).to(contain("Missing Authorization Header"))
             expect(self.response.status_code).to(equal(401))
 
-    with description('valid reuest'):
-        with context('20 artifacts offset 5 limit 10 for a team'):
+    with description("valid reuest"):
+        with context("20 artifacts offset 5 limit 10 for a team"):
             with before.each:
                 with Mock() as elastic_mock:
                     elastic_mock.search(ANY_ARG).returns(es_search_response())
