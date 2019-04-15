@@ -12,6 +12,9 @@ WORKDIR /src
 RUN poetry config settings.virtualenvs.create false
 RUN poetry install --no-dev
 
+# text processing resources
+RUN poetry run python -c "import nltk; nltk.download('all')"
+
 EXPOSE 5000
 
 CMD [ "./start-gunicorn.sh" ]
