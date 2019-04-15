@@ -8,8 +8,8 @@ class TeamFactory:
         return cls.build_team(*args, **kwargs).save()
 
     @classmethod
-    def build_team(cls, name="test", join_key="a1c1b2ad-c13e-4f9f-85c7-eb51efc189a6", members=[], traits=[]):
-        team = Team(name=name, join_key=join_key).save()
+    def build_team(cls, name="test", members=[], traits=[]):
+        team = Team(name=name).save()
         if "with_members" in traits:
             cls._add_members_to_team(team, 2)
         for member in members:
