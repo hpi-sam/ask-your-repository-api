@@ -10,7 +10,7 @@ class TeamSchema(BaseSchema):
 
     id_ = fields.UUID(missing=None)
     name = fields.String()
-    join_key = fields.UUID()
+    join_key = fields.String()
     members = fields.Nested(USERS_SCHEMA, many=True)
 
     @output_decorator
