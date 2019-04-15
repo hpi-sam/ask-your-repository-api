@@ -19,6 +19,7 @@ services:
       - "9200:9200"
   elija:
     build: ..
+    image: bp2018hg1/elija:${CIRCLE_WORKFLOW_ID}
     depends_on:
       - neo4j_dev
       - elasticsearch_dev

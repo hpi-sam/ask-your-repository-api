@@ -36,22 +36,22 @@ jobs:
       - run: docker-compose up -d
       - run: docker-compose exec jona dockerize -wait http://elija:5000 -timeout 1m
       - run: docker-compose exec jona yarn cypress run
+       # push elija image
+      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run: docker push bp2018hg1/elija:$CIRCLE_WORKFLOW_ID
+      - run:
+          name: push as latest
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker tag bp2018hg1/elija:$CIRCLE_WORKFLOW_ID bp2018hg1/elija:latest
+              docker push bp2018hg1/elija:latest
+            fi
       - store_artifacts:
           path: /app/cypress/screenshots
           destination: e2e-screenshots
       - store_artifacts:
           path: /app/cypress/videos
           destination: e2e-videos
-  build:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run: docker build -t bp2018hg1/elija:$CIRCLE_WORKFLOW_ID -t bp2018hg1/elija:latest .
-      - run: docker push bp2018hg1/elija:$CIRCLE_WORKFLOW_ID
-      - run: docker push bp2018hg1/elija:latest
   deploy_staging:
     machine: true
     steps:
@@ -74,24 +74,16 @@ workflows:
       - test
       - lint
       - e2e
-      - build:
-          requires:
-            - test
-            - lint
-            - e2e
-          filters:
-            branches:
-              only: master
       - deploy_staging:
           requires:
-            - build
+            - e2e
           filters:
             branches:
               only: master
       - hold_production_deploy:
           type: approval
           requires:
-            - build
+            - e2e
           filters:
             branches:
               only: master
