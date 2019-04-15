@@ -19,12 +19,12 @@ class InvitesView(MethodResource):
     def post(self, **params):
         """Logic for adding a single team member"""
         user = User.find_by(id_=get_jwt_identity())
-        team = Team.find_by(join_key=params['join_key'], force=False)
+        team = Team.find_by(join_key=params["join_key"], force=False)
 
         if not team:
-            return abort(404, 'this invite link is not valid')
+            return abort(404, "this invite link is not valid")
         if user in team.members:
-            return abort(409, 'user already in team')
+            return abort(409, "user already in team")
 
         team.members.connect(user)
         return team
