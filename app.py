@@ -9,9 +9,7 @@ from application.extensions import socketio
 app = create_app("development_config.cfg")  # pylint: disable=invalid-name
 
 if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger(
-        "gunicorn.error"
-    )  # pylint: disable=invalid-name
+    gunicorn_logger = logging.getLogger("gunicorn.error")  # pylint: disable=invalid-name
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)  # pylint: disable=no-member
 

@@ -11,7 +11,7 @@ from specs.factories.elasticsearch import es_search_response
 from specs.factories.request_generator import build_request
 from specs.spec_helpers import Context
 
-with description('/images') as self:
+with description("/images") as self:
     with before.each:
         self.context = Context()
         current_app.es = Stub()
@@ -21,8 +21,8 @@ with description('/images') as self:
         if hasattr(self, "context"):
             self.context.delete()
 
-    with description('valid reuest'):
-        with context('20 artifacts offset 5 limit 10 for a team'):
+    with description("valid reuest"):
+        with context("20 artifacts offset 5 limit 10 for a team"):
             with before.each:
                 with Mock() as elastic_mock:
                     elastic_mock.search(ANY_ARG).returns(es_search_response())
@@ -35,18 +35,21 @@ with description('/images') as self:
                     self.team.artifacts.connect(self.artifact)
                     self.artifacts.append(self.artifact)
                 params = {"offset": 5, "limit": 10, "team_id": self.team.id_}
-                self.response = self.context.client().get(build_request('/images', params))
+                self.response = self.context.client().get(build_request("/images", params))
 
-            with it('responds with the correct images list'):
+            with it("responds with the correct images list"):
                 expect(self.response.json).to(have_key("images"))
 
-            with it('responds with 10 images'):
-                expect(self.response.json['images']).to(have_len(10))
+            with it("responds with 10 images"):
+                expect(self.response.json["images"]).to(have_len(10))
 
-            with it('has the correct image in first place'):
+            with it("has the correct image in first place"):
                 image = self.artifacts[5]
-                expect(self.response.json['images'][0]).to(have_keys(id=image.id_,
-                                                                     url=contain(image.file_url),
-                                                                     team_id=image.team_id,
-                                                                     tags=list(map(lambda x: x.name,
-                                                                                   image.tags))))
+                expect(self.response.json["images"][0]).to(
+                    have_keys(
+                        id=image.id_,
+                        url=contain(image.file_url),
+                        team_id=image.team_id,
+                        tags=list(map(lambda x: x.name, image.tags)),
+                    )
+                )

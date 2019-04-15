@@ -31,10 +31,10 @@ class ArtifactBuilder:
     def build_relations(self, props, override_tags):
         """Create all relations on the artifact object as described in props."""
         self._set_full_tags(props, override_tags)
-        if props.get('team_id') is not None:
-            self._connect_relation(self.neo.team, Team.find(props['team_id']))
-        if props.get('user_id') is not None:
-            self._connect_relation(self.neo.user, User.find(props['user_id']))
+        if props.get("team_id") is not None:
+            self._connect_relation(self.neo.team, Team.find(props["team_id"]))
+        if props.get("user_id") is not None:
+            self._connect_relation(self.neo.user, User.find(props["user_id"]))
 
     def save(self):
         """Save both models"""
@@ -49,12 +49,12 @@ class ArtifactBuilder:
         self.neo.save()
 
     def _set_full_tags(self, properties, override_tags):
-        if 'user_tags' in properties:
-            self._add_tags_to_neo(properties['user_tags'], self.neo.user_tags, override_tags)
-        if 'label_tags' in properties:
-            self._add_tags_to_neo(properties['label_tags'], self.neo.label_tags)
-        if 'text_tags' in properties:
-            self._add_tags_to_neo(properties['text_tags'], self.neo.text_tags)
+        if "user_tags" in properties:
+            self._add_tags_to_neo(properties["user_tags"], self.neo.user_tags, override_tags)
+        if "label_tags" in properties:
+            self._add_tags_to_neo(properties["label_tags"], self.neo.label_tags)
+        if "text_tags" in properties:
+            self._add_tags_to_neo(properties["text_tags"], self.neo.text_tags)
 
     def update_with(self, override_tags=True, **properties):
         """Update both models"""

@@ -37,10 +37,10 @@ class TeamView(MethodResource):
     def get(self, **params):
         """get a single team"""
         try:
-            team = Team.find_by(id_=params['id'])
+            team = Team.find_by(id_=params["id"])
             return team
         except Team.DoesNotExist:  # pylint:disable=no-member
-            return abort(404, 'team not found')
+            return abort(404, "team not found")
 
     @use_kwargs(teams_validator.update_args())
     @marshal_with(TEAM_SCHEMA)
@@ -53,11 +53,11 @@ class TeamView(MethodResource):
     def put(self, **params):
         """Logic for updating a team"""
         try:
-            team = Team.find_by(id_=params.pop('id'))
+            team = Team.find_by(id_=params.pop("id"))
             team.update(**params)
             return team
         except Team.DoesNotExist:  # pylint:disable=no-member
-            return abort(404, 'team not found')
+            return abort(404, "team not found")
 
 
 class TeamsView(MethodResource):
@@ -86,9 +86,9 @@ class TeamsView(MethodResource):
 
 def _notify_of_team_creation(team):
     """Notify registered services of Team creation"""
-    if current_app.config['DIALOGFLOW_NOTIFY']:
+    if current_app.config["DIALOGFLOW_NOTIFY"]:
         try:
-            service_url = current_app.config['DIALOGFLOW_ADAPTER'] + '/teams'
-            requests.post(service_url, json={'id': str(team.id_), 'name': team.name})
+            service_url = current_app.config["DIALOGFLOW_ADAPTER"] + "/teams"
+            requests.post(service_url, json={"id": str(team.id_), "name": team.name})
         except requests.ConnectionError:
             current_app.logger.info("Couldn't connect to tobito!")

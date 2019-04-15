@@ -33,24 +33,20 @@ def synchronized_search(params):
     """Called from client when presentation mode is on"""
     artifacts = _search_artifacts(params)
 
-    emit('START_PRESENTATION',
-         respond_with(artifacts),
-         room=str(params["team_id"]),
-         broadcast=True
-         )
+    emit("START_PRESENTATION", respond_with(artifacts), room=str(params["team_id"]), broadcast=True)
 
 
 def _search_artifacts(params):
-    search_args = params.get('search')
+    search_args = params.get("search")
     if search_args is not None:
-        params['synonyms'] = SynonymGenerator(search_args).get_synonyms()
+        params["synonyms"] = SynonymGenerator(search_args).get_synonyms()
         elastic_artifacts = ElasticSearcher.build_artifact_searcher(params).search()
 
         artifacts = []
         for elastic_artifact in elastic_artifacts:
             try:
-                neo_artifact = Artifact.find_by(id_=elastic_artifact['_id'])
-                setattr(neo_artifact, 'score', elastic_artifact['_score'])
+                neo_artifact = Artifact.find_by(id_=elastic_artifact["_id"])
+                setattr(neo_artifact, "score", elastic_artifact["_score"])
                 artifacts.append(neo_artifact)
             except Artifact.DoesNotExist:
                 pass
@@ -61,14 +57,14 @@ def _search_artifacts(params):
 
 
 def _find_multiple_by(params):
-    team = Team.find_by(id_=params.get('team_id'), force=False)
+    team = Team.find_by(id_=params.get("team_id"), force=False)
     if team is None:
         artifacts = Artifact.nodes
     else:
         artifacts = team.artifacts
-    _from = params.get('offset', 0)
-    _to = params.get('limit', 10) + _from
-    return artifacts.order_by('created_at')[_from:_to]
+    _from = params.get("offset", 0)
+    _to = params.get("limit", 10) + _from
+    return artifacts.order_by("created_at")[_from:_to]
 
 
 class ArtifactView(MethodResource):
@@ -79,10 +75,10 @@ class ArtifactView(MethodResource):
     def get(self, **params):
         """Logic for getting a single artifact"""
         try:
-            artifact = Artifact.find_by(id_=params['id'])
+            artifact = Artifact.find_by(id_=params["id"])
             return artifact
         except Artifact.DoesNotExist:
-            return abort(404, 'artifact not found')
+            return abort(404, "artifact not found")
 
     @use_kwargs(artifacts_validator.update_args())
     @marshal_with(None, code=204)
@@ -100,23 +96,23 @@ class ArtifactView(MethodResource):
             builder.update_with(**params)
             return no_content()
         except Artifact.DoesNotExist:
-            return abort(404, 'artifact not found')
+            return abort(404, "artifact not found")
 
     @use_kwargs(artifacts_validator.delete_args())
     @marshal_with(None, 204)
     def delete(self, **params):
         """Logic for deleting an artifact"""
         try:
-            artifact = Artifact.find_by(id_=params['id'])
+            artifact = Artifact.find_by(id_=params["id"])
             filename_without_ext = os.path.splitext(artifact.file_url)[0]
             self._delete_files_starting_with(filename_without_ext)
             artifact.delete()
             return no_content()
         except Artifact.DoesNotExist:
-            return abort(404, 'artifact not found')
+            return abort(404, "artifact not found")
 
     def _delete_files_starting_with(self, start_string):
-        for p in Path(current_app.config['UPLOAD_FOLDER']).glob(f"{start_string}*"):
+        for p in Path(current_app.config["UPLOAD_FOLDER"]).glob(f"{start_string}*"):
             p.unlink()
 
 
@@ -132,11 +128,8 @@ class ArtifactsView(MethodResource):
         """Logic for querying several artifacts"""
         artifacts = _search_artifacts(params)
 
-        if params['notify_clients']:
-            socketio.emit('START_PRESENTATION',
-                          room=str(params["team_id"]),
-                          data=respond_with(artifacts)
-                          )
+        if params["notify_clients"]:
+            socketio.emit("START_PRESENTATION", room=str(params["team_id"]), data=respond_with(artifacts))
 
         return artifacts
 
@@ -153,7 +146,7 @@ class ArtifactsView(MethodResource):
 
     def _add_user_to_params(self, params):
         user_id = get_jwt_identity()
-        params['user_id'] = user_id
+        params["user_id"] = user_id
 
     def _create_artifact(self, params, metadata):
         params.update(metadata)
@@ -178,7 +171,7 @@ class ArtifactsView(MethodResource):
         return no_content()
 
     def _upload_file(self, params):
-        file_saver = FileSaver(params['file'])
+        file_saver = FileSaver(params["file"])
         file_saver.save()
 
         image_resizer = ImageResizer(file_saver.file_path)
@@ -186,7 +179,8 @@ class ArtifactsView(MethodResource):
 
         return file_saver.get_metadata()
 
-class ImageResizer: #pylint:disable=too-few-public-methods
+
+class ImageResizer:  # pylint:disable=too-few-public-methods
     """Saves resized versions of an image to disk"""
 
     widths = [320, 480, 640, 750, 1080]
@@ -209,7 +203,7 @@ class ImageResizer: #pylint:disable=too-few-public-methods
 
     def _generate_file_name(self, width):
         """Generate filename for a resized image of given width"""
-        [prefix, suffix] = self.original_file_name.rsplit('.', 1)
+        [prefix, suffix] = self.original_file_name.rsplit(".", 1)
         filename = f"{prefix}_{width}w.{suffix}"
         return filename
 
@@ -218,6 +212,7 @@ class ImageResizer: #pylint:disable=too-few-public-methods
         width_ratio = width / self.image.size[0]
         height = int(self.image.size[1] * width_ratio)
         return height
+
 
 class FileSaver:
     """Saves a file to disk and creates according metadata"""
@@ -235,8 +230,7 @@ class FileSaver:
 
     def get_metadata(self):
         """Get Metadata as hash (file_url and file_date)"""
-        return {'file_url': self.file_name,
-                'file_date': self.file_date}
+        return {"file_url": self.file_name, "file_date": self.file_date}
 
     def _create_metadata(self):
         self.file_name = self._generate_filename()
@@ -251,5 +245,4 @@ class FileSaver:
         return os.path.join(current_app.config["UPLOAD_FOLDER"], self.file_name)
 
     def _generate_filename(self):
-        return str(uuid.uuid4()) + "_" + \
-               werkzeug.utils.secure_filename(self.file.filename)
+        return str(uuid.uuid4()) + "_" + werkzeug.utils.secure_filename(self.file.filename)

@@ -1,7 +1,6 @@
 """Access to Artifacts via Neo4J"""
 
-from neomodel import (StructuredNode, StringProperty, DateTimeProperty,
-                      RelationshipTo, RelationshipFrom, cardinality)
+from neomodel import StructuredNode, StringProperty, DateTimeProperty, RelationshipTo, RelationshipFrom, cardinality
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
@@ -9,18 +8,18 @@ from application.artifacts.elastic import ElasticSyncer
 
 
 # pylint:disable=abstract-method
-class Artifact(StructuredNode, DefaultPropertyMixin,
-               DefaultHelperMixin):
+class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     """The class that manages artifacts"""
+
     schema = ArtifactSchema
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
 
-    user_tags = RelationshipTo('application.models.Tag', 'TAGGED_WITH', cardinality=cardinality.ZeroOrMore)
-    label_tags = RelationshipTo('application.models.Tag', 'LABELED_WITH', cardinality=cardinality.ZeroOrMore)
-    text_tags = RelationshipTo('application.models.Tag', 'CONTAINS_TEXT', cardinality=cardinality.ZeroOrMore)
-    team = RelationshipFrom('application.models.Team', 'UPLOADED', cardinality=cardinality.ZeroOrOne)
-    user = RelationshipTo('application.models.User', 'CREATED_BY', cardinality=cardinality.ZeroOrOne)
+    user_tags = RelationshipTo("application.models.Tag", "TAGGED_WITH", cardinality=cardinality.ZeroOrMore)
+    label_tags = RelationshipTo("application.models.Tag", "LABELED_WITH", cardinality=cardinality.ZeroOrMore)
+    text_tags = RelationshipTo("application.models.Tag", "CONTAINS_TEXT", cardinality=cardinality.ZeroOrMore)
+    team = RelationshipFrom("application.models.Team", "UPLOADED", cardinality=cardinality.ZeroOrOne)
+    user = RelationshipTo("application.models.User", "CREATED_BY", cardinality=cardinality.ZeroOrOne)
 
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema

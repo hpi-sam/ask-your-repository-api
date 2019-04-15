@@ -4,8 +4,7 @@ Handles all logic of the user api
 from flask import jsonify, make_response
 from flask_apispec import use_kwargs
 from flask_apispec.views import MethodResource
-from flask_jwt_extended import (jwt_required, create_access_token, unset_jwt_cookies,
-                                set_access_cookies, get_csrf_token)
+from flask_jwt_extended import jwt_required, create_access_token, unset_jwt_cookies, set_access_cookies, get_csrf_token
 
 from application.authentications import authentications_validator
 from application.responders import respond_with
@@ -36,10 +35,10 @@ class AuthenticationsView(MethodResource):
     @jwt_required
     def delete(self):  # pylint: disable=W0613
         """Unsets the cookie in response"""
-        resp = jsonify({'logout': True})
+        resp = jsonify({"logout": True})
         unset_jwt_cookies(resp)
         response = make_response(resp, 200)
-        response.mimetype = 'application/json'
+        response.mimetype = "application/json"
         return response
 
 
@@ -51,7 +50,7 @@ def _build_login_response(user, set_cookies):
         response = jsonify(response)
         set_access_cookies(response, access_token, 10000000000)
         response = make_response(response, 200)
-        response.mimetype = 'application/json'
+        response.mimetype = "application/json"
     else:
         response["access_token"] = access_token
 

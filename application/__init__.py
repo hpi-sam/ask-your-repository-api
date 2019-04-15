@@ -27,15 +27,14 @@ def create_app(config_filename=None):
     CORS(app, supports_credentials=True)
     create_routes(app)
     app.config.from_pyfile(config_filename)
-    app.es = (Elasticsearch(app.config['ELASTICSEARCH_URL'])
-              if app.config['ELASTICSEARCH_URL'] else None)
-    config.DATABASE_URL = app.config['NEO4J_URL']
+    app.es = Elasticsearch(app.config["ELASTICSEARCH_URL"]) if app.config["ELASTICSEARCH_URL"] else None
+    config.DATABASE_URL = app.config["NEO4J_URL"]
     JWTManager(app)
     register_extensions(app)
     register_error_handlers(app)
 
-    if not os.path.isdir(app.config['UPLOAD_FOLDER']):
-        os.mkdir(app.config['UPLOAD_FOLDER'])
+    if not os.path.isdir(app.config["UPLOAD_FOLDER"]):
+        os.mkdir(app.config["UPLOAD_FOLDER"])
 
     return app
 

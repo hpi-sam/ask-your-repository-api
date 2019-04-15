@@ -8,14 +8,13 @@ from application.users.oauth.google_oauth import GoogleOAuth, EmptyCredentialsEr
 
 
 class GoogleOauthView(MethodResource):
-
     @use_kwargs(google_oauth_validator.create_args())
     @marshal_with(USER_SCHEMA)
     @check_user
     def put(self, **params):
-        user = User.find(params['id'])
+        user = User.find(params["id"])
         try:
-            google_oauth = GoogleOAuth.create_from_id_token(params['id_token'])
+            google_oauth = GoogleOAuth.create_from_id_token(params["id_token"])
             google_oauth.user_rel.connect(user)
             return user
         except GoogleOAuthConflict as err:
@@ -25,30 +24,28 @@ class GoogleOauthView(MethodResource):
     @marshal_with(USER_SCHEMA)
     @check_user
     def patch(self, **params):
-        user = User.find(params['id'])
+        user = User.find(params["id"])
         google_auth = user.google
         if not google_auth:
-            abort(404, 'google oauth not found')
-        google_auth.set_credentials(params['auth_code'])
+            abort(404, "google oauth not found")
+        google_auth.set_credentials(params["auth_code"])
         google_auth.save()
         return user
 
 
 class GoogleScopesView(MethodResource):
-
     @use_kwargs(google_oauth_validator.revoke_access_args())
     @marshal_with(USER_SCHEMA)
     @check_user
     def delete(self, **params):
-        user = User.find(params['id'])
+        user = User.find(params["id"])
         google_auth = user.google
         if not google_auth:
-            abort(404, 'google oauth not found')
+            abort(404, "google oauth not found")
         try:
             google_auth.revoke_access()
         except EmptyCredentialsError:
-            abort(404, 'google oauth has no offline access')
+            abort(404, "google oauth has no offline access")
         except RequestError:
-            abort(502, 'could not revoke access')
+            abort(502, "could not revoke access")
         return user
-

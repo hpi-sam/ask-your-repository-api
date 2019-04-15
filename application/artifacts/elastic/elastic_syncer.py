@@ -86,11 +86,10 @@ class ElasticSyncer:
         self._elastic().create(params)
 
     def _artifact_dump(self, artifact):
-        return ArtifactSchema(model=application.artifacts.artifact.Artifact,
-                              decorate=False).dump(artifact).data
+        return ArtifactSchema(model=application.artifacts.artifact.Artifact, decorate=False).dump(artifact).data
 
     def _elastic(self):
-        return ElasticAccess('artifact', 'image')
+        return ElasticAccess("artifact", "image")
 
 
 class ElasticAccess:
@@ -102,26 +101,12 @@ class ElasticAccess:
 
     def create(self, data):
         """create a document"""
-        current_app.es.index(
-            index=self.index,
-            doc_type=self.type,
-            id=data.pop('id_'),
-            body=data)
+        current_app.es.index(index=self.index, doc_type=self.type, id=data.pop("id_"), body=data)
 
     def update(self, data):
         """update a document"""
-        current_app.es.update(
-            index=self.index,
-            doc_type=self.type,
-            id=data.pop('id_'),
-            body={
-                "doc": data
-            })
+        current_app.es.update(index=self.index, doc_type=self.type, id=data.pop("id_"), body={"doc": data})
 
     def delete(self, id):  # pylint:disable= invalid-name
         """delete a document"""
-        current_app.es.delete(
-            refresh='wait_for',
-            index=self.index,
-            doc_type=self.type,
-            id=str(id))
+        current_app.es.delete(refresh="wait_for", index=self.index, doc_type=self.type, id=str(id))
