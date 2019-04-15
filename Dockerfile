@@ -1,19 +1,24 @@
 FROM python:3.7-alpine
 
+WORKDIR /src
+
 RUN apk add libffi-dev build-base
 
 # pillow dependencies
 RUN apk add jpeg-dev zlib-dev
 
+COPY pyproject.toml .
+COPY poetry.lock .
+
 RUN pip install poetry
 
-COPY . /src
-WORKDIR /src
 RUN poetry config settings.virtualenvs.create false
 RUN poetry install --no-dev
 
 # text processing resources
-RUN poetry run python -c "import nltk; nltk.download('all')"
+RUN python -c "import nltk; nltk.download('all')"
+
+COPY . .
 
 EXPOSE 5000
 
