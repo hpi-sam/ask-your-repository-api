@@ -8,6 +8,7 @@ from neomodel import StringProperty, DateTimeProperty
 
 class DefaultPropertyMixin:
     """Adds id_, created_at and updated_at"""
+
     id_ = StringProperty(unique_index=True, default=uuid4)
     created_at = DateTimeProperty(default_now=True)
     updated_at = DateTimeProperty(default_now=True)
@@ -22,7 +23,7 @@ class DefaultPropertyMixin:
 
     def does_not_exist(self):
         """Check if self is already saved"""
-        return not hasattr(self, 'id')  # id is only populated if the node was saved once
+        return not hasattr(self, "id")  # id is only populated if the node was saved once
 
 
 class DefaultHelperMixin:
@@ -41,7 +42,7 @@ class DefaultHelperMixin:
         return cls.find_by(id_=str(uid), force=force)
 
     @classmethod
-    def find_by(cls, force=True, **properties, ):
+    def find_by(cls, force=True, **properties):
         """Find an object by properties"""
         if force:
             return cls.nodes.get(**properties)

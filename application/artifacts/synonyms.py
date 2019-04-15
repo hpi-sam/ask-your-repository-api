@@ -37,12 +37,12 @@ class SynonymGenerator:  # pylint:disable=too-few-public-methods
         synset_relations = []
         for synset in synsets:
             synset_relations.extend(
-                synset.hypernyms() + synset.hyponyms() +
-                synset.member_holonyms() + synset.part_meronyms())
+                synset.hypernyms() + synset.hyponyms() + synset.member_holonyms() + synset.part_meronyms()
+            )
         return synset_relations
 
     def _get_word_synsets(self, words):
-        args = words.split(' ')
+        args = words.split(" ")
         word_synsets = []
         for arg in args:
             word = Word(arg)
@@ -58,7 +58,7 @@ class SynonymGenerator:  # pylint:disable=too-few-public-methods
 
     def _parse_synsets_to_string(self, synsets):
         lemmas = self._get_lemma_names(synsets)
-        return ' '.join(set(lemmas))
+        return " ".join(set(lemmas))
 
     def _combine_synsets(self):
         self.synonyms.extend(self.synsets + self.synset_relations + self.synset_synonyms)

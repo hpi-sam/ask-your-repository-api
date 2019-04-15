@@ -15,12 +15,14 @@ from application.users.user_schema import USER_SCHEMA, USERS_COLLECTION_SCHEMA
 
 def check_user(func):
     """capture User.DoesNotExist exception"""
+
     @wraps(func)
     def wrapped_function(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except User.DoesNotExist:  # pylint:disable=no-member
-            return abort(404, 'user not found')
+            return abort(404, "user not found")
+
     return wrapped_function
 
 
@@ -33,7 +35,7 @@ class UserView(MethodResource):
     @check_user
     def get(self, **params):
         """get a single user"""
-        return User.find(params['id'])
+        return User.find(params["id"])
 
     @jwt_required
     @use_kwargs(users_validator.update_args())
@@ -43,7 +45,7 @@ class UserView(MethodResource):
         """Logic for updating a user"""
         user = User.find_by(id_=params.pop("id"))
         if "password" in params:
-            if not user.check_password(params.pop('old_password', None)):
+            if not user.check_password(params.pop("old_password", None)):
                 return users_validator.raise_old_password_was_wrong()
         user.update(**params)
         return user

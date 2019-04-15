@@ -5,10 +5,7 @@ from webargs import fields
 
 def add_tags_args():
     """Defines and validates params for add_tags"""
-    return {
-        "id": fields.UUID(required=True, location='view_args'),
-        "tags": fields.List(fields.String(), missing=[]),
-    }
+    return {"id": fields.UUID(required=True, location="view_args"), "tags": fields.List(fields.String(), missing=[])}
 
 
 def suggested_tags_args():
@@ -17,5 +14,5 @@ def suggested_tags_args():
         "team_id": fields.UUID(required=True),
         "tags": fields.List(fields.String(), missing=[]),
         "min_support": fields.Number(missing=0.25, validate=lambda val: val <= 1),
-        "limit": fields.Integer(missing=3)
+        "limit": fields.Integer(missing=3),
     }

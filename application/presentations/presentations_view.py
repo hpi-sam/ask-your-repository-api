@@ -23,11 +23,8 @@ class PresentationsView(MethodResource):
     def post(self, **params):
         """Creates a new presentation with remotely requested images"""
         artifacts = []
-        for artifact_id in params['file_ids']:
+        for artifact_id in params["file_ids"]:
             artifacts.append(Artifact.find_by(id_=artifact_id))
 
-        socketio.emit('START_PRESENTATION',
-                      room=str(params["team_id"]),
-                      data=respond_with(artifacts)
-                      )
+        socketio.emit("START_PRESENTATION", room=str(params["team_id"]), data=respond_with(artifacts))
         return no_content()

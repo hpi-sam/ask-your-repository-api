@@ -10,6 +10,7 @@ except ImportError:
 
 class SocketioParser(Parser):
     """Only parses requests that are json / dictionaries"""
+
     DEFAULT_LOCATIONS = ["json"]
 
     def parse_json(self, params, name, field):
@@ -18,13 +19,8 @@ class SocketioParser(Parser):
 
     # pylint: disable=too-many-arguments
     def use_args(
-            self,
-            argmap,
-            locations=None,
-            as_kwargs=False,
-            validate=None,
-            error_status_code=None,
-            error_headers=None):
+        self, argmap, locations=None, as_kwargs=False, validate=None, error_status_code=None, error_headers=None
+    ):
         """Creates a decorator funtion for socketio on-methods"""
         locations = locations or self.locations
         # Optimization: If argmap is passed as a dictionary, we only need
@@ -33,7 +29,6 @@ class SocketioParser(Parser):
             argmap = dict2schema(argmap)()
 
         def decorator(func):
-
             def socket_wrapper(data, *args, **kwargs):
                 # The first argument is either `self` or `request`
                 parsed_args = self.parse(
@@ -52,6 +47,7 @@ class SocketioParser(Parser):
             return socket_wrapper
 
         return decorator
+
     # pylint: enable=too-many-arguments
 
 

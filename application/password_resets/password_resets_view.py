@@ -58,7 +58,7 @@ def set_query_parameter(url, param_name, param_value):
 def send_reset_password_email(password_link, recipient):
     """Creates the email with templates and sends it to the user"""
     reset_mail = Message(subject="Reset Password", recipients=[recipient.email])
-    template_args = {'password_link': password_link, 'recipient': recipient.username}
-    reset_mail.body = render_template('password_reset.txt', **template_args)
-    reset_mail.html = render_template('password_reset.html', **template_args)
+    template_args = {"password_link": password_link, "recipient": recipient.username}
+    reset_mail.body = render_template("password_reset.txt", **template_args)
+    reset_mail.html = render_template("password_reset.html", **template_args)
     mail.send(reset_mail)

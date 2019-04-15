@@ -7,6 +7,7 @@ from application.base_schema import BaseSchema, output_decorator
 
 class TeamSchema(BaseSchema):
     """Schema for importing and exporting Team objects"""
+
     id_ = fields.UUID(missing=None)
     name = fields.String()
     members = fields.Nested(USERS_SCHEMA, many=True)
@@ -21,7 +22,7 @@ class TeamSchema(BaseSchema):
     def dump_teams(self, data, many):
         """add a key for the returned collection"""
         if many:
-            return {'teams': data, 'teams_count': len(data)}
+            return {"teams": data, "teams_count": len(data)}
         return data
 
 

@@ -9,10 +9,10 @@ load_dotenv()
 
 @task
 def delete_indices():
-    es = Elasticsearch(os.environ.get('ES_URL'))
+    es = Elasticsearch(os.environ.get("ES_URL"))
     es.indices.delete(index="artifact")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     delete_indices()
-    print('rofl success')
+    print("rofl success")

@@ -6,6 +6,7 @@ from application.users.oauth.google_oauth_schema import GoogleOAuthSchema
 
 class UserSchema(BaseSchema):
     """Schema for importing and exporting Team objects"""
+
     id_ = fields.UUID(missing=None)
     username = fields.String()
     email = fields.String()
@@ -26,7 +27,7 @@ class UserSchema(BaseSchema):
     def dump_users(self, data, many):
         """add a key for the returned collection"""
         if many and self.add_collection_key:
-            return {'users': data, 'users_count': len(data)}
+            return {"users": data, "users_count": len(data)}
         return data
 
 

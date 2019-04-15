@@ -43,7 +43,6 @@ def handle_errors(schema, errors, obj):  # noqa
     objects from the database using schema.load.
     Only happens if database is corrupted.
     """
-    error_message = ("The following errors occured while loading data from the database: {}"
-                     .format(errors))
+    error_message = "The following errors occured while loading data from the database: {}".format(errors)
     current_app.logger.error(error_message)
     raise ValueError(error_message)

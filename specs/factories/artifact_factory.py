@@ -1,6 +1,7 @@
 from application.artifacts.artifact import Artifact
 from application.artifacts.artifact_builder import ArtifactBuilder
 
+
 class ArtifactFactory:
     @classmethod
     def create_artifact(cls, user_tags=[], *args, **kwargs):
@@ -14,6 +15,6 @@ class ArtifactFactory:
 
     @classmethod
     def build_artifact(cls, **kwargs):
-        if 'file_url' not in kwargs:
-            kwargs["file_url"] = 'abc'
+        if "file_url" not in kwargs:
+            kwargs["file_url"] = "abc"
         return Artifact(**kwargs)

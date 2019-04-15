@@ -16,13 +16,15 @@ class ElasticSearcher:  # pylint:disable=too-few-public-methods
         if "end_date" in params:
             date_range["lte"] = params["end_date"]
 
-        search_builder = ArtifactSearchBuilder(search=params["search"],
-                                               date_range=date_range,
-                                               limit=params["limit"],
-                                               offset=params["offset"],
-                                               team_id=params["team_id"],
-                                               synonyms=params['synonyms'])
-        return cls('artifact', 'image', search_builder)
+        search_builder = ArtifactSearchBuilder(
+            search=params["search"],
+            date_range=date_range,
+            limit=params["limit"],
+            offset=params["offset"],
+            team_id=params["team_id"],
+            synonyms=params["synonyms"],
+        )
+        return cls("artifact", "image", search_builder)
 
     def __init__(self, index, type, search_builder):
         self.index = index
@@ -39,4 +41,5 @@ class ElasticSearcher:  # pylint:disable=too-few-public-methods
             search_type="dfs_query_then_fetch",
             index=self.index,
             doc_type=self.type,
-            body=body)['hits']['hits']
+            body=body,
+        )["hits"]["hits"]

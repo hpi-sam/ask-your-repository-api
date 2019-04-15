@@ -11,10 +11,10 @@ def build_request(url, params):
     """
     request = url
     if params:
-        request += '?'
+        request += "?"
         key_value_list = list(params.items())
         for key, value in key_value_list[:-1]:
-            request += f'{key}={value}&'
+            request += f"{key}={value}&"
         key, value = key_value_list[-1]  # pylint: disable=unbalanced-tuple-unpacking
-        request += f'{key}={value}'
+        request += f"{key}={value}"
     return request
