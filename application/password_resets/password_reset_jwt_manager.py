@@ -7,6 +7,7 @@ from flask_jwt_extended.exceptions import JWTDecodeError
 import jwt
 from application.models import User
 
+asdfasdf
 
 def encode_reset_token(user, expires_delta=None):
     """Encodes a jwt reset token"""
