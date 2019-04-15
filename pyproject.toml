@@ -7,7 +7,7 @@ authors = ["Jascha Beste <jascha.beste@student.hpi.de>"]
 [tool.poetry.dependencies]
 python = ">=3.7"
 Flask = "==1.0.2"
-elasticsearch = "*"
+elasticsearch = "==6.3.1"
 python-dotenv = "*"
 gunicorn = "*"
 flask-cors = "*"
