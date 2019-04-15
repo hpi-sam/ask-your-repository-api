@@ -34,6 +34,8 @@ with description("/images") as self:
     with before.each:
         self.context = Context()
         current_app.es = Stub()
+        self.user = UserFactory.create_user()
+        self.context.client().login(self.user)
 
     with after.each:
         clear_upload_dir()
@@ -161,9 +163,6 @@ with description("/images") as self:
 
             with description("logged in"):
                 with before.each:
-                    self.user = UserFactory.create_user()
-                    self.context.client().login(self.user)
-
                     with mock_image_recognition:
                         self.response = self.context.client().post(
                             "/images",

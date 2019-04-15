@@ -10,12 +10,15 @@ from neomodel import db
 
 from specs.factories.elasticsearch import es_search_response_synonyms
 from specs.factories.artifact_factory import ArtifactFactory
+from specs.factories.user_factory import UserFactory
 from specs.spec_helpers import Context
 from specs.factories.uuid_fixture import get_uuid
 
 with description("/images") as self:
     with before.each:
         self.context = Context()
+        self.user = UserFactory.create_user()
+        self.context.client().login(self.user)
 
     with after.each:
         # If check to prevent tests from failing occasionally
