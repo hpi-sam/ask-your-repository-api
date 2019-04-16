@@ -20,7 +20,7 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     text_tags = RelationshipTo("application.models.Tag", "CONTAINS_TEXT", cardinality=cardinality.ZeroOrMore)
     team = RelationshipFrom("application.models.Team", "UPLOADED", cardinality=cardinality.ZeroOrOne)
     user = RelationshipTo("application.models.User", "CREATED_BY", cardinality=cardinality.ZeroOrOne)
-
+    drive_file = RelationshipTo('application.models.DriveFile', "HAS_DRIVE_FILE", cardinality=cardinality.ZeroOrOne)
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema
     @property
