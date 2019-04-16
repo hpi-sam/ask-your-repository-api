@@ -24,4 +24,4 @@ class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
 
     artifacts = RelationshipTo("application.models.Artifact", "UPLOADED", cardinality=cardinality.ZeroOrMore)
     members = RelationshipTo("application.models.User", "HAS_MEMBER", cardinality=cardinality.ZeroOrMore)
-    drive = RelationshipTo('application.models.Drive', 'SYNCED_TO', cardinality=cardinality.ZeroOrOne)
+    drive = RelationshipTo("application.models.Drive", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)

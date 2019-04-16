@@ -11,19 +11,18 @@ from application.users.user import User
 
 
 class DrivesView(MethodResource):
-
     @jwt_required
     @use_kwargs(create_args())
     @marshal_with(DriveSchema)
     def post(self, **params):
         print(params)
-        drive = Drive(drive_id = params.get("drive_id")).save()
+        drive = Drive(drive_id=params.get("drive_id")).save()
         try:
             team = Team.find_by(id_=params.get("team_id"))
             team.drive.connect(drive)
             team.save()
         except AttemptedCardinalityViolation:
-            abort(409, 'Team already has drive connected')
+            abort(409, "Team already has drive connected")
         drive.owner.connect(User.find_by(id_=get_jwt_identity()))
         drive.save()
         return drive

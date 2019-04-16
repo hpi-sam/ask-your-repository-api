@@ -17,7 +17,7 @@ class User(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:
     teams = RelationshipFrom("application.models.Team", "HAS_MEMBER", cardinality=cardinality.ZeroOrMore)
     artifacts = RelationshipFrom("application.models.Artifact", "CREATED_BY", cardinality=cardinality.ZeroOrMore)
     google_rel = RelationshipTo("application.models.GoogleOAuth", "HAS_GOOGLE_OAUTH", cardinality=cardinality.ZeroOrOne)
-    drives = RelationshipTo('application.models.Drive', 'OWNS', cardinality=cardinality.ZeroOrMore)
+    drives = RelationshipTo("application.models.Drive", "OWNS", cardinality=cardinality.ZeroOrMore)
 
     @property
     def google(self):
