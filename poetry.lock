@@ -6,6 +6,14 @@ optional = false
 python-versions = "*"
 version = "1.2.0"
 
+[package.extras]
+dev = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.19.2)", "pytest", "mock", "flake8 (3.7.7)", "pre-commit (1.15.1)", "tox", "flake8-bugbear (19.3.0)"]
+lint = ["flake8 (3.7.7)", "pre-commit (1.15.1)", "flake8-bugbear (19.3.0)"]
+tests = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.19.2)", "pytest", "mock"]
+validation = ["prance (>=0.11)"]
+webframeworks-tests = ["apispec-webframeworks (>=0.3.0)"]
+yaml = ["PyYAML (>=3.10)"]
+
 [[package]]
 category = "main"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -41,6 +49,11 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "19.1.0"
 
+[package.extras]
+dev = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface", "sphinx", "pre-commit"]
+docs = ["sphinx", "zope.interface"]
+tests = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface"]
+
 [[package]]
 category = "dev"
 description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
@@ -64,6 +77,9 @@ version = "3.1.6"
 cffi = ">=1.1"
 six = ">=1.4.1"
 
+[package.extras]
+tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)"]
+
 [[package]]
 category = "main"
 description = "The uncompromising code formatter."
@@ -77,6 +93,9 @@ appdirs = "*"
 attrs = ">=17.4.0"
 click = ">=6.5"
 toml = ">=0.9.4"
+
+[package.extras]
+d = ["aiohttp (>=3.3.2)"]
 
 [[package]]
 category = "main"
@@ -167,6 +186,10 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.16.0"
 
+[package.extras]
+DNSSEC = ["pycryptodome", "ecdsa (>=0.13)"]
+IDNA = ["idna (>=2.1)"]
+
 [[package]]
 category = "dev"
 description = "Python test doubles"
@@ -201,6 +224,10 @@ version = "6.3.1"
 
 [package.dependencies]
 urllib3 = ">=1.21.1"
+
+[package.extras]
+develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyaml", "nosexcover", "sphinx", "sphinx-rtd-theme"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 category = "main"
@@ -273,6 +300,11 @@ Werkzeug = ">=0.14"
 click = ">=5.1"
 itsdangerous = ">=0.24"
 
+[package.extras]
+dev = ["pytest (>=3)", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
+docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
+dotenv = ["python-dotenv"]
+
 [[package]]
 category = "main"
 description = "Build and document REST APIs with Flask and apispec"
@@ -326,6 +358,9 @@ PyJWT = ">=1.6.4"
 Werkzeug = ">=0.14"
 six = "*"
 
+[package.extras]
+asymmetric_crypto = ["cryptography (>=2.3)"]
+
 [[package]]
 category = "main"
 description = "Flask extension for sending email"
@@ -349,6 +384,21 @@ version = "3.3.2"
 [package.dependencies]
 Flask = ">=0.9"
 python-socketio = ">=2.1.0,<4"
+
+[[package]]
+category = "main"
+description = "Google API Client Library for Python"
+name = "google-api-python-client"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.7.8"
+
+[package.dependencies]
+google-auth = ">=1.4.1"
+google-auth-httplib2 = ">=0.0.3"
+httplib2 = ">=0.9.2,<1dev"
+six = ">=1.6.1,<2dev"
+uritemplate = ">=3.0.0,<4dev"
 
 [[package]]
 category = "main"
@@ -388,6 +438,9 @@ version = "0.2.0"
 google-auth = "*"
 requests-oauthlib = ">=0.7.0"
 
+[package.extras]
+tool = ["click"]
+
 [[package]]
 category = "main"
 description = "Lightweight in-process concurrent programming"
@@ -404,6 +457,11 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "19.9.0"
 
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+tornado = ["tornado (>=0.2)"]
+
 [[package]]
 category = "main"
 description = "A comprehensive HTTP client library."
@@ -419,6 +477,9 @@ name = "identify"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.4.1"
+
+[package.extras]
+license = ["editdistance"]
 
 [[package]]
 category = "main"
@@ -439,6 +500,9 @@ version = "0.9"
 [package.dependencies]
 zipp = ">=0.3.2"
 
+[package.extras]
+docs = ["sphinx", "docutils (0.12)", "rst.linker"]
+
 [[package]]
 category = "main"
 description = "Various helpers to pass data to untrusted environments and back."
@@ -457,6 +521,9 @@ version = "2.10.1"
 
 [package.dependencies]
 MarkupSafe = ">=0.23"
+
+[package.extras]
+i18n = ["Babel (>=0.8)"]
 
 [[package]]
 category = "dev"
@@ -485,6 +552,12 @@ name = "marshmallow"
 optional = false
 python-versions = "*"
 version = "2.19.2"
+
+[package.extras]
+dev = ["python-dateutil", "simplejson", "pytest", "pytz", "flake8 (3.7.4)", "tox"]
+lint = ["flake8 (3.7.4)"]
+reco = ["python-dateutil", "simplejson"]
+tests = ["pytest", "pytz"]
 
 [[package]]
 category = "main"
@@ -549,6 +622,14 @@ version = "3.4"
 singledispatch = "*"
 six = "*"
 
+[package.extras]
+all = ["numpy", "python-crfsuite", "matplotlib", "gensim", "pyparsing", "scipy", "requests", "scikit-learn", "twython"]
+corenlp = ["requests"]
+machine_learning = ["gensim", "numpy", "python-crfsuite", "scikit-learn", "scipy"]
+plot = ["matplotlib"]
+tgrep = ["pyparsing"]
+twitter = ["twython"]
+
 [[package]]
 category = "main"
 description = "Node.js virtual environment builder"
@@ -564,6 +645,11 @@ name = "oauthlib"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.0.1"
+
+[package.extras]
+rsa = ["cryptography"]
+signals = ["blinker"]
+signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
 
 [[package]]
 category = "dev"
@@ -587,7 +673,7 @@ description = "A framework for managing and maintaining multi-language pre-commi
 name = "pre-commit"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.15.1"
+version = "1.15.2"
 
 [package.dependencies]
 "aspy.yaml" = "*"
@@ -663,6 +749,11 @@ optional = false
 python-versions = "*"
 version = "1.7.1"
 
+[package.extras]
+crypto = ["cryptography (>=1.4)"]
+flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
+test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
+
 [[package]]
 category = "dev"
 description = "Python interface to coveralls.io API"
@@ -685,6 +776,9 @@ optional = false
 python-versions = "*"
 version = "0.10.1"
 
+[package.extras]
+cli = ["click (>=5.0)"]
+
 [[package]]
 category = "main"
 description = "Engine.IO server"
@@ -695,6 +789,10 @@ version = "3.5.1"
 
 [package.dependencies]
 six = ">=1.9.0"
+
+[package.extras]
+asyncio_client = ["aiohttp (>=3.4)", "websockets (>=7.0)"]
+client = ["requests (>=2.21.0)", "websocket-client (>=0.54.0)"]
 
 [[package]]
 category = "main"
@@ -707,6 +805,10 @@ version = "3.1.2"
 [package.dependencies]
 python-engineio = ">=3.2.0"
 six = ">=1.9.0"
+
+[package.extras]
+asyncio_client = ["python-engineio (>=3.2.0)"]
+client = ["python-engineio (>=3.2.0)"]
 
 [[package]]
 category = "main"
@@ -738,6 +840,10 @@ chardet = ">=3.0.2,<3.1.0"
 idna = ">=2.5,<2.9"
 urllib3 = ">=1.21.1,<1.25"
 
+[package.extras]
+security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
+
 [[package]]
 category = "main"
 description = "OAuthlib authentication support for Requests."
@@ -750,6 +856,9 @@ version = "1.2.0"
 oauthlib = ">=3.0.0"
 requests = ">=2.0.0"
 
+[package.extras]
+rsa = ["oauthlib (>=3.0.0)"]
+
 [[package]]
 category = "main"
 description = "A utility library for mocking out the `requests` Python library."
@@ -761,6 +870,9 @@ version = "0.10.6"
 [package.dependencies]
 requests = ">=2.0"
 six = "*"
+
+[package.extras]
+tests = ["pytest", "coverage (>=3.7.1,<5.0.0)", "pytest-cov", "pytest-localserver", "flake8"]
 
 [[package]]
 category = "dev"
@@ -829,11 +941,23 @@ version = "0.10.0"
 
 [[package]]
 category = "main"
+description = "URI templates"
+name = "uritemplate"
+optional = false
+python-versions = "*"
+version = "3.0.0"
+
+[[package]]
+category = "main"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
 python-versions = "*"
 version = "1.22"
+
+[package.extras]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
 
 [[package]]
 category = "main"
@@ -842,6 +966,10 @@ name = "virtualenv"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "16.4.3"
+
+[package.extras]
+docs = ["sphinx (>=1.8.0,<2)", "towncrier (>=18.5.0)", "sphinx-rtd-theme (>=0.4.2,<1)"]
+testing = ["pytest (>=4.0.0,<5)", "coverage (>=4.5.0,<5)", "six (>=1.10.0,<2)", "pytest-localserver", "pypiserver", "pytest-timeout (>=1.3.0,<2)", "pytest-xdist", "mock", "xonsh"]
 
 [[package]]
 category = "main"
@@ -854,6 +982,12 @@ version = "5.3.0"
 [package.dependencies]
 marshmallow = ">=2.15.2"
 
+[package.extras]
+dev = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "flake8 (3.6.0)", "pre-commit (1.13.0)", "tox", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
+frameworks = ["Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "aiohttp (>=3.0.0)"]
+lint = ["flake8 (3.6.0)", "pre-commit (1.13.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
+tests = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)"]
+
 [[package]]
 category = "main"
 description = "The comprehensive WSGI web application library."
@@ -861,6 +995,11 @@ name = "werkzeug"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.15.2"
+
+[package.extras]
+dev = ["pytest", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinx-issues"]
+termcolor = ["termcolor"]
+watchdog = ["watchdog"]
 
 [[package]]
 category = "main"
@@ -870,8 +1009,12 @@ optional = false
 python-versions = ">=2.7"
 version = "0.3.3"
 
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs", "pytest-flake8", "pathlib2"]
+
 [metadata]
-content-hash = "2c1dd1c847980fe551033ceeb43026f62dcd92b3f1aa1470a64e55a5be780ab9"
+content-hash = "3a9b7e5a1e3b3be5801799263ec105f2b6fabdcd26112804a844091269d0616a"
 python-versions = ">=3.7"
 
 [metadata.hashes]
@@ -908,6 +1051,7 @@ flask-cors = ["7ad56ee3b90d4955148fc25a2ecaa1124fc84298471e266a7fea59aeac4405a5"
 flask-jwt-extended = ["c942e22aa4d523d6021bf4ce5d37d08d7423a94a756efc31aab13e1f44a82551"]
 flask-mail = ["22e5eb9a940bf407bcf30410ecc3708f3c56cc44b29c34e1726fe85006935f41"]
 flask-socketio = ["8d8f9f104db5ddff1b06ba322d8e158881d590144199c993fe26cf53218c7edd", "f9b9c95c82b62381862fd3bc55cea7fcc08e787f6bb63fdc79a2f258df2bdc9a"]
+google-api-python-client = ["06907006ed5ce831018f03af3852d739c0b2489cdacfda6971bcc2075c762858", "937eabdc3940977f712fa648a096a5142766b6d0a0f58bc603e2ac0687397ef0"]
 google-auth = ["0f7c6a64927d34c1a474da92cfc59e552a5d3b940d3266606c6a28b72888b9e4", "20705f6803fd2c4d1cc2dcb0df09d4dfcb9a7d51fd59e94a3a28231fd93119ed"]
 google-auth-httplib2 = ["098fade613c25b4527b2c08fa42d11f3c2037dda8995d86de0745228e965d445", "f1c437842155680cf9918df9bc51c1182fda41feef88c34004bd1978c8157e08"]
 google-auth-oauthlib = ["226d1d0960f86ba5d9efd426a70b291eaba96f47d071657e0254ea969025728a", "81ba22acada4d13b1d83f9371ab19fd61f1250a542d21cf49e4dcf0637a7344a"]
@@ -932,7 +1076,7 @@ nodeenv = ["ad8259494cf1c9034539f6cced78a1da4840a4b157e23640bc4a0c0546b0cb7a"]
 oauthlib = ["0ce32c5d989a1827e3f1148f98b9085ed2370fc939bf524c9c851d8714797298", "3e1e14f6cde7e5475128d30e97edc3bfb4dc857cb884d8714ec161fdbb3b358e"]
 pep8 = ["b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee", "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"]
 pillow = ["0683e80d81e840d401b687ebc00a02bbb23d0793c34d0852a5af64cfa1589540", "09c4e81c3277199898e8dc2d85d94febad87c41251ecbd447ba7d64d94765bd8", "0ee74a23022af9baf997e3016b4e090e4ff08688d37a6f49010338ab46cfe101", "10860baedfe5da7c43cd17835b091494dcc59dda5ad176a011713fe398ea6ac2", "15c056bfa284c30a7f265a41ac4cbbc93bdbfc0dfe0613b9cb8a8581b51a9e55", "1a4e06ba4f74494ea0c58c24de2bb752818e9d504474ec95b0aa94f6b0a7e479", "1c3c707c76be43c9e99cb7e3d5f1bee1c8e5be8b8a2a5eeee665efbf8ddde91a", "1fd0b290203e3b0882d9605d807b03c0f47e3440f97824586c173eca0aadd99d", "24114e4a6e1870c5a24b1da8f60d0ba77a0b4027907860188ea82bd3508c80eb", "258d886a49b6b058cd7abb0ab4b2b85ce78669a857398e83e8b8e28b317b5abb", "2734c55f7d054b0ad889c971136cbb0a5b35a921e27beaa44fdc2436af529c6e", "2ac36ec56727a95bd5a04dfca6abce1db8042c31ee73b65796a42f31fd52d009", "2bc1002b573d107c0b172a5da0f34b4900b2ddc6c3296b82d601e966d5ac1959", "33c79b6dd6bc7f65079ab9ca5bebffb5f5d1141c689c9c6a7855776d1b09b7e8", "367385fc797b2c31564c427430c7a8630db1a00bd040555dfc1d5c52e39fcd72", "3c1884ff078fb8bf5f63d7d86921838b82ed4a7d0c027add773c2f38b3168754", "44e5240e8f4f8861d748f2a58b3f04daadab5e22bfec896bf5434745f788f33f", "46aa988e15f3ea72dddd81afe3839437b755fffddb5e173886f11460be909dce", "492e1e4df823b57f9334f591c78a1e0e65a361e92594534e0568eeeeea56bbba", "50fb9e25d25cfcb50b2e6842c4e104e4f0b424be4624e1724532bf005c67589a", "5ceadd60dbd1e56ab7faffbfee1df5ecb83c3f0420e47f652cd5306d70eb0296", "74d90d499c9c736d52dd6d9b7221af5665b9c04f1767e35f5dd8694324bd4601", "7eeac51fc37e6b19631a4b8e38b8261a074efcf7cc27fc16a6bee4697af7aaa5", "809c0a2ce9032cbcd7b5313f71af4bdc5c8c771cb86eb7559afd954cab82ebb5", "85d1ef2cdafd5507c4221d201aaf62fc9276f8b0f71bd3933363e62a33abc734", "8c3889c7681af77ecfa4431cd42a2885d093ecb811e81fbe5e203abc07e0995b", "9218d81b9fca98d2c47d35d688a0cea0c42fd473159dfd5612dcb0483c63e40b", "9319215530e236822169cbe92426cdc18d16b88c943fdf365a6309a89876e335", "96ec275c83bf839972d6a7dd7d685fdfb6a3233c3c382ecff839d04e7d53955d", "9aa4f3827992288edd37c9df345783a69ef58bd20cc02e64b36e44bcd157bbf1", "9d80f44137a70b6f84c750d11019a3419f409c944526a95219bea0ac31f4dd91", "b7ebd36128a2fe93991293f997e44be9286503c7530ace6a55b938b20be288d8", "c30857e1fbf7d4a4b79d7d376eefaf293ea4307b8293d00a62e6f517f51bfe9b", "c4c78e2c71c257c136cdd43869fd3d5e34fc2162dc22e4a5406b0ebe86958239", "c5472ea3945e8f9eb0659f37fc1f592fd06f4f725f0f03774a8999ad8c130334", "c6a842537f887be1fe115d8abb5daa9bc8cc124e455ff995830cc785624a97af", "cf0a2e040fdf5a6d95f4c286c6ef1df6b36c218b528c8a9158ec2452a804b9b8", "cfd28aad6fc61f7a5d4ee556a997dc6e5555d9381d1390c00ecaf984d57e4232", "d0fd1ec2e7c3e0aeaae999efe83f5d0f42c1160a1f8be5120d40857d20baa452", "dca5660e25932771460d4688ccbb515677caaf8595f3f3240ec16c117deff89a", "de7aedc85918c2f887886442e50f52c1b93545606317956d65f342bd81cb4fc3", "e6c0bbf8e277b74196e3140c35f9a1ae3eafd818f7f2d3a15819c49135d6c062"]
-pre-commit = ["75a9110eae00d009c913616c0fc8a6a02e7716c4a29a14cac9b313d2c7338ab0", "f882c65316eb5b705fe4613e92a7c91055c1800102e4d291cfd18912ec9cf90e"]
+pre-commit = ["2576a2776098f3902ef9540a84696e8e06bf18a337ce43a6a889e7fa5d26c4c5", "82f2f2d657d7f9280de9f927ae56886d60b9ef7f3714eae92d12713cd9cb9e11"]
 pyasn1 = ["061442c60842f6d11051d4fdae9bc197b64bd41573a12234a753a0cb80b4f30b", "0ee2449bf4c4e535823acc25624c45a8b454f328d59d3f3eeb82d3567100b9bd", "5f9fb05c33e53b9a6ee3b1ed1d292043f83df465852bec876e93b47fd2df7eed", "65201d28e081f690a32401e6253cca4449ccacc8f3988e811fae66bd822910ee", "79b336b073a52fa3c3d8728e78fa56b7d03138ef59f44084de5f39650265b5ff", "8ec20f61483764de281e0b4aba7d12716189700debcfa9e7935780850bf527f3", "9458d0273f95d035de4c0d5e0643f25daba330582cc71bb554fe6969c015042a", "98d97a1833a29ca61cd04a60414def8f02f406d732f9f0bcb49f769faff1b699", "b00d7bfb6603517e189d1ad76967c7e805139f63e43096e5f871d1277f50aea5", "b06c0cfd708b806ea025426aace45551f91ea7f557e0c2d4fbd9a4b346873ce0", "d14d05984581770333731690f5453efd4b82e1e5d824a1d7976b868a2e5c38e8", "da2420fe13a9452d8ae97a0e478adde1dee153b11ba832a95b223a2ba01c10f7", "da6b43a8c9ae93bc80e2739efb38cc776ba74a886e3e9318d65fe81a8b8a2c6e"]
 pyasn1-modules = ["136020f884635942239b33abdb63b1e0fdfb3c4bc8693f769ff1ab0908133a5b", "1c2ce0717e099620d7d425d2bb55e68f8126d77c8ba93112f0448a212048fe76", "39da883a45dfc71314c48bba772be63a13946d0dd6abde326df163656a7b13e1", "4160b0caedf8f1675ca7b94a65900d0219c715ac745cbc0c93557a9864b19748", "50c5f454c29bc8a7b8bfffc0fd00fed1f9012160b4532807a33c27af91747337", "52c46ecb2c1e7a03fe54dc8e11d6460ec7ebdcaedba3b0fe4ba2a811521df05f", "6db7a0510e55212b42a1f3e3553559eb214c8c8495e1018b4135d2bfb5a9169a", "79580acf813e3b7d6e69783884e6e83ac94bf4617b36a135b85c599d8a818a7b", "98e80b5ae1ed0d92694927a3e34df016c3b69b7bf439b32fc0a0dc516ec3653d", "9e879981cbf4c868a2267385a56837e0d384eab2d1690e6e0c8bba28d102509e", "a52090e8c5841ebbf08ae455146792d9ef3e8445b21055d3a3b7ed9c712b7c7c", "c00dad1d69d8592bbbc978f5beb3e992d3bf996e6b97eeec1c8608f81221d922", "c226b5c17683d98498e157d6ac0098b93f9c475da5bc50072f64bf3f3f6b828f"]
 pycodestyle = ["95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56", "e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"]
@@ -956,6 +1100,7 @@ singledispatch = ["5b06af87df13818d14f08a028e42f566640aef80805c3b50c5056b086e3c2
 six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
 textblob = ["7ff3c00cb5a85a30132ee6768b8c68cb2b9d76432fec18cd1b3ffe2f8594ec8c", "b0eafd8b129c9b196c8128056caed891d64b7fa20ba570e1fcde438f4f7dd312"]
 toml = ["229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c", "235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e", "f1db651f9657708513243e61e6cc67d101a39bad662eaa9b5546f789338e07a3"]
+uritemplate = ["01c69f4fe8ed503b2951bef85d996a9d22434d2431584b5b107b2981ff416fbd", "1b9c467a940ce9fb9f50df819e8ddd14696f89b9a8cc87ac77952ba416e0a8fd", "c02643cebe23fc8adb5e6becffe201185bf06c40bda5c0b4028a93f1527d011d"]
 urllib3 = ["06330f386d6e4b195fbfc736b297f58c5a892e4440e54d294d7004e3a9bbea1b", "cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"]
 virtualenv = ["6aebaf4dd2568a0094225ebbca987859e369e3e5c22dc7d52e5406d504890417", "984d7e607b0a5d1329425dd8845bd971b957424b5ba664729fab51ab8c11bc39"]
 webargs = ["81481c249b2c9c00c1d519e08820e2a61d6b0768d842d78d114c474c172f3ab8", "c4d8ec38b2d50821e795bf4619ff9dd95589330811a4fbeac0c32d8ddcfa375d", "d531eee77274133b54fd1171b2a58498bd71c498d7fe38d2c864f24284f32ed1"]
