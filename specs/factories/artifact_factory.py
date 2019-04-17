@@ -1,5 +1,5 @@
 from application.artifacts.artifact import Artifact
-from application.artifacts.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact_connector import ArtifactConnector
 
 
 class ArtifactFactory:
@@ -8,7 +8,7 @@ class ArtifactFactory:
         artifact = cls.build_artifact(*args, **kwargs).save()
 
         if user_tags:
-            builder = ArtifactBuilder.for_artifact(artifact)
+            builder = ArtifactConnector.for_artifact(artifact)
             builder.update_with(user_tags=user_tags)
 
         return artifact

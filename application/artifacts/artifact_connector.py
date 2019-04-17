@@ -1,18 +1,17 @@
-"""Abstracting Sync of Neo and Elastic"""
-
 from application.artifacts.artifact import Artifact
+from application.artifacts.property_builder import PropertyBuilder
 from application.artifacts.tags.tag import Tag
 from application.teams.team import Team
 from application.users.user import User
-from application.artifacts.property_builder import PropertyBuilder
 
 
-class ArtifactBuilder:
-    """This class helps with building Artifacts"""
+class ArtifactConnector:
+    """This class helps with building the database connections
+    for Artifact model objects."""
 
     @classmethod
     def for_artifact(cls, neo):
-        """Create an ArtifactBuilder for a specific Artifact"""
+        """Create an ArtifactConnector for a specific Artifact"""
         builder = cls()
         builder.neo = neo
         return builder
@@ -21,7 +20,7 @@ class ArtifactBuilder:
         self.neo = None
 
     def build_with(self, **properties):
-        """builds self.neo and saves it"""
+        """builds a new Artifact with correct connections and saves it"""
         props = PropertyBuilder(**properties)
         neo_properties = props.node_properties
         self.neo = Artifact(**neo_properties).save()
@@ -37,7 +36,7 @@ class ArtifactBuilder:
             self._connect_relation(self.neo.user, User.find(props["user_id"]))
 
     def save(self):
-        """Save both models"""
+        """Saves the referenced artifact model"""
         self.neo.save()
 
     def _add_tags_to_neo(self, new_tags, tag_relation, override=False):
@@ -64,9 +63,9 @@ class ArtifactBuilder:
         self.neo.update(**neo_properties)
 
     @classmethod
-    def find(cls, uid, force=True):  # pylint: disable= invalid-name
-        """Finds Artifact and creates instances"""
-        artifact = ArtifactBuilder()
+    def find(cls, uid, force=True):
+        """Finds an artifact and saves it to this Connector"""
+        artifact = ArtifactConnector()
         artifact.neo = Artifact.find(uid, force=force)
         return artifact
 

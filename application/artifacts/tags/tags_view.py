@@ -9,7 +9,7 @@ from marshmallow import fields, Schema
 from application.errors import check_es_connection
 from application.artifacts.artifact import Artifact
 from application.teams.team import Team
-from application.artifacts.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact_connector import ArtifactConnector
 from application.responders import no_content
 from application.artifacts.tags import tag_suggestions, tags_validator
 
@@ -31,7 +31,7 @@ class TagsView(MethodResource):
         """Adds tags to an existing artifact"""
         try:
             artifact = Artifact.find_by(id_=params.pop("id"))
-            builder = ArtifactBuilder.for_artifact(artifact)
+            builder = ArtifactConnector.for_artifact(artifact)
             existing_tags = artifact.tags or []
 
             new_list = existing_tags + list(set(params["tags"]) - set(existing_tags))
