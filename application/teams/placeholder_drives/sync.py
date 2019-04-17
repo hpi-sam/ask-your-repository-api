@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 
 from application.users.oauth.google_oauth import credentials_from_dict
-from application.artifacts.artifacts_view import FileSaver
+from application.artifacts.artifact_creation import FileSaver
 
 
 class DriveAccess:
