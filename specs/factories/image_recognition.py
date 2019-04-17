@@ -1,7 +1,9 @@
 """ Defines mocked Google Cloud Vision API responses """
 from unittest.mock import patch
 
-mock_image_recognition = patch("application.artifacts.artifacts_view.ImageRecognizer.auto_add_tags", return_value=None)
+mock_image_recognition = patch(
+    "application.artifacts.artifact_creation.ImageRecognizer.auto_add_tags", return_value=None
+)
 
 
 def vision_api_response():

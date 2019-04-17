@@ -4,7 +4,7 @@ from eventlet import spawn_n
 from flask import copy_current_request_context
 from flask import current_app
 
-from application.artifacts.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.artifact_schema import ArtifactSchema
 
 
@@ -78,5 +78,5 @@ class ImageRecognizer:
     @classmethod
     def add_tags_artifact(cls, artifact, label_annotations, text_annotations):
         """Adds annotations to an artifact"""
-        builder = ArtifactBuilder.for_artifact(artifact)
+        builder = ArtifactConnector.for_artifact(artifact)
         builder.update_with(override_tags=False, label_tags=label_annotations, text_tags=text_annotations)

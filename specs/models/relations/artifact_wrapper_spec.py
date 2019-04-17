@@ -1,11 +1,11 @@
-""" Test the ArtifactBuilder class. Currently it's more of a wrapper than a builder sadly
+""" Test the ArtifactConnector class. Currently it's more of a wrapper than a builder sadly
     #refactor soon"""
 from expects import expect, be_none, be_a, equal, contain
 from mamba import description, before, after, it, context
 from neomodel import db
 
 from application.artifacts.artifact import Artifact
-from application.artifacts.artifact_builder import ArtifactBuilder
+from application.artifacts.artifact_connector import ArtifactConnector
 from specs.spec_helpers import Context
 
 with description("Artifact Wrapper") as self:
@@ -19,7 +19,7 @@ with description("Artifact Wrapper") as self:
 
     with description("Building"):
         with before.each:
-            self.artifact = ArtifactBuilder()
+            self.artifact = ArtifactConnector()
             self.artifact.build_with(file_url="asdf", type="image")
 
         with it("creates a neo artifact"):
@@ -29,7 +29,7 @@ with description("Artifact Wrapper") as self:
     with description("Save"):
         with context("without tags"):
             with before.each:
-                self.artifact = ArtifactBuilder()
+                self.artifact = ArtifactConnector()
                 self.artifact.build_with(file_url="asdf", type="image")
                 self.artifact.save()
 
@@ -38,7 +38,7 @@ with description("Artifact Wrapper") as self:
 
         with context("with tags"):
             with before.each:
-                self.artifact = ArtifactBuilder()
+                self.artifact = ArtifactConnector()
                 self.artifact.build_with(file_url="asdf", type="image", user_tags=["a", "s", "d", "f"])
                 self.artifact.save()
 
@@ -48,7 +48,7 @@ with description("Artifact Wrapper") as self:
     with description("update"):
         with context("file_url"):
             with before.each:
-                self.artifact = ArtifactBuilder()
+                self.artifact = ArtifactConnector()
                 self.artifact.build_with(file_url="asdf", type="image")
                 self.artifact.save()
                 self.artifact.update_with(file_url="blub")
@@ -59,7 +59,7 @@ with description("Artifact Wrapper") as self:
 
         with context("tags"):
             with before.each:
-                self.artifact = ArtifactBuilder()
+                self.artifact = ArtifactConnector()
                 self.artifact.build_with(file_url="asdf", type="image")
                 self.artifact.save()
                 self.artifact.update_with(
