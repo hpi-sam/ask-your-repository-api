@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from neomodel.exceptions import AttemptedCardinalityViolation
 from flask import abort
 from .drive_schema import DriveSchema
-
+from .sync import ImageSynchronizer
 from .drive_validator import create_args
 from ..team import Team
 from .drive import Drive
@@ -31,3 +31,10 @@ class DrivesView(MethodResource):
 class DriveView(MethodResource):
     def delete(self):
         pass
+
+    def post(self):
+        drive_id = "asdf"
+        user_is_in_team = "true"
+        drive = Drive.find_by(drive_id)
+        ImageSynchronizer(drive).sync_from_drive()
+        # sync drive to saved artifacts

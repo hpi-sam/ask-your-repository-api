@@ -12,7 +12,7 @@ from elasticsearch import Elasticsearch
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from neomodel import config
+from neomodel import config, install_all_labels
 
 from .extensions import socketio, bcrypt, mail
 from .routes import create_routes
@@ -29,6 +29,7 @@ def create_app(config_filename=None):
     app.config.from_pyfile(config_filename)
     app.es = Elasticsearch(app.config["ELASTICSEARCH_URL"]) if app.config["ELASTICSEARCH_URL"] else None
     config.DATABASE_URL = app.config["NEO4J_URL"]
+    install_all_labels()
     JWTManager(app)
     register_extensions(app)
     register_error_handlers(app)

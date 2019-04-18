@@ -1,12 +1,12 @@
 import io
 import os
-import uuid
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
+from werkzeug.datastructures import FileStorage
 
+from application.artifacts.artifact_creation import ArtifactCreator
 from application.users.oauth.google_oauth import credentials_from_dict
-from application.artifacts.artifact_creation import FileSaver
 
 
 class DriveAccess:
@@ -21,40 +21,32 @@ class DriveAccess:
 
     def list_images(self, drive_id):
         result = self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'").execute()
-        print(result.get("files"))
         return result.get("files")
 
-    def download_file(self, file_id, filepath):
+    def download_file(self, file_id, filename):
+        print(file_id)
         request = self.service.files().get_media(fileId=file_id)
-        fh = io.FileIO(filepath, "wb")
-        downloader = MediaIoBaseDownload(fh, request)
+        file = FileStorage(io.BytesIO(), filename=filename)
+        downloader = MediaIoBaseDownload(file, request)
         done = False
         while done is False:
             status, done = downloader.next_chunk()
-            "Download %d%%." % int(status.progress() * 100)
+        file.seek(0)
+        return file
 
     def start_page_token(self):
-        return self.service.changes().getStartPageToken().execute()
+        return self.service.changes().getStartPageToken().execute().get("startPageToken")
 
     def get(self, file_id):
-        return self.service.files().get(file_id).execute()
+        print(self.service.files().get(file_id).execute())
 
-
-# Download File:
-# Download File
-# Create Artifact
-# Create DriveFile (save ID)
-# Connect to Drive
 
 # Upload File:
 # Upload File
 # Create DriveFile (save ID)
 # Connect to Drive
 
-# Delete File:
-# Find deleted DriveFile.drive_id
-# Delete Artifact and downloaded File
-# Delete DriveFile
+# Delete remote File
 
 
 class ImageSynchronizer:
@@ -63,6 +55,7 @@ class ImageSynchronizer:
         self.credentials = credentials_from_dict(self.owner.google_rel.single().credentials)
         self.drive_access = DriveAccess(self.credentials)
         self.drive = drive
+        self.team = drive.team.single()
         if drive.page_token is None:
             drive.page_token = self.drive_access.start_page_token()["startPageToken"]
             drive.save()
@@ -72,12 +65,42 @@ class ImageSynchronizer:
         for image in images:
             self.download_image(image)
 
+    def sync_from_drive(self):
+        self.compute_changes(self.handle_change)
+
+    def handle_change(self, change):
+        print(
+            f'Change found for file: {change.get("fileId")} with name: '
+            f'{change.get("file").get("name")}, parent is '
+            f'{change.get("file").get("parents")}'
+        )
+        if change.get("removed") or change.get("file").get("trashed"):
+            self.delete_artifact_by(change.get("fileId"))
+        else:
+            if not self.drive.find_artifact_by(change.get("fileId"), force=False):
+                if "image" in change.get("file").get("mimeType"):
+                    self.download_image(change.get("file"))
+
+    def list_images(self):
+        images = self.drive_access.list_images(self.drive.drive_id)
+        return images
+
     def download_image(self, image):
-        download_file = DriveDownloadFile(self.drive_access, image)
-        file_saver = FileSaver(download_file)
-        file_saver.save()
-        # TODO: Implement actually creating artifacts from downloaded files
-        # def create_artifact_from_file? (user= user, team= team, file= file)
+        print("asdf")
+        file = self.drive_access.download_file(image["id"], image["name"])
+        creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_)
+        artifact = creator.create_artifact()
+        self.drive.files.connect(artifact, {"gdrive_file_id": image["id"]})
+
+    def delete_artifact_by(self, gdrive_id):
+        try:
+            self.drive.find_artifact_by(gdrive_id).delete()
+        except:
+            print("Artifact not Found, askyourcloud and google drive out of sync.")
+
+    def _update_page_token(self):
+        self.drive.page_token = self.drive_access.start_page_token()
+        self.drive.save()
 
     def upload_all(self):
         # TODO: For all artifacts without DriveFile:
@@ -86,33 +109,23 @@ class ImageSynchronizer:
 
     # TODO: Local changes vs remote changes (other changes than add/delete?)
 
-    def retrieve_changes(self):
+    def compute_changes(self, handle_change):
         page_token = self.drive.page_token
-        response = self.drive_access.service.changes().list(pageToken=page_token, fields="*", spaces="drive").execute()
-        print(response)
-        for change in response.get("changes"):
-            print(f'Change found for file: {change.get("fileId")} with name: '
-                  f'{change.get("file").get("name")}, parent is '
-                  f'{change.get("file").get("parents")}')
-        if "newStartPageToken" in response:
-            saved_start_page_token = response.get("newStartPageToken")
-        page_token = response.get("nextPageToken")
-        self.drive.page_token = page_token
+        while page_token is not None:
+            response = (
+                self.drive_access.service.changes().list(pageToken=page_token, fields="*", spaces="drive").execute()
+            )
+            changes = response.get("changes")
+            page_token = response.get("nextPageToken")
+            print(changes)
+            for change in changes:
+                if self.drive.drive_id in change.get("file").get("parents"):
+                    handle_change(change)
+
+            if "newStartPageToken" in response:
+                self.drive.page_token = response.get("newStartPageToken")
+                self.drive.save()
 
     def initialize_sync(self):
         self.download_all()
         self.upload_all()
-
-class DriveDownloadFile():
-
-    def __init__(self, drive_access, image):
-        self.drive_access = drive_access
-        self._image = image
-        self.file_id = image['id']
-        self.filename = image['name']
-
-    def save(self, filename):
-        self.drive_access.download_file(self.file_id, filename)
-
-    def close(self):
-        pass
