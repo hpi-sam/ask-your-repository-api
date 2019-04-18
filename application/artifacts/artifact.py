@@ -5,6 +5,7 @@ from neomodel import StructuredNode, StringProperty, DateTimeProperty, Relations
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
 from application.artifacts.elastic import ElasticSyncer
+from application.relations.contains_rel import ContainsRel
 
 
 # pylint:disable=abstract-method
@@ -20,7 +21,9 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     text_tags = RelationshipTo("application.models.Tag", "CONTAINS_TEXT", cardinality=cardinality.ZeroOrMore)
     team = RelationshipFrom("application.models.Team", "UPLOADED", cardinality=cardinality.ZeroOrOne)
     user = RelationshipTo("application.models.User", "CREATED_BY", cardinality=cardinality.ZeroOrOne)
-    drive_file = RelationshipTo('application.models.DriveFile', "HAS_DRIVE_FILE", cardinality=cardinality.ZeroOrOne)
+    drive_folder = RelationshipFrom(
+        "application.models.Drive", "CONTAINS", cardinality=cardinality.ZeroOrOne, model=ContainsRel
+    )
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema
     @property
