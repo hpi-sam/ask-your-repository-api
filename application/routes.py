@@ -5,13 +5,13 @@ def create_routes(app):
     """Creates Routes. Called in __init__"""
 
     from application.home.home_view import HomeView
-    from application.artifacts import ARTIFACTS
-    from application.users import USERS
-    from application.teams import TEAMS
-    from application.authentications import AUTHENTICATIONS
-    from application.password_resets import PASSWORD_RESETS
-    from application.presentations import PRESENTATIONS
-    from application.invites import INVITES
+    from application.artifacts.aritfact_routes import ARTIFACTS
+    from application.users.users_routes import USERS
+    from application.teams.teams_routes import TEAMS
+    from application.authentications.authentications_routes import AUTHENTICATIONS
+    from application.password_resets.password_resets_routes import PASSWORD_RESETS
+    from application.presentations.presentations_routes import PRESENTATIONS
+    from application.invites.invites_routes import INVITES
     from application.artifacts.tags.tags_view import TagsView
 
     app.register_blueprint(ARTIFACTS, url_prefix="/images")
