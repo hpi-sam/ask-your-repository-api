@@ -15,10 +15,6 @@ Installing dependencies:
   - [Install Poetry](https://poetry.eustace.io/docs/#system-requirements)
   - Install dependencies via: `poetry install`
   
-- If you don't have poetry installed yet but have pipenv installeed, you can try to use pipenv instead:  
-  - In project folder run `pipenv install`
-  - We don't regulary update our Pipfile anymore though so you might run into trouble!
-
 - Copy .env.example into new .env file
 - It's highly recommended you have docker installed it makes environment setup much easier: https://www.docker.com/get-started
 - Install Neo4j
