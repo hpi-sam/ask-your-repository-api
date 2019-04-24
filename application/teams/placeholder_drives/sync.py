@@ -6,6 +6,7 @@ import magic
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 from werkzeug.datastructures import FileStorage
+from neomodel.match import NodeSet
 
 from application.artifacts.artifact_creation import ArtifactCreator
 from application.users.oauth.google_oauth import credentials_from_dict
@@ -104,7 +105,6 @@ class ImageSynchronizer:
         return images
 
     def download_image(self, image):
-        print("asdf")
         file = self.drive_access.download_file(image["id"], image["name"])
         creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_)
         artifact = creator.create_artifact()
@@ -120,16 +120,16 @@ class ImageSynchronizer:
         self.drive.page_token = self.drive_access.start_page_token()
         self.drive.save()
 
-    def upload_all(self):
-        artifacts = self.drive.team.single().artifacts
+    def upload_all_missing(self):
+        artifacts = NodeSet(self.drive.team.single().artifacts._new_traversal()).has(drive_folder=False)
+        # The manual conversion to NodeSet is needed as .artifacts returns a RelationshipManager.
+        # This Manager is not to 100% compatible to the NodeSet interface so to
+        # support "has()" we need to convert manually. #PullRequestPlz
         for artifact in artifacts:
             if artifact in self.drive.files:
                 return
             id = self.drive_access.upload_file(artifact.file_url, self.drive.drive_id)
             self.drive.files.connect(artifact, {"gdrive_file_id": id})
-
-
-    # TODO: Local changes vs remote changes (other changes than add/delete?)
 
     def compute_changes(self, handle_change):
         page_token = self.drive.page_token
@@ -148,14 +148,16 @@ class ImageSynchronizer:
                 self.drive.page_token = response.get("newStartPageToken")
                 self.drive.save()
 
-    def delete_all(self):
+    def delete_all_files(self):
         artifacts = self.drive.files
         for artifact in artifacts:
-            rel = self.drive.files.relationship(artifact)
-            print(rel.gdrive_file_id)
-            self.drive_access.delete_file(rel.gdrive_file_id)
-            self.drive.files.disconnect(artifact)
+            self.delete_file_by(artifact)
+
+    def delete_file_by(self, artifact):
+        rel = self.drive.files.relationship(artifact)
+        self.drive_access.delete_file(rel.gdrive_file_id)
+        self.drive.files.disconnect(artifact)
 
     def initialize_sync(self):
         self.download_all()
-        self.upload_all()
+        self.upload_all_missing()

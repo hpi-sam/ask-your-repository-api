@@ -26,6 +26,6 @@ with description("drive") as self:
                 #                         ({'status': 200}, file_content('drive-list.json'))])
                 api_key = 'your_api_key'
                 sync = ImageSynchronizer(Drive.all()[3])
-                print(sync.delete_all())
+                print(sync.upload_all_missing())
 
     #
