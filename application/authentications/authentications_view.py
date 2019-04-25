@@ -7,8 +7,9 @@ from flask_apispec.views import MethodResource
 from flask_jwt_extended import jwt_required, create_access_token, unset_jwt_cookies, set_access_cookies, get_csrf_token
 
 from application.authentications import authentications_validator
-from application.responders import respond_with
+from application.responders import marshal_data
 from application.users.user import User
+from application.users.user_schema import USER_SCHEMA
 from application.users.oauth.google_oauth import validate_google_id_token, GoogleOAuth
 
 
@@ -44,7 +45,7 @@ class AuthenticationsView(MethodResource):
 
 def _build_login_response(user, set_cookies):
     access_token = create_access_token(identity=user.id_, expires_delta=False)
-    response = respond_with(user)
+    response = marshal_data(user, USER_SCHEMA)
     response["csrf_token"] = get_csrf_token(access_token)
     if set_cookies:
         response = jsonify(response)
