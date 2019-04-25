@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from neomodel.exceptions import AttemptedCardinalityViolation
 from flask import abort
 from .drive_schema import DriveSchema
-from .sync import ImageSynchronizer
+from .sync import DriveDownloader
 from .drive_validator import create_args
 from ..team import Team
 from .drive import Drive
@@ -36,5 +36,5 @@ class DriveView(MethodResource):
         drive_id = "asdf"
         user_is_in_team = "true"
         drive = Drive.find_by(drive_id)
-        ImageSynchronizer(drive).sync_from_drive()
+        DriveDownloader(drive).sync_from_drive()
         # sync drive to saved artifacts
