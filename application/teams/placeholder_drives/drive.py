@@ -6,6 +6,7 @@ from neomodel.exceptions import MultipleNodesReturned
 
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.relations.contains_rel import ContainsRel
+from .sync import DriveUploader
 
 
 class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
@@ -31,3 +32,9 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
             else:
                 return None
         return results[0]
+
+    def sync(self):
+        DriveUploader(self).upload_all_missing()
+
+    def delete_if_necessary(self, artifact):
+        DriveUploader(self).delete_file_by(artifact)
