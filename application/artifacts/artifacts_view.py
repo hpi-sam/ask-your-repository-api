@@ -29,9 +29,19 @@ from .artifact import Artifact
 def synchronized_search(params):
     """Called from client when presentation mode is on"""
     artifacts = _search_artifacts(params)
+    emit(
+        "START_PRESENTATION",
+        _socketio_data(artifacts, params.get("search")),
+        room=str(params["team_id"]),
+        broadcast=True,
+    )
+
+
+def _socketio_data(artifacts, search):
+    """Returns the artifacts data with search included"""
     data = marshal_data(artifacts, ARTIFACTS_SCHEMA)
-    data["search"] = params.get("search")
-    emit("START_PRESENTATION", data, room=str(params["team_id"]), broadcast=True)
+    data["search"] = search
+    return data
 
 
 def _search_artifacts(params):
@@ -39,7 +49,6 @@ def _search_artifacts(params):
     if search_args is not None:
         params["synonyms"] = SynonymGenerator(search_args).get_synonyms()
         elastic_artifacts = ElasticSearcher.build_artifact_searcher(params).search()
-        print(elastic_artifacts)
         artifacts = []
         for elastic_artifact in elastic_artifacts:
             try:
@@ -130,8 +139,9 @@ class ArtifactsView(MethodResource):
         artifacts = _search_artifacts(params)
 
         if params["notify_clients"]:
-            socketio.emit("START_PRESENTATION", room=str(params["team_id"]),
-                          data=marshal_data(artifacts, ARTIFACTS_SCHEMA))
+            socketio.emit(
+                "START_PRESENTATION", room=str(params["team_id"]), data=_socketio_data(artifacts, params.get("search"))
+            )
 
         return artifacts
 
