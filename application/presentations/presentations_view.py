@@ -7,9 +7,10 @@ from flask_apispec import use_kwargs, marshal_with
 from flask_apispec.views import MethodResource
 
 from application.artifacts.artifact import Artifact
+from application.artifacts.artifact_schema import ARTIFACTS_SCHEMA
 from application.errors import check_es_connection
 from application.extensions import socketio
-from application.responders import respond_with, no_content
+from application.responders import marshal_data, no_content
 from application.presentations import presentations_validator
 
 
@@ -26,5 +27,5 @@ class PresentationsView(MethodResource):
         for artifact_id in params["file_ids"]:
             artifacts.append(Artifact.find_by(id_=artifact_id))
 
-        socketio.emit("START_PRESENTATION", room=str(params["team_id"]), data=respond_with(artifacts))
+        socketio.emit("START_PRESENTATION", room=str(params["team_id"]), data=marshal_data(artifacts, ARTIFACTS_SCHEMA))
         return no_content()

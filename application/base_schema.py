@@ -6,8 +6,8 @@ from marshmallow import Schema, post_load, post_dump
 
 def output_decorator(decorator_function):
     """
-    Decorator to define output transformation functions
-    that are only called in respond_with (application.responders)
+    Decorator to define output transformation functions.
+    Add to Schema and pass decorate=True on Schema creation.
     """
 
     @post_dump
