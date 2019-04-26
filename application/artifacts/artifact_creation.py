@@ -69,7 +69,10 @@ class FileSaver:
         self.file_path = self._file_path()
 
     def _save_file(self):
-        self.file.save(self.file_path)
+        # Opening the file with Pillow and saving it strips EXIF tags that cause rotation on mobile
+        img = Image.open(self.file)
+        img.save(self.file_path)
+        img.close()
         self.file.close()
 
     def _file_path(self):
