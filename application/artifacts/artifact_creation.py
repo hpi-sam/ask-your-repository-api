@@ -96,16 +96,11 @@ class FileSaver:
         img = Image.open(image)
         if hasattr(img, "_getexif"):
             exif_data = img._getexif()
-
-            try:
-                orientation = exif_data.get(274)
-            except:
-                # There was no EXIF Orientation Data
-                orientation = 1
+            orientation = exif_data.get(274, 1) if exif_data else 1
         else:
             orientation = 1
 
-        return self.ROTATION_FUNCTIONS[1](img)
+        return self.ROTATION_FUNCTIONS[orientation](img)
 
     def _file_path(self):
         return os.path.join(current_app.config["UPLOAD_FOLDER"], self.file_name)
