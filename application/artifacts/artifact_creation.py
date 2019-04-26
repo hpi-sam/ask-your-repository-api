@@ -48,6 +48,24 @@ class ImageResizer:
 class FileSaver:
     """Saves a file to disk and creates according metadata"""
 
+    ROTATION_FUNCTIONS = {
+        1: lambda img: img,
+        # Mirrored horizontal
+        2: lambda img: img.transpose(Image.FLIP_LEFT_RIGHT),
+        # Rotated 180
+        3: lambda img: img.rotate(180, expand=True),
+        # Mirrored vertical
+        4: lambda img: img.rotate(180, expand=True).transpose(Image.FLIP_LEFT_RIGHT),
+        # Mirrored horizontal then rotated 90 CCW
+        5: lambda img: img.rotate(-90, expand=True).transpose(Image.FLIP_LEFT_RIGHT),
+        # Rotated 90 CCW
+        6: lambda img: img.rotate(-90, expand=True),
+        # Mirrored horizontal then rotated 90 CW
+        7: lambda img: img.rotate(90, expand=True).transpose(Image.FLIP_LEFT_RIGHT),
+        # Rotated 90 CW
+        8: lambda img: img.rotate(90, expand=True),
+    }
+
     def __init__(self, file):
         self.file = file
         self.file_date = None
@@ -69,11 +87,25 @@ class FileSaver:
         self.file_path = self._file_path()
 
     def _save_file(self):
-        # Opening the file with Pillow and saving it strips EXIF tags that cause rotation on mobile
-        img = Image.open(self.file)
+        img = self._fix_orientation(self.file)
         img.save(self.file_path)
         img.close()
         self.file.close()
+
+    def _fix_orientation(self, image):
+        img = Image.open(image)
+        if hasattr(img, "_getexif"):
+            exif_data = img._getexif()
+
+            try:
+                orientation = exif_data.get(274)
+            except:
+                # There was no EXIF Orientation Data
+                orientation = 1
+        else:
+            orientation = 1
+
+        return self.ROTATION_FUNCTIONS[1](img)
 
     def _file_path(self):
         return os.path.join(current_app.config["UPLOAD_FOLDER"], self.file_name)
