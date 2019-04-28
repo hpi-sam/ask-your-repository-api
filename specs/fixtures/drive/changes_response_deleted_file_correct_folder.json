@@ -1,0 +1,112 @@
+{
+  "kind": "drive#changeList",
+  "newStartPageToken": "256057",
+  "changes": [
+    {
+      "kind": "drive#change",
+      "type": "file",
+      "changeType": "file",
+      "time": "2019-04-28T16:21:21.086Z",
+      "removed": false,
+      "fileId": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB",
+      "file": {
+        "kind": "drive#file",
+        "id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB",
+        "name": "unpacking.png",
+        "mimeType": "image/png",
+        "starred": false,
+        "trashed": true,
+        "explicitlyTrashed": true,
+        "parents": [
+          "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0"
+        ],
+        "spaces": [
+          "drive"
+        ],
+        "version": "5",
+        "webContentLink": "https://drive.google.com/uc?id=1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB&export=download",
+        "webViewLink": "https://drive.google.com/file/d/1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB/view?usp=drivesdk",
+        "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/image/png",
+        "hasThumbnail": true,
+        "thumbnailLink": "https://lh3.googleusercontent.com/YtWBjQad6pwbQV4RyQLxhxMRffA-wQppQG6wy4DegY_qiiVCNKlZmxQ3BiwuuRmFpB6zexVpkzw=s220",
+        "thumbnailVersion": "1",
+        "viewedByMe": true,
+        "viewedByMeTime": "2019-04-28T16:11:55.804Z",
+        "createdTime": "2019-04-28T16:11:55.804Z",
+        "modifiedTime": "2019-04-28T16:11:55.804Z",
+        "modifiedByMeTime": "2019-04-28T16:11:55.804Z",
+        "modifiedByMe": true,
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "me": true,
+            "permissionId": "06049617087689875213",
+            "emailAddress": "bestejascha@gmail.com"
+          }
+        ],
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "Jascha Beste",
+          "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+          "me": true,
+          "permissionId": "06049617087689875213",
+          "emailAddress": "bestejascha@gmail.com"
+        },
+        "shared": false,
+        "ownedByMe": true,
+        "capabilities": {
+          "canAddChildren": false,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canChangeViewersCanCopyContent": true,
+          "canComment": true,
+          "canCopy": true,
+          "canDelete": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": false,
+          "canMoveItemIntoTeamDrive": false,
+          "canMoveItemOutOfDrive": false,
+          "canReadRevisions": true,
+          "canRemoveChildren": false,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canUntrash": true
+        },
+        "viewersCanCopyContent": true,
+        "copyRequiresWriterPermission": false,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "06049617087689875213",
+            "type": "user",
+            "emailAddress": "bestejascha@gmail.com",
+            "role": "owner",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "deleted": false
+          }
+        ],
+        "permissionIds": [
+          "06049617087689875213"
+        ],
+        "originalFilename": "unpacking.png",
+        "fullFileExtension": "png",
+        "fileExtension": "png",
+        "md5Checksum": "51529d41fb4ba854afb9d4311326bb7e",
+        "size": "1037859",
+        "quotaBytesUsed": "1037859",
+        "headRevisionId": "0B11KLtJd1_URUjhMTnBZYnFCT0pMM1pXTFZyRkN1Z1FyMDBjPQ",
+        "imageMediaMetadata": {
+          "width": 1516,
+          "height": 856,
+          "rotation": 0
+        },
+        "isAppAuthorized": false
+      }
+    }
+  ]
+}
