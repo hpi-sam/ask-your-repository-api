@@ -46,9 +46,11 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
         """Sync with Elasticsearch"""
         super()
         ElasticSyncer.for_artifact(self).sync()
-        self.drive_folder.sync()
+        if self.drive_folder.single():
+            self.drive_folder.single().sync()
 
     def pre_delete(self):
         """Sync with Elasticsearch"""
         ElasticSyncer.for_artifact(self).delete()
-        self.drive_folder.delete_if_necessary(self)
+        if self.drive_folder.single():
+            self.drive_folder.single().delete_if_necessary(self)

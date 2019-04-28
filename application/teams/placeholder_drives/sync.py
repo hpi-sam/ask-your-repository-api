@@ -1,15 +1,20 @@
 import io
-import os
+import json
+from abc import ABC
 
 import magic
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 from neomodel.match import NodeSet
 from werkzeug.datastructures import FileStorage
-from abc import ABC
 
 from application.artifacts.artifact_creation import ArtifactCreator
 from application.users.oauth.google_oauth import credentials_from_dict
+
+
+def print_to_file(file_name, response):
+    with open(f'{file_name}', 'w') as fe:
+        fe.write(json.dumps(response))
 
 
 class DriveAdapter:
@@ -25,10 +30,10 @@ class DriveAdapter:
 
     def list_images(self, drive_id):
         result = self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'").execute()
+        print_to_file('list_of_images.json', result)
         return result.get("files")
 
     def download_file(self, file_id, filename):
-        print(file_id)
         request = self.service.files().get_media(fileId=file_id)
         file = FileStorage(io.BytesIO(), filename=filename)
         downloader = MediaIoBaseDownload(file, request)
@@ -39,10 +44,14 @@ class DriveAdapter:
         return file
 
     def start_page_token(self):
-        return self.service.changes().getStartPageToken().execute().get("startPageToken")
+        result = self.service.changes().getStartPageToken().execute()
+        print_to_file('start_page_token.json', result)
+        return result.get("startPageToken")
 
     def get(self, file_id):
-        print(self.service.files().get(file_id).execute())
+        result = self.service.files().get(file_id).execute()
+        print_to_file(f'get_file_{file_id}.json', result)
+        return result
 
     def upload_file(self, filename, parent_folder):
         file_metadata = {'name': filename, 'parents': [parent_folder]}
@@ -58,7 +67,8 @@ class DriveAdapter:
 
     def delete_file(self, drive_file_id):
         try:
-            print(self.service.files().delete(fileId=drive_file_id).execute())
+            result = self.service.files().delete(fileId=drive_file_id).execute()
+            print_to_file(f'delete_file_{drive_file_id}.json', result)
         except Exception as e:
             print(e)
             """TODO: If 404 just ignore otherwise I don't know yet,
@@ -66,13 +76,16 @@ class DriveAdapter:
 
     def compute_changes(self, initial_page_token, handle_change):
         page_token = initial_page_token
+        i = 0
         while page_token is not None:
             response = (
-                self.drive_access.service.changes().list(pageToken=page_token, fields="*", spaces="drive").execute()
+                self.service.changes().list(pageToken=page_token, fields="*", spaces="drive").execute()
             )
+            print_to_file(f'changes_response_{i}.json', response)
+            i += 1
             changes = response.get("changes")
             page_token = response.get("nextPageToken")
-            print(changes)
+            #print(changes)
             for change in changes:
                 handle_change(change)
 
@@ -88,9 +101,9 @@ class AbstractesDriveAccessDing(ABC):
         self.owner = drive.owner.single()
         self.drive_adapter = self._build_drive_adapter(http)
 
-    def _build_drive_adapter(self,http):
+    def _build_drive_adapter(self, http):
         credentials = credentials_from_dict(self.owner.google.credentials)
-        return DriveAdapter(self.credentials, http)
+        return DriveAdapter(credentials, http)
 
 
 class DriveUploader(AbstractesDriveAccessDing):
@@ -123,6 +136,7 @@ class DriveUploader(AbstractesDriveAccessDing):
         Delete a file in google drive by artifact object
         :param artifact: the artifact object to delete in google drive
         """
+        # TODO: What to do if drive not available?
         rel = self.drive.files.relationship(artifact)
         self.drive_adapter.delete_file(rel.gdrive_file_id)
         self.drive.files.disconnect(artifact)
@@ -131,7 +145,7 @@ class DriveUploader(AbstractesDriveAccessDing):
 class DriveDownloader(AbstractesDriveAccessDing):
 
     def __init__(self, *args, **kwargs):
-        super(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._initialize_start_page_token()
 
     def _initialize_start_page_token(self):
@@ -161,14 +175,14 @@ class DriveDownloader(AbstractesDriveAccessDing):
         """
         try:
             self.drive.find_artifact_by(gdrive_id).delete()
-        except: # TODO: Can't import Artifact cyclic imports
+        except:  # TODO: Can't import Artifact cyclic imports
             print("Artifact not Found, askyourcloud and google drive out of sync.")
 
     def _update_page_token(self):
         self.drive.page_token = self.drive_adapter.start_page_token()
         self.drive.save()
 
-    def _sync_by_remote_changes(self):
+    def sync_by_remote_changes(self):
         """
         Synchronize google drive changes to local artifacts.
         """
@@ -176,42 +190,42 @@ class DriveDownloader(AbstractesDriveAccessDing):
                                                                    self._handle_change)
         self.drive.save()
 
-
-    def sync_from_drive(self):
-        """
-        Synchronize all files from the drive.
-        """
-        if not self.drive.page_token:
-            self.initialize_sync()
-        self._sync_by_remote_changes()
+    def is_sync_initialized(self):
+        return bool(self.drive.page_token)
 
     def _handle_change(self, change):
         """
         Handle a single google drive change
         :param change: a google drive api change response as dict
         """
-        if self.drive.drive_id in change.get("file").get("parents"):
-            if change.get("removed") or change.get("file").get("trashed"):
-                self.delete_artifact_by(change.get("fileId"))
-            else:
-                if not self.drive.find_artifact_by(change.get("fileId"), force=False):
-                    if "image" in change.get("file").get("mimeType"):
-                        self._download_image(change.get("file"))
+        print(change)
+        if change.get("removed"):
+            self.delete_artifact_by(change.get("fileId"))
+        if change.get("file") is not None:
+            if self.drive.drive_id in change.get("file").get("parents", []):
+                if change.get("file").get("trashed"):
+                    self.delete_artifact_by(change.get("fileId"))
+                else:
+                    if not self.drive.find_artifact_by(change.get("fileId"), force=False):
+                        if "image" in change.get("file").get("mimeType"):
+                            self._download_image(change.get("file"))
 
     def _download_image(self, image):
         """
         Downloads a single image
         :param image: a dict containing a google drive api image object
         """
+        print("downloading image")
         file = self.drive_adapter.download_file(image["id"], image["name"])
         creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_)
         artifact = creator.create_artifact()
+        print(artifact)
         self.drive.files.connect(artifact, {"gdrive_file_id": image["id"]})
 
 
 class Sync:
 
-    def __init__(self,drive, http=None):
+    def __init__(self, drive, http=None):
         """
         Create a Sync Object to allow initializing synchronization
         :param drive: The drive this sync object is for
@@ -228,3 +242,11 @@ class Sync:
         """
         self.donwnloader.download_all()
         self.uploader.upload_all_missing()
+
+    def sync_from_drive(self):
+        """
+        Synchronize all files from the drive.
+        """
+        if not self.downloader.is_sync_initialized():
+            self.initialize_sync()
+        self.downloader.sync_by_remote_changes()
