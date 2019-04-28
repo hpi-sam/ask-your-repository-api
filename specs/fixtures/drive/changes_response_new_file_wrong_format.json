@@ -1,0 +1,201 @@
+{
+  "kind": "drive#changeList",
+  "newStartPageToken": "256053",
+  "changes": [
+    {
+      "kind": "drive#change",
+      "type": "file",
+      "changeType": "file",
+      "time": "2019-04-28T16:18:20.217Z",
+      "removed": false,
+      "fileId": "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+      "file": {
+        "kind": "drive#file",
+        "id": "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+        "name": "Christian-ity",
+        "mimeType": "application/vnd.google-apps.folder",
+        "starred": false,
+        "trashed": false,
+        "explicitlyTrashed": false,
+        "parents": [
+          "0AF1KLtJd1_URUk9PVA"
+        ],
+        "spaces": [
+          "drive"
+        ],
+        "version": "17",
+        "webViewLink": "https://drive.google.com/drive/folders/1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+        "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.folder",
+        "hasThumbnail": false,
+        "thumbnailVersion": "0",
+        "viewedByMe": true,
+        "viewedByMeTime": "2019-04-28T16:18:19.888Z",
+        "createdTime": "2018-10-22T12:11:44.810Z",
+        "modifiedTime": "2018-10-22T12:11:44.810Z",
+        "modifiedByMeTime": "2018-10-22T12:11:44.810Z",
+        "modifiedByMe": true,
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "me": true,
+            "permissionId": "06049617087689875213",
+            "emailAddress": "bestejascha@gmail.com"
+          }
+        ],
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "Jascha Beste",
+          "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+          "me": true,
+          "permissionId": "06049617087689875213",
+          "emailAddress": "bestejascha@gmail.com"
+        },
+        "shared": false,
+        "ownedByMe": true,
+        "capabilities": {
+          "canAddChildren": true,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canChangeViewersCanCopyContent": true,
+          "canComment": true,
+          "canCopy": false,
+          "canDelete": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": true,
+          "canMoveItemIntoTeamDrive": true,
+          "canMoveItemOutOfDrive": true,
+          "canReadRevisions": false,
+          "canRemoveChildren": true,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canUntrash": true
+        },
+        "viewersCanCopyContent": true,
+        "copyRequiresWriterPermission": false,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "06049617087689875213",
+            "type": "user",
+            "emailAddress": "bestejascha@gmail.com",
+            "role": "owner",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "deleted": false
+          }
+        ],
+        "permissionIds": [
+          "06049617087689875213"
+        ],
+        "folderColorRgb": "#8f8f8f",
+        "quotaBytesUsed": "0",
+        "isAppAuthorized": false
+      }
+    },
+    {
+      "kind": "drive#change",
+      "type": "file",
+      "changeType": "file",
+      "time": "2019-04-28T16:18:45.434Z",
+      "removed": false,
+      "fileId": "1IQQNiI2zH_o_eqJu0KRq1VE26IeOuL8W",
+      "file": {
+        "kind": "drive#file",
+        "id": "1IQQNiI2zH_o_eqJu0KRq1VE26IeOuL8W",
+        "name": "Studienbescheinigungb0802b8f-c25b-4783-bc68-366dc9c8132c.PDF",
+        "mimeType": "application/pdf",
+        "starred": false,
+        "trashed": false,
+        "explicitlyTrashed": false,
+        "parents": [
+          "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0"
+        ],
+        "spaces": [
+          "drive"
+        ],
+        "version": "3",
+        "webContentLink": "https://drive.google.com/uc?id=1IQQNiI2zH_o_eqJu0KRq1VE26IeOuL8W&export=download",
+        "webViewLink": "https://drive.google.com/file/d/1IQQNiI2zH_o_eqJu0KRq1VE26IeOuL8W/view?usp=drivesdk",
+        "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/pdf",
+        "hasThumbnail": true,
+        "thumbnailLink": "https://lh3.googleusercontent.com/BoiJSkWYrHzjma1gn7SQywDjezzhCncWH9W1ituGdbqGYHbgMGHSD1PXzKMYLSAk09HknLi38hM=s220",
+        "thumbnailVersion": "1",
+        "viewedByMe": true,
+        "viewedByMeTime": "2019-04-28T16:18:43.909Z",
+        "createdTime": "2019-04-28T16:18:43.909Z",
+        "modifiedTime": "2019-04-28T16:18:43.909Z",
+        "modifiedByMeTime": "2019-04-28T16:18:43.909Z",
+        "modifiedByMe": true,
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "me": true,
+            "permissionId": "06049617087689875213",
+            "emailAddress": "bestejascha@gmail.com"
+          }
+        ],
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "Jascha Beste",
+          "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+          "me": true,
+          "permissionId": "06049617087689875213",
+          "emailAddress": "bestejascha@gmail.com"
+        },
+        "shared": false,
+        "ownedByMe": true,
+        "capabilities": {
+          "canAddChildren": false,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canChangeViewersCanCopyContent": true,
+          "canComment": true,
+          "canCopy": true,
+          "canDelete": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": false,
+          "canMoveItemIntoTeamDrive": true,
+          "canMoveItemOutOfDrive": true,
+          "canReadRevisions": true,
+          "canRemoveChildren": false,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canUntrash": true
+        },
+        "viewersCanCopyContent": true,
+        "copyRequiresWriterPermission": false,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "06049617087689875213",
+            "type": "user",
+            "emailAddress": "bestejascha@gmail.com",
+            "role": "owner",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "deleted": false
+          }
+        ],
+        "permissionIds": [
+          "06049617087689875213"
+        ],
+        "originalFilename": "Studienbescheinigungb0802b8f-c25b-4783-bc68-366dc9c8132c.PDF",
+        "fullFileExtension": "PDF",
+        "fileExtension": "PDF",
+        "md5Checksum": "bbe3d8689aeefa881ab721eb6d721bdb",
+        "size": "208154",
+        "quotaBytesUsed": "208154",
+        "headRevisionId": "0B11KLtJd1_URWENCN0tBcEplK2FnTlUrYk5DVFJZdDdRbUFVPQ",
+        "isAppAuthorized": false
+      }
+    }
+  ]
+}

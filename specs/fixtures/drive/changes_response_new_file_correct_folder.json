@@ -1,0 +1,206 @@
+{
+  "kind": "drive#changeList",
+  "newStartPageToken": "256046",
+  "changes": [
+    {
+      "kind": "drive#change",
+      "type": "file",
+      "changeType": "file",
+      "time": "2019-04-28T16:11:38.970Z",
+      "removed": false,
+      "fileId": "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+      "file": {
+        "kind": "drive#file",
+        "id": "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+        "name": "Christian-ity",
+        "mimeType": "application/vnd.google-apps.folder",
+        "starred": false,
+        "trashed": false,
+        "explicitlyTrashed": false,
+        "parents": [
+          "0AF1KLtJd1_URUk9PVA"
+        ],
+        "spaces": [
+          "drive"
+        ],
+        "version": "16",
+        "webViewLink": "https://drive.google.com/drive/folders/1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0",
+        "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.folder",
+        "hasThumbnail": false,
+        "thumbnailVersion": "0",
+        "viewedByMe": true,
+        "viewedByMeTime": "2019-04-28T16:11:38.257Z",
+        "createdTime": "2018-10-22T12:11:44.810Z",
+        "modifiedTime": "2018-10-22T12:11:44.810Z",
+        "modifiedByMeTime": "2018-10-22T12:11:44.810Z",
+        "modifiedByMe": true,
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "me": true,
+            "permissionId": "06049617087689875213",
+            "emailAddress": "bestejascha@gmail.com"
+          }
+        ],
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "Jascha Beste",
+          "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+          "me": true,
+          "permissionId": "06049617087689875213",
+          "emailAddress": "bestejascha@gmail.com"
+        },
+        "shared": false,
+        "ownedByMe": true,
+        "capabilities": {
+          "canAddChildren": true,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canChangeViewersCanCopyContent": true,
+          "canComment": true,
+          "canCopy": false,
+          "canDelete": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": true,
+          "canMoveItemIntoTeamDrive": true,
+          "canMoveItemOutOfDrive": true,
+          "canReadRevisions": false,
+          "canRemoveChildren": true,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canUntrash": true
+        },
+        "viewersCanCopyContent": true,
+        "copyRequiresWriterPermission": false,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "06049617087689875213",
+            "type": "user",
+            "emailAddress": "bestejascha@gmail.com",
+            "role": "owner",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "deleted": false
+          }
+        ],
+        "permissionIds": [
+          "06049617087689875213"
+        ],
+        "folderColorRgb": "#8f8f8f",
+        "quotaBytesUsed": "0",
+        "isAppAuthorized": false
+      }
+    },
+    {
+      "kind": "drive#change",
+      "type": "file",
+      "changeType": "file",
+      "time": "2019-04-28T16:11:57.143Z",
+      "removed": false,
+      "fileId": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB",
+      "file": {
+        "kind": "drive#file",
+        "id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB",
+        "name": "unpacking.png",
+        "mimeType": "image/png",
+        "starred": false,
+        "trashed": false,
+        "explicitlyTrashed": false,
+        "parents": [
+          "1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0"
+        ],
+        "spaces": [
+          "drive"
+        ],
+        "version": "2",
+        "webContentLink": "https://drive.google.com/uc?id=1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB&export=download",
+        "webViewLink": "https://drive.google.com/file/d/1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB/view?usp=drivesdk",
+        "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/image/png",
+        "hasThumbnail": true,
+        "thumbnailLink": "https://lh3.googleusercontent.com/Z0x81HLOrCLvuPhA43-zTe2zSg6PnVOLwIf0jBPge1RPgoNHtLjA2FdsvAsuSkSoZyupMFLwtS0=s220",
+        "thumbnailVersion": "1",
+        "viewedByMe": true,
+        "viewedByMeTime": "2019-04-28T16:11:55.804Z",
+        "createdTime": "2019-04-28T16:11:55.804Z",
+        "modifiedTime": "2019-04-28T16:11:55.804Z",
+        "modifiedByMeTime": "2019-04-28T16:11:55.804Z",
+        "modifiedByMe": true,
+        "owners": [
+          {
+            "kind": "drive#user",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "me": true,
+            "permissionId": "06049617087689875213",
+            "emailAddress": "bestejascha@gmail.com"
+          }
+        ],
+        "lastModifyingUser": {
+          "kind": "drive#user",
+          "displayName": "Jascha Beste",
+          "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+          "me": true,
+          "permissionId": "06049617087689875213",
+          "emailAddress": "bestejascha@gmail.com"
+        },
+        "shared": false,
+        "ownedByMe": true,
+        "capabilities": {
+          "canAddChildren": false,
+          "canChangeCopyRequiresWriterPermission": true,
+          "canChangeViewersCanCopyContent": true,
+          "canComment": true,
+          "canCopy": true,
+          "canDelete": true,
+          "canDownload": true,
+          "canEdit": true,
+          "canListChildren": false,
+          "canMoveItemIntoTeamDrive": true,
+          "canMoveItemOutOfDrive": true,
+          "canReadRevisions": true,
+          "canRemoveChildren": false,
+          "canRename": true,
+          "canShare": true,
+          "canTrash": true,
+          "canUntrash": true
+        },
+        "viewersCanCopyContent": true,
+        "copyRequiresWriterPermission": false,
+        "writersCanShare": true,
+        "permissions": [
+          {
+            "kind": "drive#permission",
+            "id": "06049617087689875213",
+            "type": "user",
+            "emailAddress": "bestejascha@gmail.com",
+            "role": "owner",
+            "displayName": "Jascha Beste",
+            "photoLink": "https://lh5.googleusercontent.com/-mRpQHAfGBMk/AAAAAAAAAAI/AAAAAAAAALE/r8rtDCOywEc/s64/photo.jpg",
+            "deleted": false
+          }
+        ],
+        "permissionIds": [
+          "06049617087689875213"
+        ],
+        "originalFilename": "unpacking.png",
+        "fullFileExtension": "png",
+        "fileExtension": "png",
+        "md5Checksum": "51529d41fb4ba854afb9d4311326bb7e",
+        "size": "1037859",
+        "quotaBytesUsed": "1037859",
+        "headRevisionId": "0B11KLtJd1_URUjhMTnBZYnFCT0pMM1pXTFZyRkN1Z1FyMDBjPQ",
+        "imageMediaMetadata": {
+          "width": 1516,
+          "height": 856,
+          "rotation": 0
+        },
+        "isAppAuthorized": false
+      }
+    }
+  ]
+}
