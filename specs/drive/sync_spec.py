@@ -9,6 +9,8 @@ from specs.factories.image_recognition import mock_image_recognition
 from specs.spec_helpers import Context
 from specs.factories.drive_factory import DriveFactory
 from neomodel import db
+from application.artifacts.artifact_creation import ArtifactCreator
+from werkzeug.datastructures import FileStorage
 
 
 def file_content(path):
@@ -52,8 +54,8 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     sync.sync_from_drive()
 
-            with it("asdf"):
-                pass
+            with it("doesn't change anything"):
+                expect(len(self.drive.files.all())).to(equal(0))
 
         with description("Change: new image in correct folder"):
             with before.each:
@@ -65,8 +67,9 @@ with description("drive") as self:
                     sync.sync_from_drive()
 
             with it("has an artifact connected"):
-                print(self.drive.owner.single().teams.single().artifacts.all())
+                team_artifacts = self.drive.owner.single().teams.single().artifacts.all()
                 expect(len(self.drive.files.all())).to(equal(1))
+                expect(team_artifacts).to(equal(self.drive.files.all()))
 
         with description("Change: new file wrong format"):
             with before.each:
@@ -75,8 +78,8 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     sync.sync_from_drive()
 
-            with it("asdf"):
-                pass
+            with it("doesn't downnload the file"):
+                expect(len(self.drive.files.all())).to(equal(0))
 
         with description("Change: new file incorrect folder"):
             with before.each:
@@ -85,38 +88,60 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     sync.sync_from_drive()
 
-            with it("asdf"):
-                pass
+            with it("doesn't downnload the file"):
+                expect(len(self.drive.files.all())).to(equal(0))
 
         with description("Change: deleted file correct folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_correct_folder.json")
                     sync = Sync(self.drive, http)
+                    fp = open("specs/fixtures/drive/meh.png", "rb")
+                    file = FileStorage(fp)
+                    creator = ArtifactCreator(
+                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
+                    )
+                    artifact = creator.create_artifact()
+                    self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_from_drive()
+                    fp.close()
 
-            with it("asdf"):
-                pass
+            with it("deletes connected artifact"):
+                expect(len(self.drive.files.all())).to(equal(0))
 
         with description("Change: deleted file incorrect folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_wrong_format.json")
                     sync = Sync(self.drive, http)
+                    fp = open("specs/fixtures/drive/meh.png", "rb")
+                    file = FileStorage(fp)
+                    creator = ArtifactCreator(
+                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
+                    )
+                    artifact = creator.create_artifact()
+                    self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_from_drive()
 
-            with it("asdf"):
-                pass
+            with it("doesn't delete anything"):
+                expect(len(self.drive.files.all())).to(equal(1))
 
         with description("Change: deleted file wrong format"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_wrong_folder.json")
                     sync = Sync(self.drive, http)
+                    fp = open("specs/fixtures/drive/meh.png", "rb")
+                    file = FileStorage(fp)
+                    creator = ArtifactCreator(
+                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
+                    )
+                    artifact = creator.create_artifact()
+                    self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_from_drive()
 
-            with it("asdf"):
-                pass
+            with it("doesn't delete anything"):
+                expect(len(self.drive.files.all())).to(equal(1))
 
     # with it("Downloads a new image"):
     # with open("drive-discovery.json", "w") as f:

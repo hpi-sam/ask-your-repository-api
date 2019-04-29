@@ -37,4 +37,7 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
         DriveUploader(self).upload_all_missing()
 
     def delete_if_necessary(self, artifact):
-        DriveUploader(self).delete_file_by(artifact)
+        try:
+            DriveUploader(self).delete_file_by(artifact)
+        except:
+            print("Connection to google drive failed")
