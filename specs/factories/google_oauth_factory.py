@@ -23,6 +23,7 @@ class GoogleOAuthFactory:
         user = UserFactory.create_user(*args, **kwargs)
         google_oauth = cls.create_google_oauth(credentials=credentials)
         user.google_rel.connect(google_oauth)
+        user.save()
         return user
 
     @classmethod
