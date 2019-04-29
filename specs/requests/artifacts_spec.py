@@ -38,7 +38,7 @@ with description("/images") as self:
         self.context.client().login(self.user)
 
     with after.each:
-        # clear_upload_dir()
+        clear_upload_dir()
         db.cypher_query("MATCH (a) DETACH DELETE a")
         if hasattr(self, "context"):
             self.context.delete()
