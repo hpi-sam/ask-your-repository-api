@@ -2,15 +2,14 @@ from expects import equal
 from expects import expect
 from googleapiclient.http import HttpMockSequence
 from mamba import description, before, it, after
+from neomodel import db
+from werkzeug.datastructures import FileStorage
 
-from application.teams.placeholder_drives.drive import Drive
+from application.artifacts.artifact_creation import ArtifactCreator
 from application.teams.placeholder_drives.sync import Sync
+from specs.factories.drive_factory import DriveFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.spec_helpers import Context
-from specs.factories.drive_factory import DriveFactory
-from neomodel import db
-from application.artifacts.artifact_creation import ArtifactCreator
-from werkzeug.datastructures import FileStorage
 
 
 def file_content(path):
@@ -152,9 +151,9 @@ with description("drive") as self:
             # downloads new images
             # deletes deleted images
             # initializes sync if no sync started yet
-        
+
         uploads changes:
             # Creating by artifact uploads file to google drive with correct name
             # Deleting af file by id deletes it on google drive and disconnects artifact
-            
+
     """

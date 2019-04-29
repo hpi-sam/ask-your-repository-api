@@ -1,12 +1,12 @@
 """Access to Drive objects in Ne4J"""
 from neomodel import StructuredNode, StringProperty, cardinality, RelationshipFrom, RelationshipTo
-
-from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from neomodel.exceptions import MultipleNodesReturned
 
+from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.teams.placeholder_drives.contains_rel import ContainsRel
 from .sync import DriveUploader
+from httplib2 import ServerNotFoundError
 
 
 class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
@@ -26,7 +26,7 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
         results = self.files.match(gdrive_file_id=gdrive_file_id)
         if len(results) > 1:
             raise MultipleNodesReturned
-        if len(results) is 0:
+        if len(results) == 0:
             if force:
                 raise Exception("ArtifactDoesNotExist")
             else:
@@ -39,5 +39,5 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
     def delete_if_necessary(self, artifact):
         try:
             DriveUploader(self).delete_file_by(artifact)
-        except:
+        except ServerNotFoundError:
             print("Connection to google drive failed")

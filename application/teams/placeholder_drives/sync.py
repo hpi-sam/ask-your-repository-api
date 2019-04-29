@@ -60,7 +60,7 @@ class DriveAdapter:
 
     def delete_file(self, drive_file_id):
         try:
-            result = self.service.files().delete(fileId=drive_file_id).execute()
+            self.service.files().delete(fileId=drive_file_id).execute()
         except Exception as e:
             print(e)
             """TODO: If 404 just ignore otherwise I don't know yet,
@@ -160,7 +160,7 @@ class DriveDownloader(AbstractesDriveAccessDing):
         """
         try:
             self.drive.find_artifact_by(gdrive_id).delete()
-        except:  # TODO: Can't import Artifact cyclic imports
+        except Exception:  # TODO: Can't import Artifact cyclic imports
             print("Artifact not Found, askyourcloud and google drive out of sync.")
 
     def _update_page_token(self):
