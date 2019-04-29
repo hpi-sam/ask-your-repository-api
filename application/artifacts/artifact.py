@@ -5,7 +5,7 @@ from neomodel import StructuredNode, StringProperty, DateTimeProperty, Relations
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
 from application.artifacts.elastic import ElasticSyncer
-from application.relations.contains_rel import ContainsRel
+from application.teams.placeholder_drives.contains_rel import ContainsRel
 
 
 # pylint:disable=abstract-method
