@@ -5,7 +5,7 @@ from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from neomodel.exceptions import MultipleNodesReturned
 
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
-from application.relations.contains_rel import ContainsRel
+from application.teams.placeholder_drives.contains_rel import ContainsRel
 from .sync import DriveUploader
 
 
