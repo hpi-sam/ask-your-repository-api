@@ -35,6 +35,7 @@ class DriveView(MethodResource):
     def post(self):
         drive_id = "asdf"
         user_is_in_team = "true"
-        drive = Drive.find_by(drive_id)
-        DriveDownloader(drive).sync_from_drive()
-        # sync drive to saved artifacts
+        if user_is_in_team:
+            drive = Drive.find_by(drive_id)
+            DriveDownloader(drive).sync_from_drive()
+            # sync drive to saved artifacts

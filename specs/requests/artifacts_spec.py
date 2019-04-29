@@ -1,21 +1,21 @@
 """ Tests for artifacts """
 
-import sys
 import os
-from PIL import Image
+import sys
 
+from PIL import Image
 from doublex import Stub
 from expects import expect, equal, have_key, have_keys
 from flask import current_app
 from mamba import shared_context, included_context, description, context, before, after, it
 from neomodel import db
-from application.artifacts.artifact import Artifact
 
+from application.artifacts.artifact import Artifact
 from specs.factories.artifact_factory import ArtifactFactory
-from specs.factories.user_factory import UserFactory
 from specs.factories.image_factory import ImageFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.factories.request_generator import build_request
+from specs.factories.user_factory import UserFactory
 from specs.factories.uuid_fixture import get_uuid
 from specs.spec_helpers import Context
 
