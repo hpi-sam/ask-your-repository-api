@@ -1,5 +1,5 @@
 """Access to Drive objects in Ne4J"""
-from neomodel import StructuredNode, StringProperty, cardinality, RelationshipFrom, RelationshipTo
+from neomodel import StructuredNode, StringProperty, cardinality, RelationshipFrom, RelationshipTo, BooleanProperty
 from neomodel.exceptions import MultipleNodesReturned
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
@@ -15,6 +15,7 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
 
     drive_id = StringProperty(required=True)
     page_token = StringProperty()
+    is_syncing = BooleanProperty(required=True, default=False)
 
     team = RelationshipFrom("application.models.Team", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
     owner = RelationshipFrom("application.models.User", "OWNS", cardinality=cardinality.ZeroOrOne)
@@ -45,5 +46,5 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
 
     @classmethod
     def sync_all(cls):
-        for drive in Drive.all():
+        for drive in Drive.nodes.get(is_syncing=False):
             Sync(drive).sync_from_drive()

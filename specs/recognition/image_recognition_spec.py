@@ -17,6 +17,6 @@ with description("image recognition called during create") as self:
         self.recognizer._call_google_api = method_returning(vision_api_response())
 
     with it("Adds Tags to artifact"):
-        self.recognizer._work_asynchronously(self.artifact)
+        self.recognizer._work_for_artifact(self.artifact)
         expect(self.recognizer._call_google_api).to(have_been_called.once)
         expect(list(map(lambda x: x.name, self.artifact.tags))).to(contain("Arne", "Zerndt", "Meeting"))

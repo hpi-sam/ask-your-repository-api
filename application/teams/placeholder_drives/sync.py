@@ -211,6 +211,7 @@ class Sync:
         :param http: the http2 object to use. Can be used to mock the connection
         leave at None if you don't know what this is
         """
+        self.drive = drive
         self.uploader = DriveUploader(drive, http)
         self.downloader = DriveDownloader(drive, http)
 
@@ -226,6 +227,8 @@ class Sync:
         """
         Synchronize all files from the drive.
         """
+        self.drive.update(is_syncing=True)
         if not self.downloader.is_sync_initialized():
             self.initialize_sync()
         self.downloader.sync_by_remote_changes()
+        self.drive.update(is_syncing=False)
