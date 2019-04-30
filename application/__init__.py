@@ -19,6 +19,7 @@ from .extensions import socketio, bcrypt, mail
 from .routes import create_routes
 from .background import add_background_jobs
 
+
 def create_app(config_filename=None):
     """
     Creates the app using the specific config file of that environment.
