@@ -65,7 +65,13 @@ Installing dependencies:
 - Run: `poetry run mamba specs`
 
 # Running linter
-- Run: `poetry run prospector`
+- Run: `poetry run black --check .`
+- Run: `poetry run flake8 ./`
+
+# Running auto-formater
+- Run: `poetry run black .`
+
+Autoformating and linting can be automized if you have [Pre-Commit](https://pre-commit.com/) installed on user.
 
 # Start service
 - Run: `poetry run flask run`
