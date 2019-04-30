@@ -3,11 +3,11 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from neomodel.exceptions import AttemptedCardinalityViolation
 from flask import abort
 from .drive_schema import DriveSchema
-from .sync import DriveDownloader
-from .drive_validator import create_args
+from .drive_validator import create_args, delete_args
 from ..team import Team
 from .drive import Drive
 from application.users.user import User
+from application.responders import no_content
 
 
 class DrivesView(MethodResource):
@@ -15,7 +15,6 @@ class DrivesView(MethodResource):
     @use_kwargs(create_args())
     @marshal_with(DriveSchema)
     def post(self, **params):
-        print(params)
         drive = Drive(drive_id=params.get("drive_id")).save()
         try:
             team = Team.find_by(id_=params.get("team_id"))
@@ -29,13 +28,19 @@ class DrivesView(MethodResource):
 
 
 class DriveView(MethodResource):
-    def delete(self):
-        pass
 
-    def post(self):
-        drive_id = "asdf"
-        user_is_in_team = "true"
-        if user_is_in_team:
-            drive = Drive.find_by(drive_id)
-            DriveDownloader(drive).sync_from_drive()
-            # sync drive to saved artifacts
+    @jwt_required
+    @use_kwargs(delete_args())
+    @marshal_with(None, 204)
+    def delete(self, **params):
+        drive = Drive.find_by(id_=params['drive_id'])
+        if drive.owner == User.find_by(id_=get_jwt_identity()):
+            try:
+                Drive.find_by(id_=params['drive_id']).delete()
+                return no_content()
+            except Drive.NotFound:
+                abort(404, "Drive not Found")
+        else:
+            abort(403)
+
+
