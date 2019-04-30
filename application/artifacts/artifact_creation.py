@@ -96,6 +96,8 @@ class ArtifactCreator:
         file_metadata = self._upload_file()
         artifact = self._save_to_db(file_metadata)
         ImageRecognizer.auto_add_tags(artifact)
+        if artifact.team.single().drive.single():
+            artifact.team.single().drive.single().sync()
         return artifact
 
     def _save_to_db(self, file_metadata):
