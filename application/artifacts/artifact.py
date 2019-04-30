@@ -8,7 +8,6 @@ from application.artifacts.elastic import ElasticSyncer
 from application.teams.placeholder_drives.contains_rel import ContainsRel
 
 
-# pylint:disable=abstract-method
 class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     """The class that manages artifacts"""
 

@@ -5,7 +5,7 @@ from neomodel.exceptions import MultipleNodesReturned
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.teams.placeholder_drives.contains_rel import ContainsRel
-from .sync import DriveUploader
+from .sync import DriveUploader, Sync
 from httplib2 import ServerNotFoundError
 
 
@@ -41,3 +41,8 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
             DriveUploader(self).delete_file_by(artifact)
         except ServerNotFoundError:
             print("Connection to google drive failed")
+
+    @classmethod
+    def sync_all(cls):
+        for drive in Drive.all():
+            Sync(drive).sync_from_drive()
