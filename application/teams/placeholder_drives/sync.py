@@ -122,7 +122,6 @@ class DriveUploader(AbstractesDriveAccessDing):
         Delete a file in google drive by artifact object
         :param artifact: the artifact object to delete in google drive
         """
-        # TODO: What to do if drive not available?
         rel = self.drive.files.relationship(artifact)
         self.drive_adapter.delete_file(rel.gdrive_file_id)
         self.drive.files.disconnect(artifact)
