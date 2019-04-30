@@ -28,19 +28,16 @@ class DrivesView(MethodResource):
 
 
 class DriveView(MethodResource):
-
     @jwt_required
     @use_kwargs(delete_args())
     @marshal_with(None, 204)
     def delete(self, **params):
-        drive = Drive.find_by(id_=params['drive_id'])
+        drive = Drive.find_by(id_=params["drive_id"])
         if drive.owner == User.find_by(id_=get_jwt_identity()):
             try:
-                Drive.find_by(id_=params['drive_id']).delete()
+                Drive.find_by(id_=params["drive_id"]).delete()
                 return no_content()
             except Drive.NotFound:
                 abort(404, "Drive not Found")
         else:
             abort(403)
-
-

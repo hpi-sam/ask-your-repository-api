@@ -3,6 +3,7 @@ from neomodel import StructuredNode, StringProperty, cardinality, RelationshipFr
 from neomodel.exceptions import MultipleNodesReturned
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
+
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.teams.placeholder_drives.contains_rel import ContainsRel
 from .sync import DriveUploader, Sync
