@@ -4,11 +4,12 @@ from .teams.placeholder_drives.drive import Drive
 
 
 def add_background_jobs(app):
-    sched = BackgroundScheduler(deamon=False)
+    sync_scheduler = BackgroundScheduler(deamon=False)
 
     def sync_with_context():
         with app.app_context():
             Drive.sync_all()
 
-    sched.add_job(sync_with_context, "interval", seconds=30)
-    sched.start()
+    sync_scheduler.add_job(sync_with_context, "interval", seconds=5)
+    sync_scheduler.start()
+    app.sync_scheduler = sync_scheduler

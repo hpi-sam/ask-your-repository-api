@@ -6,7 +6,7 @@ from neomodel import db
 from werkzeug.datastructures import FileStorage
 
 from application.artifacts.artifact_creation import ArtifactCreator
-from application.teams.placeholder_drives.sync import Sync
+from application.teams.placeholder_drives.sync.sync import Sync
 from specs.factories.drive_factory import DriveFactory
 from specs.factories.image_recognition import mock_image_recognition
 from specs.spec_helpers import Context
