@@ -6,6 +6,7 @@ from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
 from application.artifacts.elastic import ElasticSyncer
 from application.teams.placeholder_drives.contains_rel import ContainsRel
+from .artifact_deletor import ArtifactDeletor
 
 
 class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
@@ -48,6 +49,4 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
 
     def pre_delete(self):
         """Sync with Elasticsearch"""
-        ElasticSyncer.for_artifact(self).delete()
-        if self.drive_folder.single():
-            self.drive_folder.single().delete_if_necessary(self)
+        ArtifactDeletor(self).delete()

@@ -9,6 +9,7 @@ from flask import current_app
 
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
+from application.teams.placeholder_drives.sync.uploader import DriveUploader
 
 
 class ImageResizer:
@@ -97,7 +98,7 @@ class ArtifactCreator:
         artifact = self._save_to_db(file_metadata)
         ImageRecognizer.auto_add_tags(artifact)
         if artifact.team.single().drive.single():
-            artifact.team.single().drive.single().sync()
+            DriveUploader(artifact.team.single().drive.single()).created(artifact, **self.additional_params)
         return artifact
 
     def _save_to_db(self, file_metadata):

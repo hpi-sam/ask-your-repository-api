@@ -6,8 +6,10 @@ from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.teams.placeholder_drives.contains_rel import ContainsRel
-from .sync import DriveUploader, Sync
+from application.teams.placeholder_drives.sync.sync import Sync
+from application.teams.placeholder_drives.sync.uploader import DriveUploader
 from httplib2 import ServerNotFoundError
+from flask import current_app
 
 
 class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
@@ -15,11 +17,10 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
 
     drive_id = StringProperty(required=True)
     page_token = StringProperty()
-    is_syncing = BooleanProperty(required=True, default=False)
+    is_syncing = BooleanProperty(default=False)
 
     team = RelationshipFrom("application.models.Team", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
     owner = RelationshipFrom("application.models.User", "OWNS", cardinality=cardinality.ZeroOrOne)
-    eligible_users = RelationshipFrom("application.models.User", "HAS_ACCESS", cardinality=cardinality.ZeroOrMore)
     files = RelationshipTo(
         "application.models.Artifact", "CONTAINS", model=ContainsRel, cardinality=cardinality.ZeroOrMore
     )
@@ -35,16 +36,16 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
                 return None
         return results[0]
 
-    def sync(self):
-        DriveUploader(self).upload_all_missing()
-
     def delete_if_necessary(self, artifact):
-        try:
-            DriveUploader(self).delete_file_by(artifact)
-        except ServerNotFoundError:
-            print("Connection to google drive failed")
+        def send_delete_request():
+            try:
+                DriveUploader(self).delete_file_by(artifact)
+            except ServerNotFoundError:
+                print("Connection to google drive failed")
+
+        current_app.sync_scheduler.add_job(send_delete_request())
 
     @classmethod
     def sync_all(cls):
-        for drive in Drive.nodes.get(is_syncing=False):
-            Sync(drive).sync_from_drive()
+        for drive in Drive.nodes.filter(is_syncing=False):
+            Sync(drive).sync_drive()
