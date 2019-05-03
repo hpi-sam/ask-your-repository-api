@@ -13,11 +13,16 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from neomodel import config, install_all_labels
-from apscheduler.schedulers.background import BackgroundScheduler
+from .debug_scripts import add_debug_scripts
 
+from .background import add_background_jobs
 from .extensions import socketio, bcrypt, mail
 from .routes import create_routes
-from .background import add_background_jobs
+import asyncio
+
+
+async def print_something():
+    print("something")
 
 
 def create_app(config_filename=None):
@@ -36,6 +41,7 @@ def create_app(config_filename=None):
     register_extensions(app)
     register_error_handlers(app)
     add_background_jobs(app)
+    add_debug_scripts(app)
 
     if not os.path.isdir(app.config["UPLOAD_FOLDER"]):
         os.mkdir(app.config["UPLOAD_FOLDER"])
