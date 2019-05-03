@@ -20,6 +20,7 @@ from application.responders import marshal_data, no_content
 from application.socketio_parser import use_args as socketio_args
 from application.teams.team import Team
 from .artifact import Artifact
+from .elastic.sync_jobs import resync_elasticsearch_eventually
 
 
 @socketio.on("SYNCHRONIZED_SEARCH")
@@ -54,8 +55,8 @@ def _search_artifacts(params):
                 setattr(neo_artifact, "score", elastic_artifact["_score"])
                 artifacts.append(neo_artifact)
             except Artifact.DoesNotExist:
-                pass
-                # es and neo out of sync have to resync
+                # neo and elasticsearch are out of sync so add a resync job
+                resync_elasticsearch_eventually()
     else:
         artifacts = _find_multiple_by(params)
     return artifacts

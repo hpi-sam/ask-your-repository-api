@@ -11,6 +11,12 @@ class ElasticSyncer:
     """Synchronization class"""
 
     @classmethod
+    def resync_everything(cls):
+        cls._elastic().delete_index()
+        cls.sync_everything()
+
+
+    @classmethod
     def sync_enabled(cls):
         """Check if synchonization is enabled"""
         return current_app.config["ES_SYNC"]
@@ -88,7 +94,8 @@ class ElasticSyncer:
     def _artifact_dump(self, artifact):
         return ArtifactSchema(model=application.artifacts.artifact.Artifact, decorate=False).dump(artifact).data
 
-    def _elastic(self):
+    @staticmethod
+    def _elastic():
         return ElasticAccess("artifact", "image")
 
 
@@ -110,3 +117,7 @@ class ElasticAccess:
     def delete(self, id):  # pylint:disable= invalid-name
         """delete a document"""
         current_app.es.delete(refresh="wait_for", index=self.index, doc_type=self.type, id=str(id))
+
+    def delete_index(self):
+        """delete the whole index"""
+        current_app.es.indices.delete(index=self.index, ignore=[400, 404])
