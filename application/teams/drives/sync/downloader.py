@@ -1,8 +1,8 @@
 from application.artifacts.artifact_creation import ArtifactCreator
-from application.teams.drives.sync.abstraktes_drive_dingens import AbstractesDriveAccessDing
+from application.teams.drives.sync.abstraktes_drive_dingens import DriveAccessible
 
 
-class DriveDownloader(AbstractesDriveAccessDing):
+class DriveDownloader(DriveAccessible):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._initialize_start_page_token()
