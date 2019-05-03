@@ -4,7 +4,6 @@ from application.teams.placeholder_drives.sync.abstraktes_drive_dingens import A
 
 
 class DriveUploader(AbstractesDriveAccessDing):
-
     def sync_to_drive(self):
         self.upload_all_missing()
         self.delete_all_deleted()
@@ -30,12 +29,10 @@ class DriveUploader(AbstractesDriveAccessDing):
         for image in self.drive_adapter.list_images(self.drive.drive_id):
             if self.image_should_be_deleted(image):
                 print(f"Found image to be deleted: {image}")
-                self.drive_adapter.delete_file(image['id'])
+                self.drive_adapter.delete_file(image["id"])
 
     def image_should_be_deleted(self, file):
-        if (self.file_is_in_folder(file) and not
-            self.file_is_downloaded(file) and
-            self.file_has_elija_id(file)):
+        if self.file_is_in_folder(file) and not self.file_is_downloaded(file) and self.file_has_elija_id(file):
             return True
         else:
             return False
@@ -51,7 +48,7 @@ class DriveUploader(AbstractesDriveAccessDing):
         return self.drive.drive_id in file.get("parents")
 
     def file_is_downloaded(self, file):
-        if self.drive.find_artifact_by(file.get('id'), force=False):
+        if self.drive.find_artifact_by(file.get("id"), force=False):
             return True
         else:
             return False

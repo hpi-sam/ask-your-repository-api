@@ -16,6 +16,6 @@ def add_background_jobs(app):
             print("done")
 
     sync_scheduler.add_job(sync_with_context, "interval", seconds=5)
-    if app.config['START_DRIVE_SYNC_WORKER']:
+    if app.config["START_DRIVE_SYNC_WORKER"]:
         sync_scheduler.start()
     app.sync_scheduler = sync_scheduler

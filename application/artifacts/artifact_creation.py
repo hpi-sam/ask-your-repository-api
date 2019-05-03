@@ -9,7 +9,6 @@ from flask import current_app
 
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
-from application.teams.placeholder_drives.sync.uploader import DriveUploader
 
 
 class ImageResizer:
