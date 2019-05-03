@@ -1,4 +1,4 @@
-from application.teams.placeholder_drives.drive import Drive
+from application.teams.drives.drive import Drive
 from .google_oauth_factory import GoogleOAuthFactory, google_credentials
 from .team_factory import TeamFactory
 
