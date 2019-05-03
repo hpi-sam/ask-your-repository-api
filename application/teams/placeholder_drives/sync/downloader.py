@@ -25,7 +25,7 @@ class DriveDownloader(AbstractesDriveAccessDing):
         Download all images from google drive and save them as artifacts.
         """
         for image in self.images_in_drive():
-            if not image['trashed']:
+            if not image["trashed"]:
                 self._download_image(image)
 
     def delete_artifact_by(self, gdrive_id):
@@ -70,17 +70,14 @@ class DriveDownloader(AbstractesDriveAccessDing):
             pass
 
     def change_should_be_downloaded(self, change):
-        if (self.change_contains_file(change) and
-            self.file_should_be_downloaded(change.get("file"))):
+        if self.change_contains_file(change) and self.file_should_be_downloaded(change.get("file")):
             return True
         else:
             return False
 
     def file_should_be_downloaded(self, file):
         print(f"Checking if file should be downloaded {file}")
-        if (self.file_is_image(file) and
-            self.file_is_in_folder(file) and not
-            self.file_is_downloaded(file)):
+        if self.file_is_image(file) and self.file_is_in_folder(file) and not self.file_is_downloaded(file):
             return True
         else:
             return False
@@ -88,9 +85,11 @@ class DriveDownloader(AbstractesDriveAccessDing):
     def change_should_be_trashed(self, change):
         if change.get("removed"):
             return True
-        elif (self.change_contains_file(change) and
-              self.file_is_in_folder(change.get("file")) and
-              self.file_is_trashed(change.get("file"))):
+        elif (
+            self.change_contains_file(change)
+            and self.file_is_in_folder(change.get("file"))
+            and self.file_is_trashed(change.get("file"))
+        ):
             return True
         else:
             return False
@@ -102,7 +101,7 @@ class DriveDownloader(AbstractesDriveAccessDing):
         return "image" in file.get("mimeType")
 
     def file_is_downloaded(self, file):
-        if self.drive.find_artifact_by(file.get('id'), force=False):
+        if self.drive.find_artifact_by(file.get("id"), force=False):
             return True
         else:
             return False
@@ -121,5 +120,5 @@ class DriveDownloader(AbstractesDriveAccessDing):
         file = self.drive_adapter.download_file(image["id"], image["name"])
         creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_)
         artifact = creator.create_artifact()
-        self.drive.files.connect(artifact, {"gdrive_file_id": image['id']})
+        self.drive.files.connect(artifact, {"gdrive_file_id": image["id"]})
         self.drive_adapter.add_properties_to_file(image["id"], elija_id=artifact.id_)

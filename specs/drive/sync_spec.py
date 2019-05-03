@@ -51,7 +51,7 @@ with description("drive") as self:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_no_changes.json")
                     sync = Sync(self.drive, http)
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("doesn't change anything"):
                 expect(len(self.drive.files.all())).to(equal(0))
@@ -63,7 +63,7 @@ with description("drive") as self:
                     mock_array.append(({"status": 200}, file_content("specs/fixtures/drive/meh.png")))
                     http = HttpMockSequence(mock_array)
                     sync = Sync(self.drive, http)
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("has an artifact connected"):
                 team_artifacts = self.drive.owner.single().teams.single().artifacts.all()
@@ -75,7 +75,7 @@ with description("drive") as self:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_new_file_wrong_format.json")
                     sync = Sync(self.drive, http)
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("doesn't downnload the file"):
                 expect(len(self.drive.files.all())).to(equal(0))
@@ -85,7 +85,7 @@ with description("drive") as self:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_new_file_incorrect_folder.json")
                     sync = Sync(self.drive, http)
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("doesn't downnload the file"):
                 expect(len(self.drive.files.all())).to(equal(0))
@@ -102,7 +102,7 @@ with description("drive") as self:
                     )
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
-                    sync.sync_from_drive()
+                    sync.sync_drive()
                     fp.close()
 
             with it("deletes connected artifact"):
@@ -120,7 +120,7 @@ with description("drive") as self:
                     )
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("doesn't delete anything"):
                 expect(len(self.drive.files.all())).to(equal(1))
@@ -137,7 +137,7 @@ with description("drive") as self:
                     )
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
-                    sync.sync_from_drive()
+                    sync.sync_drive()
 
             with it("doesn't delete anything"):
                 expect(len(self.drive.files.all())).to(equal(1))

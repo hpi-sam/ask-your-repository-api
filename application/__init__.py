@@ -18,7 +18,6 @@ from .debug_scripts import add_debug_scripts
 from .background import add_background_jobs
 from .extensions import socketio, bcrypt, mail
 from .routes import create_routes
-import asyncio
 
 
 async def print_something():

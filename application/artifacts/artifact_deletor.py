@@ -1,7 +1,4 @@
 from .elastic.elastic_syncer import ElasticSyncer
-from application.teams.placeholder_drives.sync.uploader import DriveUploader
-from httplib2 import ServerNotFoundError
-from flask import current_app
 
 
 class ArtifactDeletor:

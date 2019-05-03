@@ -17,7 +17,9 @@ class DriveAdapter:
             return build("drive", "v3", credentials=credentials)
 
     def list_images(self, drive_id):
-        result = self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'", fields="*").execute()
+        result = (
+            self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'", fields="*").execute()
+        )
         return result.get("files")
 
     def download_file(self, file_id, filename):
