@@ -17,7 +17,7 @@ class DriveAdapter:
             return build("drive", "v3", credentials=credentials)
 
     def list_images(self, drive_id):
-        result = self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'").execute()
+        result = self.service.files().list(q=f"mimeType contains 'image' and parents='{drive_id}'", fields="*").execute()
         return result.get("files")
 
     def download_file(self, file_id, filename):
@@ -46,6 +46,10 @@ class DriveAdapter:
         media = MediaFileUpload(f"uploads/{filename}", mimetype=mime_type)
         file = self.service.files().create(body=file_metadata, media_body=media, fields="id").execute()
         return file["id"]
+
+    def add_properties_to_file(self, file_id, **properties):
+        file_metadata = {"appProperties": properties}
+        self.service.files().update(fileId=file_id, body=file_metadata).execute()
 
     def delete_file(self, drive_file_id):
         try:

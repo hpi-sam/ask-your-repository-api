@@ -1,6 +1,5 @@
 from application.artifacts.artifact_creation import ArtifactCreator
 from application.teams.placeholder_drives.sync.abstraktes_drive_dingens import AbstractesDriveAccessDing
-from application.artifacts.artifact import Artifact
 
 
 class DriveDownloader(AbstractesDriveAccessDing):
@@ -26,7 +25,8 @@ class DriveDownloader(AbstractesDriveAccessDing):
         Download all images from google drive and save them as artifacts.
         """
         for image in self.images_in_drive():
-            self._download_image(image)
+            if not image['trashed']:
+                self._download_image(image)
 
     def delete_artifact_by(self, gdrive_id):
         """
@@ -59,16 +59,59 @@ class DriveDownloader(AbstractesDriveAccessDing):
         Handle a single google drive change
         :param change: a google drive api change response as dict
         """
-        if change.get("removed"):
+        print(f"Handling change {change}")
+        if self.change_should_be_trashed(change):
+            print("This change should be trashed")
             self.delete_artifact_by(change.get("fileId"))
-        if change.get("file") is not None:
-            if self.drive.drive_id in change.get("file").get("parents", []):
-                if change.get("file").get("trashed"):
-                    self.delete_artifact_by(change.get("fileId"))
-                else:
-                    if not self.drive.find_artifact_by(change.get("fileId"), force=False):
-                        if "image" in change.get("file").get("mimeType"):
-                            self._download_image(change.get("file"))
+        elif self.change_should_be_downloaded(change):
+            print("This should be downloaded")
+            self._download_image(change.get("file"))
+        else:
+            pass
+
+    def change_should_be_downloaded(self, change):
+        if (self.change_contains_file(change) and
+            self.file_should_be_downloaded(change.get("file"))):
+            return True
+        else:
+            return False
+
+    def file_should_be_downloaded(self, file):
+        print(f"Checking if file should be downloaded {file}")
+        if (self.file_is_image(file) and
+            self.file_is_in_folder(file) and not
+            self.file_is_downloaded(file)):
+            return True
+        else:
+            return False
+
+    def change_should_be_trashed(self, change):
+        if change.get("removed"):
+            return True
+        elif (self.change_contains_file(change) and
+              self.file_is_in_folder(change.get("file")) and
+              self.file_is_trashed(change.get("file"))):
+            return True
+        else:
+            return False
+
+    def file_is_in_folder(self, file):
+        return self.drive.drive_id in file.get("parents")
+
+    def file_is_image(self, file):
+        return "image" in file.get("mimeType")
+
+    def file_is_downloaded(self, file):
+        if self.drive.find_artifact_by(file.get('id'), force=False):
+            return True
+        else:
+            return False
+
+    def file_is_trashed(self, file):
+        return file.get("trashed")
+
+    def change_contains_file(self, change):
+        return change.get("file") is not None
 
     def _download_image(self, image):
         """
@@ -76,5 +119,7 @@ class DriveDownloader(AbstractesDriveAccessDing):
         :param image: a dict containing a google drive api image object
         """
         file = self.drive_adapter.download_file(image["id"], image["name"])
-        creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_, drive_file_id=image["id"])
+        creator = ArtifactCreator(file, owner_id=self.owner.id_, team_id=self.team.id_)
         artifact = creator.create_artifact()
+        self.drive.files.connect(artifact, {"gdrive_file_id": image['id']})
+        self.drive_adapter.add_properties_to_file(image["id"], elija_id=artifact.id_)

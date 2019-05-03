@@ -38,7 +38,7 @@ class Sync:
             if not self.downloader.is_sync_initialized():
                 self.initialize_sync()
             self.downloader.sync_by_remote_changes()
-            self.uploader.upload_all_missing()
+            self.uploader.sync_to_drive()
         except Exception as e:
             print(e)
             print(type(e))
