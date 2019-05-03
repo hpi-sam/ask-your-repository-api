@@ -1,9 +1,9 @@
 from neomodel import NodeSet
 
-from application.teams.drives.sync.abstraktes_drive_dingens import AbstractesDriveAccessDing
+from application.teams.drives.sync.abstraktes_drive_dingens import DriveAccessible
 
 
-class DriveUploader(AbstractesDriveAccessDing):
+class DriveUploader(DriveAccessible):
     def sync_to_drive(self):
         self.upload_all_missing()
         self.delete_all_deleted()

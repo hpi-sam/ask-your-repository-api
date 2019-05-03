@@ -4,7 +4,7 @@ from application.teams.drives.sync.adapter import DriveAdapter
 from application.users.oauth.google_oauth import credentials_from_dict
 
 
-class AbstractesDriveAccessDing(ABC):
+class DriveAccessible(ABC):
     def __init__(self, drive, http=None):
         self.drive = drive
         self.team = drive.team.single()
