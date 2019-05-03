@@ -1,8 +1,8 @@
 from flask.cli import AppGroup
-from application.teams.placeholder_drives.drive import Drive
+from application.teams.drives.drive import Drive
 
 # from application.teams.placeholder_drives.sync.uploader import DriveUploader
-from application.teams.placeholder_drives.sync.downloader import DriveDownloader
+from application.teams.drives.sync.downloader import DriveDownloader
 
 # from application.teams.placeholder_drives.sync.sync import Sync
 

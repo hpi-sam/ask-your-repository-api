@@ -1,5 +1,5 @@
 from application.artifacts.artifact_creation import ArtifactCreator
-from application.teams.placeholder_drives.sync.abstraktes_drive_dingens import AbstractesDriveAccessDing
+from application.teams.drives.sync.abstraktes_drive_dingens import AbstractesDriveAccessDing
 
 
 class DriveDownloader(AbstractesDriveAccessDing):

@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from .teams.placeholder_drives.drive import Drive
+from .teams.drives.drive import Drive
 
 
 def add_background_jobs(app):

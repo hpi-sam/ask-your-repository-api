@@ -1,6 +1,6 @@
 from abc import ABC
 
-from application.teams.placeholder_drives.sync.adapter import DriveAdapter
+from application.teams.drives.sync.adapter import DriveAdapter
 from application.users.oauth.google_oauth import credentials_from_dict
 
 

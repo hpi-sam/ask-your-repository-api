@@ -2,7 +2,7 @@
 from flask import Blueprint
 
 from .teams_view import TeamView, TeamsView
-from application.teams.placeholder_drives.drive_view import DrivesView, DriveView
+from application.teams.drives.drive_view import DrivesView, DriveView
 
 TEAMS = Blueprint("teams", __name__)
 TEAMS.add_url_rule("", view_func=TeamsView.as_view("teamsview"))

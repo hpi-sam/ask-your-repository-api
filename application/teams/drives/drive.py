@@ -5,9 +5,9 @@ from neomodel.exceptions import MultipleNodesReturned
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
-from application.teams.placeholder_drives.contains_rel import ContainsRel
-from application.teams.placeholder_drives.sync.sync import Sync
-from application.teams.placeholder_drives.sync.uploader import DriveUploader
+from application.teams.drives.contains_rel import ContainsRel
+from application.teams.drives.sync.sync import Sync
+from application.teams.drives.sync.uploader import DriveUploader
 from httplib2 import ServerNotFoundError
 from flask import current_app
 

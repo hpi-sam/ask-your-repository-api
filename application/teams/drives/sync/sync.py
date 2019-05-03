@@ -1,7 +1,7 @@
 import json
 
-from application.teams.placeholder_drives.sync.downloader import DriveDownloader
-from application.teams.placeholder_drives.sync.uploader import DriveUploader
+from application.teams.drives.sync.downloader import DriveDownloader
+from application.teams.drives.sync.uploader import DriveUploader
 
 
 def print_to_file(file_name, response):
