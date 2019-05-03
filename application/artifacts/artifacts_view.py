@@ -2,10 +2,8 @@
 Handles all logic of the artifacts api
 """
 import logging
-import os
-from pathlib import Path
 
-from flask import current_app, abort
+from flask import abort
 from flask_apispec import MethodResource, use_kwargs, marshal_with
 from flask_jwt_extended import jwt_optional, get_jwt_identity, jwt_required
 from flask_socketio import emit
@@ -111,16 +109,10 @@ class ArtifactView(MethodResource):
         """Logic for deleting an artifact"""
         try:
             artifact = Artifact.find_by(id_=params["id"])
-            filename_without_ext = os.path.splitext(artifact.file_url)[0]
-            self._delete_files_starting_with(filename_without_ext)
             artifact.delete()
             return no_content()
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")
-
-    def _delete_files_starting_with(self, start_string):
-        for p in Path(current_app.config["UPLOAD_FOLDER"]).glob(f"{start_string}*"):
-            p.unlink()
 
 
 class ArtifactsView(MethodResource):
