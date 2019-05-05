@@ -38,15 +38,11 @@ with description("drive") as self:
     with after.each:
         db.cypher_query("MATCH (a) DETACH DELETE a")
 
-    # generating discovery file:
-    #        with open("drive-discovery.json", "w") as f:
-    #            f.write(_retrieve_discovery_doc("https://www.googleapis.com/discovery/v1/apis/drive/v3/rest", build_http(), cache_discovery=False))
-
     with description("Syncing drive changes"):
         with before.each:
             self.drive = DriveFactory.create_drive()
 
-        with description("Change: nothing changed"):
+        with description("Remote Change: nothing changed"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_no_changes.json")
@@ -56,7 +52,7 @@ with description("drive") as self:
             with it("doesn't change anything"):
                 expect(len(self.drive.files.all())).to(equal(0))
 
-        with description("Change: new image in correct folder"):
+        with description("Remote Change: new image in correct folder"):
             with before.each:
                 with mock_image_recognition:
                     mock_array = build_http_mock_array_for_change("changes_response_new_file_correct_folder.json")
@@ -70,7 +66,7 @@ with description("drive") as self:
                 expect(len(self.drive.files.all())).to(equal(1))
                 expect(team_artifacts).to(equal(self.drive.files.all()))
 
-        with description("Change: new file wrong format"):
+        with description("Remote Change: new file wrong format"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_new_file_wrong_format.json")
@@ -80,7 +76,7 @@ with description("drive") as self:
             with it("doesn't downnload the file"):
                 expect(len(self.drive.files.all())).to(equal(0))
 
-        with description("Change: new file incorrect folder"):
+        with description("Remote Change: new file incorrect folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_new_file_incorrect_folder.json")
@@ -90,7 +86,7 @@ with description("drive") as self:
             with it("doesn't downnload the file"):
                 expect(len(self.drive.files.all())).to(equal(0))
 
-        with description("Change: deleted file correct folder"):
+        with description("Remote Change: deleted file correct folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_correct_folder.json")
@@ -106,7 +102,7 @@ with description("drive") as self:
             with it("deletes connected artifact"):
                 expect(len(self.drive.files.all())).to(equal(0))
 
-        with description("Change: deleted file incorrect folder"):
+        with description("Remote Change: deleted file incorrect folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_wrong_format.json")
@@ -121,7 +117,7 @@ with description("drive") as self:
             with it("doesn't delete anything"):
                 expect(len(self.drive.files.all())).to(equal(1))
 
-        with description("Change: deleted file wrong format"):
+        with description("Remote Change: deleted file wrong format"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_deleted_file_wrong_folder.json")
@@ -136,18 +132,8 @@ with description("drive") as self:
             with it("doesn't delete anything"):
                 expect(len(self.drive.files.all())).to(equal(1))
 
-    # with it("Downloads a new image"):
-    # with open("drive-discovery.json", "w") as f:
-    #        f.write(_retrieve_discovery_doc("https://www.googleapis.com/discovery/v1/apis/drive/v3/rest", build_http(), cache_discovery=False))
+        with description("Local Change: created artifact"):
+            pass
 
-    """
-        sync to drive changes:
-            # downloads new images
-            # deletes deleted images
-            # initializes sync if no sync started yet
-
-        uploads changes:
-            # Creating by artifact uploads file to google drive with correct name
-            # Deleting af file by id deletes it on google drive and disconnects artifact
-
-    """
+        with description("Local Change: deleted artifact"):
+            pass
