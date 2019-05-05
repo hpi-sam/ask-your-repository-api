@@ -18,7 +18,7 @@ class DrivesView(MethodResource):
         drive = Drive(drive_id=params.get("drive_id")).save()
         try:
             team = Team.find_by(id_=params.get("team_id"))
-            team.drive.connect(drive)
+            team.drive_rel.connect(drive)
             team.save()
         except AttemptedCardinalityViolation:
             abort(409, "Team already has drive connected")

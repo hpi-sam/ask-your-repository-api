@@ -8,14 +8,14 @@ class DriveFactory:
     def create_drive(cls, user=None, team=None):
         drive = Drive(drive_id="1HTeLgrLX3L3QvvTd7Q6f9Sbaalvq4HU0").save()
         if user:
-            drive.owner.connect(user)
+            drive.owner_rel.connect(user)
         else:
             user = GoogleOAuthFactory.create_user_with_google(credentials=google_credentials)
-            drive.owner.connect(user)
+            drive.owner_rel.connect(user)
         if team:
-            drive.team.connect(team)
+            drive.team_rel.connect(team)
         else:
             team = TeamFactory.create_team(members=[user])
-            drive.team.connect(team)
+            drive.team_rel.connect(team)
         drive.save()
         return drive

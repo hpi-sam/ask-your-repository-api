@@ -1,5 +1,5 @@
 from application.artifacts.artifact_creation import ArtifactCreator
-from application.teams.drives.sync.abstraktes_drive_dingens import DriveAccessible
+from application.teams.drives.sync.drive_accessible import DriveAccessible
 
 
 class DriveDownloader(DriveAccessible):
@@ -35,10 +35,10 @@ class DriveDownloader(DriveAccessible):
         """
         try:
             self.drive.find_artifact_by(gdrive_id).delete()
-        except Exception as e:
-            print(e)
-            print(type(e))
-            print("Artifact not Found, askyourcloud and google drive out of sync.")
+        except Exception:
+            pass
+            # This can happen as google drive handles trashing and removing separately.
+            # So the delete action might be executed twice.
 
     def _update_page_token(self):
         self.drive.page_token = self.drive_adapter.start_page_token()
@@ -95,7 +95,7 @@ class DriveDownloader(DriveAccessible):
             return False
 
     def file_is_in_folder(self, file):
-        return self.drive.drive_id in file.get("parents")
+        return self.drive.drive_id in file.get("parents", [])
 
     def file_is_image(self, file):
         return "image" in file.get("mimeType")

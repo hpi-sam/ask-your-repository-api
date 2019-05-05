@@ -66,7 +66,7 @@ with description("drive") as self:
                     sync.sync_drive()
 
             with it("has an artifact connected"):
-                team_artifacts = self.drive.owner.single().teams.single().artifacts.all()
+                team_artifacts = self.drive.owner.teams.single().artifacts.all()
                 expect(len(self.drive.files.all())).to(equal(1))
                 expect(team_artifacts).to(equal(self.drive.files.all()))
 
@@ -97,9 +97,7 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     fp = open("specs/fixtures/drive/meh.png", "rb")
                     file = FileStorage(fp)
-                    creator = ArtifactCreator(
-                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
-                    )
+                    creator = ArtifactCreator(file, owner_id=self.drive.owner.id_, team_id=self.drive.team.id_)
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_drive()
@@ -115,9 +113,7 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     fp = open("specs/fixtures/drive/meh.png", "rb")
                     file = FileStorage(fp)
-                    creator = ArtifactCreator(
-                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
-                    )
+                    creator = ArtifactCreator(file, owner_id=self.drive.owner.id_, team_id=self.drive.team.id_)
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_drive()
@@ -132,9 +128,7 @@ with description("drive") as self:
                     sync = Sync(self.drive, http)
                     fp = open("specs/fixtures/drive/meh.png", "rb")
                     file = FileStorage(fp)
-                    creator = ArtifactCreator(
-                        file, owner_id=self.drive.owner.single().id_, team_id=self.drive.team.single().id_
-                    )
+                    creator = ArtifactCreator(file, owner_id=self.drive.owner.id_, team_id=self.drive.team.id_)
                     artifact = creator.create_artifact()
                     self.drive.files.connect(artifact, {"gdrive_file_id": "1Zupn6mY84l4WnNSyKimgUUW1T9CfKmzB"})
                     sync.sync_drive()

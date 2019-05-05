@@ -15,7 +15,6 @@ class ElasticSyncer:
         cls._elastic().delete_index()
         cls.sync_everything()
 
-
     @classmethod
     def sync_enabled(cls):
         """Check if synchonization is enabled"""
