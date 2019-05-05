@@ -1,20 +1,14 @@
 from flask.cli import AppGroup
-from application.teams.drives.drive import Drive
-
-# from application.teams.placeholder_drives.sync.uploader import DriveUploader
-from application.teams.drives.sync.downloader import DriveDownloader
-
-# from application.teams.placeholder_drives.sync.sync import Sync
 
 
 debug_cli = AppGroup("debug")
 
 
-@debug_cli.command("debug1")
+@debug_cli.command("something")
 def something():
-    drive = Drive.all()[0]
-    drive.page_token = None
-    DriveDownloader(drive)._initialize_start_page_token()
+    pass
+    # Whatever you want to execute, put your code here and call "poetry run flask debug something".
+    # It's like flask shell but loads from a file :P
 
 
 def add_debug_scripts(app):
