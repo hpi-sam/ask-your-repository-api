@@ -13,8 +13,7 @@ from specs.spec_helpers import Context
 
 
 def file_content(path):
-    asdf = open(path, "rb").read()
-    return asdf
+    return open(path, "rb").read()
 
 
 def build_http_mock_array_for_change(change_file):
@@ -27,8 +26,13 @@ def build_http_mock_array_for_change(change_file):
     return http
 
 
+def add_images_list_to_mock_array(array):
+    array.append(({"status": 200}, file_content("specs/fixtures/drive/list_images_response.json")))
+    return array
+
+
 def build_http_mock_for_change(change_file):
-    return HttpMockSequence(build_http_mock_array_for_change(change_file))
+    return HttpMockSequence(add_images_list_to_mock_array(build_http_mock_array_for_change(change_file)))
 
 
 with description("drive") as self:
@@ -57,6 +61,8 @@ with description("drive") as self:
                 with mock_image_recognition:
                     mock_array = build_http_mock_array_for_change("changes_response_new_file_correct_folder.json")
                     mock_array.append(({"status": 200}, file_content("specs/fixtures/drive/meh.png")))
+                    mock_array.append(({"status": 200}, "{}"))
+                    add_images_list_to_mock_array(mock_array)
                     http = HttpMockSequence(mock_array)
                     sync = Sync(self.drive, http)
                     sync.sync_drive()
@@ -76,7 +82,7 @@ with description("drive") as self:
             with it("doesn't downnload the file"):
                 expect(len(self.drive.files.all())).to(equal(0))
 
-        with description("Remote Change: new file incorrect folder"):
+        with description("Remote Change: new file in incorrect folder"):
             with before.each:
                 with mock_image_recognition:
                     http = build_http_mock_for_change("changes_response_new_file_incorrect_folder.json")

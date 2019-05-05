@@ -59,12 +59,9 @@ class DriveDownloader(DriveAccessible):
         Handle a single google drive change
         :param change: a google drive api change response as dict
         """
-        print(f"Handling change {change}")
         if self.change_should_be_trashed(change):
-            print("This change should be trashed")
             self.delete_artifact_by(change.get("fileId"))
         elif self.change_should_be_downloaded(change):
-            print("This should be downloaded")
             self._download_image(change.get("file"))
         else:
             pass
@@ -76,7 +73,6 @@ class DriveDownloader(DriveAccessible):
             return False
 
     def file_should_be_downloaded(self, file):
-        print(f"Checking if file should be downloaded {file}")
         if self.file_is_image(file) and self.file_is_in_folder(file) and not self.file_is_downloaded(file):
             return True
         else:

@@ -68,9 +68,6 @@ class TeamsView(MethodResource):
         """Logic for querying several teams"""
         user = User.find_by(id_=get_jwt_identity())
         teams = list(user.teams)
-        for team in teams:
-            print(team.drive)
-            print(team.members)
         return teams
 
     @jwt_required
