@@ -25,10 +25,8 @@ class DriveUploader(DriveAccessible):
             self.drive_adapter.add_properties_to_file(id, elija_id=artifact.id_)
 
     def delete_all_deleted(self):
-        print("Trying to delete images")
         for image in self.drive_adapter.list_images(self.drive.drive_id):
             if self.image_should_be_deleted(image):
-                print(f"Found image to be deleted: {image}")
                 self.drive_adapter.delete_file(image["id"])
 
     def image_should_be_deleted(self, file):

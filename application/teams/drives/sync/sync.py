@@ -1,12 +1,5 @@
-import json
-
 from application.teams.drives.sync.downloader import DriveDownloader
 from application.teams.drives.sync.uploader import DriveUploader
-
-
-def print_to_file(file_name, response):
-    with open(f"{file_name}", "w") as fe:
-        fe.write(json.dumps(response))
 
 
 class Sync:
