@@ -1,6 +1,6 @@
 from neomodel import NodeSet
 
-from application.teams.drives.sync.abstraktes_drive_dingens import DriveAccessible
+from application.teams.drives.sync.drive_accessible import DriveAccessible
 
 
 class DriveUploader(DriveAccessible):
@@ -13,7 +13,7 @@ class DriveUploader(DriveAccessible):
         Uploads all missing artifacts to google drive.
         :return: None
         """
-        artifacts = NodeSet(self.drive.team.single().artifacts._new_traversal()).has(drive_folder=False)
+        artifacts = NodeSet(self.drive.team.artifacts._new_traversal()).has(drive_folder=False)
         # The manual conversion to NodeSet is needed as .artifacts returns a RelationshipManager.
         # This Manager is not to 100% compatible to the NodeSet interface so to
         # support "has()" we need to convert manually. #PullRequestPlz
@@ -45,30 +45,10 @@ class DriveUploader(DriveAccessible):
         return False
 
     def file_is_in_folder(self, file):
-        return self.drive.drive_id in file.get("parents")
+        return self.drive.drive_id in file.get("parents", [])
 
     def file_is_downloaded(self, file):
         if self.drive.find_artifact_by(file.get("id"), force=False):
             return True
         else:
             return False
-
-    def _delete_all_files(self):
-        """
-        Deletes all files in google drive.
-        """
-        artifacts = self.drive.files
-        for artifact in artifacts:
-            self.delete_file_by(artifact)
-
-    def delete_file_by(self, artifact):
-        """
-        Delete a file in google drive by artifact object
-        :param artifact: the artifact object to delete in google drive
-        """
-        rel = self.drive.files.relationship(artifact)
-        self.drive_adapter.delete_file(rel.gdrive_file_id)
-        self.drive.files.disconnect(artifact)
-
-    def delete_file_by_id(self, gdrive_file_id):
-        self.drive_adapter.delete_file(gdrive_file_id)

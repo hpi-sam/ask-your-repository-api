@@ -5,6 +5,7 @@ from application.users.user_schema import USERS_SCHEMA
 from application.base_schema import BaseSchema, output_decorator
 from .drives.drive_schema import DRIVE_SCHEMA
 
+
 class TeamSchema(BaseSchema):
     """Schema for importing and exporting Team objects"""
 
@@ -12,7 +13,7 @@ class TeamSchema(BaseSchema):
     name = fields.String()
     join_key = fields.String()
     members = fields.Nested(USERS_SCHEMA, many=True)
-    drive = fields.Nested(DRIVE_SCHEMA)
+    drive_folder = fields.Nested(DRIVE_SCHEMA)
 
     @output_decorator
     def transform_fields(self, data):

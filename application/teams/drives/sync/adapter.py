@@ -5,6 +5,13 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 from werkzeug.datastructures import FileStorage
 
+import json
+
+
+def print_to_file(file_name, response):
+    with open(f"{file_name}", "w") as fe:
+        fe.write(json.dumps(response))
+
 
 class DriveAdapter:
     def __init__(self, credentials, http=None):
@@ -47,11 +54,13 @@ class DriveAdapter:
         mime_type = mime.from_file(filepath)
         media = MediaFileUpload(f"uploads/{filename}", mimetype=mime_type)
         file = self.service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+        print_to_file(f"upload_{filename}.json", file)
         return file["id"]
 
     def add_properties_to_file(self, file_id, **properties):
         file_metadata = {"appProperties": properties}
-        self.service.files().update(fileId=file_id, body=file_metadata).execute()
+        response = self.service.files().update(fileId=file_id, body=file_metadata).execute()
+        print_to_file(f"update_{file_id}.json", response)
 
     def delete_file(self, drive_file_id):
         try:

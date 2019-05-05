@@ -3,13 +3,9 @@ from neomodel import StructuredNode, StringProperty, cardinality, RelationshipFr
 from neomodel.exceptions import MultipleNodesReturned
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
-
 # import application.artifacts.artifact.Artifact.DoesNotExist as ArtifactDoesNotExist
 from application.teams.drives.contains_rel import ContainsRel
 from application.teams.drives.sync.sync import Sync
-from application.teams.drives.sync.uploader import DriveUploader
-from httplib2 import ServerNotFoundError
-from flask import current_app
 
 
 class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint:disable=abstract-method
@@ -19,11 +15,19 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
     page_token = StringProperty()
     is_syncing = BooleanProperty(default=False)
 
-    team = RelationshipFrom("application.models.Team", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
-    owner = RelationshipFrom("application.models.User", "OWNS", cardinality=cardinality.ZeroOrOne)
+    team_rel = RelationshipFrom("application.models.Team", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
+    owner_rel = RelationshipFrom("application.models.User", "OWNS", cardinality=cardinality.ZeroOrOne)
     files = RelationshipTo(
         "application.models.Artifact", "CONTAINS", model=ContainsRel, cardinality=cardinality.ZeroOrMore
     )
+
+    @property
+    def team(self):
+        return self.team_rel.single()
+
+    @property
+    def owner(self):
+        return self.owner_rel.single()
 
     def find_artifact_by(self, gdrive_file_id, force=True):
         results = self.files.match(gdrive_file_id=gdrive_file_id)
@@ -35,15 +39,6 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
             else:
                 return None
         return results[0]
-
-    def delete_if_necessary(self, artifact):
-        def send_delete_request():
-            try:
-                DriveUploader(self).delete_file_by(artifact)
-            except ServerNotFoundError:
-                print("Connection to google drive failed")
-
-        current_app.sync_scheduler.add_job(send_delete_request())
 
     @classmethod
     def sync_all(cls):

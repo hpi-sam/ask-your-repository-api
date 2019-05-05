@@ -4,7 +4,6 @@ import string
 from neomodel import StructuredNode, StringProperty, RelationshipTo, cardinality
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
-from application.teams.team_schema import TeamSchema
 
 
 def generate_join_key():
@@ -18,10 +17,13 @@ def generate_join_key():
 class Team(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     """The class that manages Teams"""
 
-    schema = TeamSchema
     name = StringProperty(required=True)
     join_key = StringProperty(required=False, unique_index=True, default=generate_join_key)
 
     artifacts = RelationshipTo("application.models.Artifact", "UPLOADED", cardinality=cardinality.ZeroOrMore)
     members = RelationshipTo("application.models.User", "HAS_MEMBER", cardinality=cardinality.ZeroOrMore)
-    drive = RelationshipTo("application.models.Drive", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
+    drive_rel = RelationshipTo("application.models.Drive", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
+
+    @property
+    def drive(self):
+        return self.drive_rel.single()
