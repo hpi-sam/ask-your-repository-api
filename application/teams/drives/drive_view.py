@@ -21,6 +21,7 @@ class DrivesView(MethodResource):
             team.drive_rel.connect(drive)
             team.save()
         except AttemptedCardinalityViolation:
+            drive.delete()
             abort(409, "Team already has drive connected")
         drive.owner.connect(User.find_by(id_=get_jwt_identity()))
         drive.save()
