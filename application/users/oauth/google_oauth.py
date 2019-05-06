@@ -113,4 +113,6 @@ class GoogleOAuth(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
         if not revoke.status_code == 200:
             raise RequestError
         self.credentials = None
+        for drive in self.user.drives:
+            drive.delete()
         self.save()
