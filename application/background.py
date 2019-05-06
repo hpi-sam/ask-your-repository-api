@@ -15,7 +15,7 @@ def add_background_jobs(app):
             Drive.sync_all()
             print("done")
 
-    sync_scheduler.add_job(sync_with_context, "interval", seconds=5)
+    sync_scheduler.add_job(sync_with_context, "interval", seconds=30)
     if app.config["START_DRIVE_SYNC_WORKER"]:
         sync_scheduler.start()
     app.sync_scheduler = sync_scheduler
