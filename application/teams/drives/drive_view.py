@@ -15,19 +15,19 @@ class DrivesView(MethodResource):
     @use_kwargs(create_args())
     @marshal_with(DriveSchema)
     def post(self, **params):
-        current_user = User.find_by(id_=get_jwt_identity())
+        current_user = User.find(get_jwt_identity())
         if (not current_user.google) or (not current_user.google.has_offline_access):
             abort(403, "No google account connected")
         team_id = params.pop("team_id")
         drive = Drive(**params).save()
         try:
-            team = Team.find_by(id_=team_id)
+            team = Team.find(team_id)
             team.drive_rel.connect(drive)
             team.save()
         except AttemptedCardinalityViolation:
             drive.delete()
             abort(409, "Team already has drive connected")
-        drive.owner_rel.connect(User.find_by(id_=get_jwt_identity()))
+        drive.owner_rel.connect(User.find(get_jwt_identity()))
         drive.save()
         return drive
 
