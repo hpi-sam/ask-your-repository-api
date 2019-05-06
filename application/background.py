@@ -4,7 +4,7 @@ from .teams.drives.drive import Drive
 
 
 def add_background_jobs(app):
-    sync_scheduler = BackgroundScheduler(deamon=False)
+    sync_scheduler = BackgroundScheduler(deamon=False, timezone="Europe/Berlin")
 
     for drive in Drive.all():
         drive.update(is_syncing=False)
