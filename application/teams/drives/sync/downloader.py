@@ -1,5 +1,5 @@
 from application.artifacts.artifact_creation import ArtifactCreator
-from application.teams.drives.sync.drive_accessible import DriveAccessible
+from .drive_accessible import DriveAccessible
 
 
 class DriveDownloader(DriveAccessible):
