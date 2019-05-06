@@ -59,6 +59,7 @@ def register_error_handlers(app):
             return jsonify({"errors": messages}), err.code, headers
         return jsonify({"errors": messages}), err.code
 
+    @app.errorhandler(403)
     @app.errorhandler(404)
     @app.errorhandler(409)
     @app.errorhandler(502)

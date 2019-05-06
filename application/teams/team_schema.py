@@ -13,7 +13,7 @@ class TeamSchema(BaseSchema):
     name = fields.String()
     join_key = fields.String()
     members = fields.Nested(USERS_SCHEMA, many=True)
-    drive_folder = fields.Nested(DRIVE_SCHEMA)
+    drive = fields.Nested(DRIVE_SCHEMA)
 
     @output_decorator
     def transform_fields(self, data):
