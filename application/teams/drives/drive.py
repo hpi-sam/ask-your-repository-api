@@ -15,6 +15,8 @@ class Drive(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):  # pylint
     drive_id = StringProperty(required=True)
     page_token = StringProperty()
     is_syncing = BooleanProperty(default=False)
+    url = StringProperty()
+    name = StringProperty()
 
     team_rel = RelationshipFrom("application.models.Team", "SYNCED_TO", cardinality=cardinality.ZeroOrOne)
     owner_rel = RelationshipFrom("application.models.User", "OWNS", cardinality=cardinality.ZeroOrOne)
