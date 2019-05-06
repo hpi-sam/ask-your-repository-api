@@ -34,6 +34,7 @@ jobs:
       - run: docker-compose pull jona
       - run: docker-compose build elija
       - run: docker-compose up -d
+      - run: docker-compose logs elija
       - run: docker-compose exec jona dockerize -wait http://elija:5000 -timeout 1m
       - run: docker-compose exec jona yarn cypress run
        # push elija image
