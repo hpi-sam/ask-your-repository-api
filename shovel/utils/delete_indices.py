@@ -15,4 +15,4 @@ def delete_indices():
 
 if __name__ == "__main__":
     delete_indices()
-    print("rofl success")
+    print("rofl success")  # noqa
