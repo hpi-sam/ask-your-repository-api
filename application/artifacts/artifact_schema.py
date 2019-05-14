@@ -3,6 +3,7 @@ from flask import current_app
 from marshmallow import post_dump, fields
 
 from application.artifacts.tags.tag_schema import TagSchema
+from application.artifacts.tags.label_tag_schema import LabelTagSchema
 from application.users.user_schema import UserSchema
 from application.base_schema import BaseSchema, output_decorator
 
@@ -17,7 +18,7 @@ class ArtifactSchema(BaseSchema):
     team_id = fields.String(missing=None)
     author = fields.Nested(UserSchema, only=["username"], missing=None)
     tags = fields.Nested(TagSchema, many=True, only="name")
-    label_tags = fields.Nested(TagSchema, many=True, only="name")
+    labeled_with = fields.Nested(LabelTagSchema, many=True)
     user_tags = fields.Nested(TagSchema, many=True, only="name")
     text_tags = fields.Nested(TagSchema, many=True, only="name")
     file_date = fields.DateTime(missing=None)

@@ -9,6 +9,12 @@ def get_args():
     """Defines and validates params for show"""
     return {"id": fields.UUID(required=True, location="view_args")}
 
+def related_args():
+    """Defines and validates params for show"""
+    return {
+        "id": fields.UUID(required=True, location="view_args"),
+        "limit": fields.Integer(missing=5),
+    }
 
 def search_args():
     """Defines and validates params for index"""

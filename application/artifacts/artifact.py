@@ -6,6 +6,7 @@ from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
 from application.artifacts.elastic import ElasticSyncer
 from application.teams.drives.contains_rel import ContainsRel
+from application.artifacts.tags.labeled_with_rel import LabeledWithRel
 from .artifact_deletor import ArtifactDeletor
 
 
@@ -17,7 +18,9 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     file_date = DateTimeProperty()
 
     user_tags = RelationshipTo("application.models.Tag", "TAGGED_WITH", cardinality=cardinality.ZeroOrMore)
-    label_tags = RelationshipTo("application.models.Tag", "LABELED_WITH", cardinality=cardinality.ZeroOrMore)
+    label_tags = RelationshipTo(
+        "application.models.Tag", "LABELED_WITH", cardinality=cardinality.ZeroOrMore, model=LabeledWithRel
+    )
     text_tags = RelationshipTo("application.models.Tag", "CONTAINS_TEXT", cardinality=cardinality.ZeroOrMore)
     team = RelationshipFrom("application.models.Team", "UPLOADED", cardinality=cardinality.ZeroOrOne)
     user = RelationshipTo("application.models.User", "CREATED_BY", cardinality=cardinality.ZeroOrOne)
@@ -36,6 +39,17 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
         """Returns this artifacts teams id"""
         team = self.team.single()  # pylint:disable=no-member
         return team.id_ if team else None
+
+    @property
+    def labeled_with(self):
+        new_label_tags = []
+        for tag in self.label_tags:
+            rel = self.label_tags.relationship(tag)
+            new_label_tags.append({
+                "name": tag.name,
+                "confidence": rel.score,
+            })
+        return new_label_tags
 
     @property
     def author(self):

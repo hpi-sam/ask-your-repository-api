@@ -7,6 +7,7 @@ from eventlet import spawn_n
 from flask import copy_current_request_context, has_request_context
 from flask import current_app
 
+from application.artifacts.tags.tag import Tag
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.artifact_schema import ArtifactSchema
 
@@ -77,7 +78,11 @@ class ImageRecognizer:
             if "labelAnnotations" in res_one:
                 labels = res_one["labelAnnotations"]
                 for label in labels:
-                    label_annotations.append(label["description"])
+                    label_annotations.append({
+                        "tag": label["description"],
+                        "score": label["score"],
+                        "topicality": label["topicality"],
+                    })
             if "textAnnotations" in res_one:
                 texts = res_one["textAnnotations"]
                 for text in texts:
@@ -88,4 +93,11 @@ class ImageRecognizer:
     def add_tags_artifact(cls, artifact, label_annotations, text_annotations):
         """Adds annotations to an artifact"""
         builder = ArtifactConnector.for_artifact(artifact)
-        builder.update_with(override_tags=False, label_tags=label_annotations, text_tags=text_annotations)
+        builder.update_with(override_tags=False, text_tags=text_annotations)
+
+        for label_annotation in label_annotations:
+            created_tag = Tag.find_or_create_by(name=label_annotation["tag"])
+            artifact.label_tags.connect(created_tag, {
+                "score": label_annotation["score"],
+                "topicality": label_annotation["topicality"],
+            })
