@@ -1,5 +1,8 @@
 """Image Recognition"""
 import requests
+import base64
+import os
+import json
 from eventlet import spawn_n
 from flask import copy_current_request_context, has_request_context
 from flask import current_app
@@ -37,26 +40,29 @@ class ImageRecognizer:
         """Does API call to could vision api and returns the response body"""
         api_url = current_app.config.get("CLOUD_VISION_API_URL")
         api_key = current_app.config.get("CLOUD_VISION_API_KEY")
-        file_url = ArtifactSchema.build_url(artifact.file_url)
+
+        upload_dir = current_app.config["UPLOAD_FOLDER"]
+        file_path = f"{upload_dir}/{artifact.file_url}"
+
+        with open(file_path, "rb") as file:
+            file_content = file.read()
+            image_content = base64.b64encode(file_content).decode('utf-8')
 
         querystring = {"key": api_key}
-        payload = (
-            '''{
-     "requests": [
-         {
-             "features": [
-                 {"type": "LABEL_DETECTION"},
-                 {"type": "TEXT_DETECTION"}
-             ],
-             "image": {
-                 "source": {"imageUri": "'''
-            + file_url
-            + """"}
-             }
-         }
-     ]
- }"""
-        )
+        payload = json.dumps({
+            "requests": [
+                {
+                    "features": [
+                        { "type": "LABEL_DETECTION" },
+                        { "type": "TEXT_DETECTION" },
+                    ],
+                    "image": {
+                        "content": image_content,
+                    },
+                },
+            ]
+        })
+
         headers = {"Content-Type": "application/json"}
         response = requests.request("POST", api_url, data=payload, headers=headers, params=querystring)
         return response.json()
