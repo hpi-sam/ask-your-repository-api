@@ -28,6 +28,7 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
         "application.models.Drive", "CONTAINS", cardinality=cardinality.ZeroOrOne, model=ContainsRel
     )
 
+    day = RelationshipTo("application.models.Day", "CREATED_ON", cardinality=cardinality.ZeroOrOne)
     faces = RelationshipTo("application.models.Face", "CONTAINS_FACE", cardinality=cardinality.ZeroOrMore)
     persons = RelationshipFrom("application.models.Person", "APPEARS_IN", cardinality=cardinality.ZeroOrMore)
     locations = RelationshipTo("application.models.Location", "LOCATED_AT", cardinality=cardinality.ZeroOrMore)
@@ -38,6 +39,15 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     def tags(self):
         """Returns union of all tag types as tags."""
         return list(self.user_tags) + list(self.label_tags) + list(self.text_tags)
+
+    @property
+    def original_date(self):
+        """Returns this artifacts original file date"""
+        return {
+            "day": self.day.single().value,
+            "month": self.day.single().month.single().value,
+            "year": self.day.single().month.single().year.single().value,
+        }
 
     @property
     def team_id(self):

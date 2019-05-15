@@ -10,6 +10,7 @@ from flask import current_app
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
 from application.artifacts.faces.face_extraction import FaceExtractor
+from application.date.date_extraction import DateExtractor
 from application.artifacts.locations.location_extraction import LocationExtractor
 
 
@@ -128,9 +129,11 @@ class ArtifactCreator:
         file_metadata = self._upload_file()
         artifact = self._save_to_db(file_metadata)
 
+        image = Image.open(self.file)
+        DateExtractor(artifact, image).run()
         ImageRecognizer.auto_add_tags(artifact)
         FaceExtractor(artifact).run()
-        LocationExtractor(artifact, Image.open(self.file)).run()
+        LocationExtractor(artifact, image).run()
 
         return artifact
 

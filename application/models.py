@@ -9,3 +9,7 @@ from .teams.drives.drive import Drive  # noqa
 from .artifacts.faces.face import Face  # noqa
 from .artifacts.faces.person import Person  # noqa
 from .artifacts.locations.location import Location  # noqa
+
+from .date.year import Year  # noqa
+from .date.month import Month  # noqa
+from .date.day import Day  # noqa
