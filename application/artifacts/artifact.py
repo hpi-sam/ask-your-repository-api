@@ -30,6 +30,7 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
 
     faces = RelationshipTo("application.models.Face", "CONTAINS_FACE", cardinality=cardinality.ZeroOrMore)
     persons = RelationshipFrom("application.models.Person", "APPEARS_IN", cardinality=cardinality.ZeroOrMore)
+    locations = RelationshipTo("application.models.Location", "LOCATED_AT", cardinality=cardinality.ZeroOrMore)
 
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema

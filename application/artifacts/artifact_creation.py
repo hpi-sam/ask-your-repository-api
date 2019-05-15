@@ -10,6 +10,7 @@ from flask import current_app
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
 from application.artifacts.faces.face_extraction import FaceExtractor
+from application.artifacts.locations.location_extraction import LocationExtractor
 
 
 class ImageResizer:
@@ -91,7 +92,7 @@ class FileSaver:
         img = self._fix_orientation(self.file)
         img.save(self.file_path)
         img.close()
-        self.file.close()
+        #self.file.close()
 
     def _fix_orientation(self, image):
         img = Image.open(image)
@@ -101,7 +102,7 @@ class FileSaver:
         else:
             orientation = 1
 
-        return self.ROTATION_FUNCTIONS[orientation](img)
+        return img #self.ROTATION_FUNCTIONS[orientation](img)
 
     def _file_path(self):
         return os.path.join(current_app.config["UPLOAD_FOLDER"], self.file_name)
@@ -128,6 +129,7 @@ class ArtifactCreator:
         artifact = self._save_to_db(file_metadata)
         ImageRecognizer.auto_add_tags(artifact)
         FaceExtractor(artifact).run()
+        LocationExtractor(artifact, self.file).run()
         return artifact
 
     def _save_to_db(self, file_metadata):

@@ -6,6 +6,7 @@ from application.artifacts.tags.tag_schema import TagSchema
 from application.artifacts.tags.label_tag_schema import LabelTagSchema
 from application.artifacts.faces.face_schema import FaceSchema
 from application.artifacts.faces.person_schema import PersonSchema
+from application.artifacts.locations.location_schema import LocationSchema
 from application.users.user_schema import UserSchema
 from application.base_schema import BaseSchema, output_decorator
 
@@ -26,6 +27,7 @@ class ArtifactSchema(BaseSchema):
     file_date = fields.DateTime(missing=None)
     faces = fields.Nested(FaceSchema, many=True)
     persons = fields.Nested(PersonSchema, many=True, only="name")
+    locations = fields.Nested(LocationSchema, many=True, only="name")
     score = fields.Number()
 
     @output_decorator
