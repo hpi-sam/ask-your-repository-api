@@ -6,3 +6,5 @@ from .users.user import User  # noqa
 from .users.oauth.google_oauth import GoogleOAuth  # noqa
 from .artifacts.tags.tag import Tag  # noqa
 from .teams.drives.drive import Drive  # noqa
+from .artifacts.faces.face import Face  # noqa
+from .artifacts.faces.person import Person  # noqa

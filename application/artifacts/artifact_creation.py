@@ -9,6 +9,7 @@ from flask import current_app
 
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
+from application.artifacts.faces.face_extraction import FaceExtractor
 
 
 class ImageResizer:
@@ -126,6 +127,7 @@ class ArtifactCreator:
         file_metadata = self._upload_file()
         artifact = self._save_to_db(file_metadata)
         ImageRecognizer.auto_add_tags(artifact)
+        FaceExtractor(artifact).run()
         return artifact
 
     def _save_to_db(self, file_metadata):

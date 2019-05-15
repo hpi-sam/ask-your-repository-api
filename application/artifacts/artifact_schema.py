@@ -4,6 +4,8 @@ from marshmallow import post_dump, fields
 
 from application.artifacts.tags.tag_schema import TagSchema
 from application.artifacts.tags.label_tag_schema import LabelTagSchema
+from application.artifacts.faces.face_schema import FaceSchema
+from application.artifacts.faces.person_schema import PersonSchema
 from application.users.user_schema import UserSchema
 from application.base_schema import BaseSchema, output_decorator
 
@@ -22,6 +24,8 @@ class ArtifactSchema(BaseSchema):
     user_tags = fields.Nested(TagSchema, many=True, only="name")
     text_tags = fields.Nested(TagSchema, many=True, only="name")
     file_date = fields.DateTime(missing=None)
+    faces = fields.Nested(FaceSchema, many=True)
+    persons = fields.Nested(PersonSchema, many=True, only="name")
     score = fields.Number()
 
     @output_decorator

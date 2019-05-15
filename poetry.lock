@@ -6,14 +6,6 @@ optional = false
 python-versions = "*"
 version = "1.2.0"
 
-[package.extras]
-dev = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.19.2)", "pytest", "mock", "flake8 (3.7.7)", "pre-commit (1.15.1)", "tox", "flake8-bugbear (19.3.0)"]
-lint = ["flake8 (3.7.7)", "pre-commit (1.15.1)", "flake8-bugbear (19.3.0)"]
-tests = ["PyYAML (>=3.10)", "prance (>=0.11)", "marshmallow (2.19.2)", "pytest", "mock"]
-validation = ["prance (>=0.11)"]
-webframeworks-tests = ["apispec-webframeworks (>=0.3.0)"]
-yaml = ["PyYAML (>=3.10)"]
-
 [[package]]
 category = "main"
 description = "A small Python module for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -35,19 +27,6 @@ pytz = "*"
 setuptools = ">=0.7"
 six = ">=1.4.0"
 tzlocal = ">=1.2"
-
-[package.extras]
-asyncio = ["trollius"]
-doc = ["sphinx", "sphinx-rtd-theme"]
-gevent = ["gevent"]
-mongodb = ["pymongo (>=2.8)"]
-redis = ["redis (>=3.0)"]
-rethinkdb = ["rethinkdb (>=2.4.0)"]
-sqlalchemy = ["sqlalchemy (>=0.8)"]
-testing = ["pytest (<3.7)", "pytest-cov", "pytest-tornado5", "mock", "pytest-asyncio (<0.6)", "pytest-asyncio"]
-tornado = ["tornado (>=4.3)"]
-twisted = ["twisted"]
-zookeeper = ["kazoo"]
 
 [[package]]
 category = "dev"
@@ -76,11 +55,6 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "19.1.0"
 
-[package.extras]
-dev = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface", "sphinx", "pre-commit"]
-docs = ["sphinx", "zope.interface"]
-tests = ["coverage", "hypothesis", "pympler", "pytest", "six", "zope.interface"]
-
 [[package]]
 category = "dev"
 description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
@@ -104,9 +78,6 @@ version = "3.1.6"
 cffi = ">=1.1"
 six = ">=1.4.1"
 
-[package.extras]
-tests = ["pytest (>=3.2.1,<3.3.0 || >3.3.0)"]
-
 [[package]]
 category = "main"
 description = "The uncompromising code formatter."
@@ -120,9 +91,6 @@ appdirs = "*"
 attrs = ">=17.4.0"
 click = ">=6.5"
 toml = ">=0.9.4"
-
-[package.extras]
-d = ["aiohttp (>=3.3.2)"]
 
 [[package]]
 category = "main"
@@ -207,15 +175,19 @@ version = "4.0.3"
 
 [[package]]
 category = "main"
+description = "A toolkit for making real world machine learning and data analysis applications"
+name = "dlib"
+optional = false
+python-versions = "*"
+version = "19.17.0"
+
+[[package]]
+category = "main"
 description = "DNS toolkit"
 name = "dnspython"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.16.0"
-
-[package.extras]
-DNSSEC = ["pycryptodome", "ecdsa (>=0.13)"]
-IDNA = ["idna (>=2.1)"]
 
 [[package]]
 category = "dev"
@@ -252,10 +224,6 @@ version = "6.3.1"
 [package.dependencies]
 urllib3 = ">=1.21.1"
 
-[package.extras]
-develop = ["requests (>=2.0.0,<3.0.0)", "nose", "coverage", "mock", "pyaml", "nosexcover", "sphinx", "sphinx-rtd-theme"]
-requests = ["requests (>=2.4.0,<3.0.0)"]
-
 [[package]]
 category = "main"
 description = "Discover and load entry points from installed packages."
@@ -285,6 +253,29 @@ name = "expects"
 optional = false
 python-versions = "*"
 version = "0.9.0"
+
+[[package]]
+category = "main"
+description = "Recognize faces from Python or from the command line"
+name = "face-recognition"
+optional = false
+python-versions = "*"
+version = "1.2.3"
+
+[package.dependencies]
+Click = ">=6.0"
+Pillow = "*"
+dlib = ">=19.7"
+face-recognition-models = ">=0.3.0"
+numpy = "*"
+
+[[package]]
+category = "main"
+description = "Models used by the face_recognition package."
+name = "face-recognition-models"
+optional = false
+python-versions = "*"
+version = "0.3.0"
 
 [[package]]
 category = "main"
@@ -326,11 +317,6 @@ Jinja2 = ">=2.10"
 Werkzeug = ">=0.14"
 click = ">=5.1"
 itsdangerous = ">=0.24"
-
-[package.extras]
-dev = ["pytest (>=3)", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
-docs = ["sphinx", "pallets-sphinx-themes", "sphinxcontrib-log-cabinet"]
-dotenv = ["python-dotenv"]
 
 [[package]]
 category = "main"
@@ -384,9 +370,6 @@ Flask = "*"
 PyJWT = ">=1.6.4"
 Werkzeug = ">=0.14"
 six = "*"
-
-[package.extras]
-asymmetric_crypto = ["cryptography (>=2.3)"]
 
 [[package]]
 category = "main"
@@ -465,9 +448,6 @@ version = "0.2.0"
 google-auth = "*"
 requests-oauthlib = ">=0.7.0"
 
-[package.extras]
-tool = ["click"]
-
 [[package]]
 category = "main"
 description = "Lightweight in-process concurrent programming"
@@ -484,11 +464,6 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "19.9.0"
 
-[package.extras]
-eventlet = ["eventlet (>=0.9.7)"]
-gevent = ["gevent (>=0.13)"]
-tornado = ["tornado (>=0.2)"]
-
 [[package]]
 category = "main"
 description = "A comprehensive HTTP client library."
@@ -504,9 +479,6 @@ name = "identify"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.4.1"
-
-[package.extras]
-license = ["editdistance"]
 
 [[package]]
 category = "main"
@@ -527,9 +499,6 @@ version = "0.9"
 [package.dependencies]
 zipp = ">=0.3.2"
 
-[package.extras]
-docs = ["sphinx", "docutils (0.12)", "rst.linker"]
-
 [[package]]
 category = "main"
 description = "Various helpers to pass data to untrusted environments and back."
@@ -548,9 +517,6 @@ version = "2.10.1"
 
 [package.dependencies]
 MarkupSafe = ">=0.23"
-
-[package.extras]
-i18n = ["Babel (>=0.8)"]
 
 [[package]]
 category = "dev"
@@ -579,12 +545,6 @@ name = "marshmallow"
 optional = false
 python-versions = "*"
 version = "2.19.2"
-
-[package.extras]
-dev = ["python-dateutil", "simplejson", "pytest", "pytz", "flake8 (3.7.4)", "tox"]
-lint = ["flake8 (3.7.4)"]
-reco = ["python-dateutil", "simplejson"]
-tests = ["pytest", "pytz"]
 
 [[package]]
 category = "main"
@@ -649,14 +609,6 @@ version = "3.4"
 singledispatch = "*"
 six = "*"
 
-[package.extras]
-all = ["numpy", "python-crfsuite", "matplotlib", "gensim", "pyparsing", "scipy", "requests", "scikit-learn", "twython"]
-corenlp = ["requests"]
-machine_learning = ["gensim", "numpy", "python-crfsuite", "scikit-learn", "scipy"]
-plot = ["matplotlib"]
-tgrep = ["pyparsing"]
-twitter = ["twython"]
-
 [[package]]
 category = "main"
 description = "Node.js virtual environment builder"
@@ -667,16 +619,19 @@ version = "1.3.3"
 
 [[package]]
 category = "main"
+description = "NumPy is the fundamental package for array computing with Python."
+name = "numpy"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.16.3"
+
+[[package]]
+category = "main"
 description = "A generic, spec-compliant, thorough implementation of the OAuth request-signing logic"
 name = "oauthlib"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.0.1"
-
-[package.extras]
-rsa = ["cryptography"]
-signals = ["blinker"]
-signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
 
 [[package]]
 category = "dev"
@@ -776,11 +731,6 @@ optional = false
 python-versions = "*"
 version = "1.7.1"
 
-[package.extras]
-crypto = ["cryptography (>=1.4)"]
-flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
-test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
-
 [[package]]
 category = "dev"
 description = "Python interface to coveralls.io API"
@@ -803,9 +753,6 @@ optional = false
 python-versions = "*"
 version = "0.10.1"
 
-[package.extras]
-cli = ["click (>=5.0)"]
-
 [[package]]
 category = "main"
 description = "Engine.IO server"
@@ -816,10 +763,6 @@ version = "3.5.1"
 
 [package.dependencies]
 six = ">=1.9.0"
-
-[package.extras]
-asyncio_client = ["aiohttp (>=3.4)", "websockets (>=7.0)"]
-client = ["requests (>=2.21.0)", "websocket-client (>=0.54.0)"]
 
 [[package]]
 category = "main"
@@ -840,10 +783,6 @@ version = "3.1.2"
 [package.dependencies]
 python-engineio = ">=3.2.0"
 six = ">=1.9.0"
-
-[package.extras]
-asyncio_client = ["python-engineio (>=3.2.0)"]
-client = ["python-engineio (>=3.2.0)"]
 
 [[package]]
 category = "main"
@@ -875,10 +814,6 @@ chardet = ">=3.0.2,<3.1.0"
 idna = ">=2.5,<2.9"
 urllib3 = ">=1.21.1,<1.25"
 
-[package.extras]
-security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
-
 [[package]]
 category = "main"
 description = "OAuthlib authentication support for Requests."
@@ -891,9 +826,6 @@ version = "1.2.0"
 oauthlib = ">=3.0.0"
 requests = ">=2.0.0"
 
-[package.extras]
-rsa = ["oauthlib (>=3.0.0)"]
-
 [[package]]
 category = "main"
 description = "A utility library for mocking out the `requests` Python library."
@@ -905,9 +837,6 @@ version = "0.10.6"
 [package.dependencies]
 requests = ">=2.0"
 six = "*"
-
-[package.extras]
-tests = ["pytest", "coverage (>=3.7.1,<5.0.0)", "pytest-cov", "pytest-localserver", "flake8"]
 
 [[package]]
 category = "dev"
@@ -1001,10 +930,6 @@ optional = false
 python-versions = "*"
 version = "1.22"
 
-[package.extras]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
-
 [[package]]
 category = "main"
 description = "Virtual Python Environment builder"
@@ -1012,10 +937,6 @@ name = "virtualenv"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "16.4.3"
-
-[package.extras]
-docs = ["sphinx (>=1.8.0,<2)", "towncrier (>=18.5.0)", "sphinx-rtd-theme (>=0.4.2,<1)"]
-testing = ["pytest (>=4.0.0,<5)", "coverage (>=4.5.0,<5)", "six (>=1.10.0,<2)", "pytest-localserver", "pypiserver", "pytest-timeout (>=1.3.0,<2)", "pytest-xdist", "mock", "xonsh"]
 
 [[package]]
 category = "main"
@@ -1028,12 +949,6 @@ version = "5.3.0"
 [package.dependencies]
 marshmallow = ">=2.15.2"
 
-[package.extras]
-dev = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "flake8 (3.6.0)", "pre-commit (1.13.0)", "tox", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
-frameworks = ["Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "aiohttp (>=3.0.0)"]
-lint = ["flake8 (3.6.0)", "pre-commit (1.13.0)", "mypy (0.650)", "flake8-bugbear (18.8.0)"]
-tests = ["pytest", "mock", "webtest (2.0.32)", "Flask (>=0.12.2)", "Django (>=1.11.16)", "bottle (>=0.12.13)", "tornado (>=4.5.2)", "pyramid (>=1.9.1)", "webapp2 (>=3.0.0b1)", "falcon (>=1.4.0)", "webtest-aiohttp (2.0.0)", "pytest-aiohttp (>=0.3.0)", "aiohttp (>=3.0.0)"]
-
 [[package]]
 category = "main"
 description = "The comprehensive WSGI web application library."
@@ -1041,11 +956,6 @@ name = "werkzeug"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.15.2"
-
-[package.extras]
-dev = ["pytest", "coverage", "tox", "sphinx", "pallets-sphinx-themes", "sphinx-issues"]
-termcolor = ["termcolor"]
-watchdog = ["watchdog"]
 
 [[package]]
 category = "main"
@@ -1055,12 +965,8 @@ optional = false
 python-versions = ">=2.7"
 version = "0.3.3"
 
-[package.extras]
-docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs", "pytest-flake8", "pathlib2"]
-
 [metadata]
-content-hash = "084736b6805e7a58e8d899a25997a9e990f53468c6b4c4c63febbba87a80c2c3"
+content-hash = "32ac9f4c33e738a0049c69b1e1f60bec118c7494bd5d115dd056413df0289da3"
 python-versions = ">=3.7"
 
 [metadata.hashes]
@@ -1082,6 +988,7 @@ chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "
 click = ["2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13", "5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"]
 clint = ["05224c32b1075563d0b16d0015faaf9da43aa214e4a2140e51f08789e7a4c5aa"]
 coverage = ["00d464797a236f654337181af72b4baea3d35d056ca480e45e9163bb5df496b8", "0a90afa6f5ea08889da9066dca3ce2ef85d47587e3f66ca06a4fa8d3a0053acc", "0ba6c4345e3c197f6a3ba924d155c402ad28c080ac0d79529493eb17582fbc41", "2be3748f45d2eb0259c3c93abccc15c10725ef715bf0817a4c0a1a1dad2abc6a", "50727512afe77e044c7d7f2fd4cd0fe62b06527f965b335a810d956748e0514d", "6c2fd127cd4e2decb0ab41fe3ac2948b87ad2ea0470e24b4be5f7e7fdfef8df3", "6ed521ed3800d8f8911642b9b3c3891780a929db5e572c88c4713c1032530f82", "76a73a48a308fb87a4417d630b0345d36166f489ef17ea5aa8e4596fb50a2296", "7eaa0a33423476ed63317ee0a53cc07c0e36b5a390e3e95b95152e7eb6b3a6f6", "845d0f8a1765074b3256f07ddbce2969e5a5316dfd0eb3289137010d7677326a", "85b1275b6d7a61ccc8024a4e9a4c9e896394776edce1a5d075ec116f91925462", "8e60e720cad3ee6b0a32f475ae4040552c5623870a9ca0d3d4263faa89a8d96b", "93c50475f189cd226e9688b9897a0cd3c4c5d9c90b1733fa8f6445cfc0182c51", "94c1e66610807a7917d967ed6415b9d5fde7487ab2a07bb5e054567865ef6ef0", "964f86394cb4d0fd2bb40ffcddca321acf4323b48d1aa5a93db8b743c8a00f79", "99043494b28d6460035dd9410269cdb437ee460edc7f96f07ab45c57ba95e651", "addf63b5e39d573c459c3930b25176146395c1dc1afce4710067bb5e6dc4ea58", "af2f59ce312523c384a7826821cae0b95f320fee1751387abba4f00eed737166", "af6ed80340e5e1b89fa794f730ce7597651fbda3312e500002688b679c184ef9", "beb96d32ce8cfa47ec6433d95a33e4afaa97c19ac1b4a47ea40a424fedfee7c2", "c00bac0f6b35b82ace069a6a0d88e8fd4cd18d964fc5e47329cd02b212397fbe", "d079e36baceea9707fd50b268305654151011274494a33c608c075808920eda8", "d3188345f1c7161d701fd2ea9150f9bb6e2df890f3ddd6c0aea1f525e21d1544", "e65c78bde155a734f0d624647c4d6e0f47fb4875355a0b95c37d537788737f4f", "e813cba9ff0e3d37ad31dc127fac85d23f9a26d0461ef8042ac4539b2045e781", "e96c13a40df389ce8cbb5ec108e5fb834989d1bedff5d8846e5aa3d270a5f3b6", "ee2338539157cfc35fb1d6757dd799126804df39393c4a6c5fe88b402c8c0ab4"]
+dlib = ["92587c81b0165e933593f505fdf099dface0d0f8ec874b1d8655fc774598911f"]
 dnspython = ["36c5e8e38d4369a08b6780b7f27d790a292b2b08eea01607865bf0936c558e01", "f69c21288a962f4da86e56c4905b49d11aba7938d3d740e80d9e366ee4f1632d"]
 doublex = ["4e9f17f346276db7faa461dfa105f17de7f837e5ceccca34f4c70d4ff9d2f20c"]
 doublex-expects = ["69bafcac049dc4f0a4d91b97e58344613f2671ea574494dbf75623fc73bdd7cd"]
@@ -1089,6 +996,8 @@ elasticsearch = ["7546cc08e3899716e12fe67d12d7cfe9a64647014d1134b014c3c392b63cad
 entrypoints = ["589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19", "c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"]
 eventlet = ["c584163e006e613707e224552fafc63e4e0aa31d7de0ab18b481ac0b385254c8", "d9d31a3c8dbcedbcce5859a919956d934685b17323fc80e1077cb344a2ffa68d"]
 expects = ["419902ccafe81b7e9559eeb6b7a07ef9d5c5604eddb93000f0642b3b2d594f4c"]
+face-recognition = ["08c41397d3b899ed5b4a801646abd20935a2610ac4ba8643173db0aef6372f21", "a03eb709d1280bc3ca648add274ff741761b4c56f5317167252fc90cb519eda1"]
+face-recognition-models = ["b79bd200a88c87c9a9d446c990ae71c5a626d1f3730174e6d570157ff1d896cf"]
 flake8 = ["859996073f341f2670741b51ec1e67a01da142831aa1fdc6242dbf88dffbe661", "a796a115208f5c03b18f332f7c11729812c8c3ded6c46319c59b53efd3819da8"]
 flake8-print = ["5010e6c138b63b62400da4b06afa33becc5e08bd1fcce9af3752445cf3342f54"]
 flask = ["2271c0070dbcb5275fad4a82e29f23ab92682dc45f9dfbc22c02ba9b9322ce48", "a080b744b7e345ccfcbc77954861cb05b3c63786e93f2b3875e0913d44b43f05"]
@@ -1120,6 +1029,7 @@ neomodel = ["2f7cd8aa60a0069d3cde4938581bfafc690d03820b48cf93aa727b6ec4bd923b"]
 neotime = ["4e0477ba0f24e004de2fa79a3236de2bd941f20de0b5db8d976c52a86d7363eb"]
 nltk = ["286f6797204ffdb52525a1d21ec0a221ec68b8e3fa4f2d25f412ac8e63c70e8d", "e51590c0bf2d9dcb7ce088b03e4f42c94e7cdd2a372c724320dfa8b19de77609"]
 nodeenv = ["ad8259494cf1c9034539f6cced78a1da4840a4b157e23640bc4a0c0546b0cb7a"]
+numpy = ["0e2eed77804b2a6a88741f8fcac02c5499bba3953ec9c71e8b217fad4912c56c", "1c666f04553ef70fda54adf097dbae7080645435fc273e2397f26bbf1d127bbb", "1f46532afa7b2903bfb1b79becca2954c0a04389d19e03dc73f06b039048ac40", "315fa1b1dfc16ae0f03f8fd1c55f23fd15368710f641d570236f3d78af55e340", "3d5fcea4f5ed40c3280791d54da3ad2ecf896f4c87c877b113576b8280c59441", "48241759b99d60aba63b0e590332c600fc4b46ad597c9b0a53f350b871ef0634", "4b4f2924b36d857cf302aec369caac61e43500c17eeef0d7baacad1084c0ee84", "54fe3b7ed9e7eb928bbc4318f954d133851865f062fa4bbb02ef8940bc67b5d2", "5a8f021c70e6206c317974c93eaaf9bc2b56295b6b1cacccf88846e44a1f33fc", "754a6be26d938e6ca91942804eb209307b73f806a1721176278a6038869a1686", "771147e654e8b95eea1293174a94f34e2e77d5729ad44aefb62fbf8a79747a15", "78a6f89da87eeb48014ec652a65c4ffde370c036d780a995edaeb121d3625621", "7fde5c2a3a682a9e101e61d97696687ebdba47637611378b4127fe7e47fdf2bf", "80d99399c97f646e873dd8ce87c38cfdbb668956bbc39bc1e6cac4b515bba2a0", "88a72c1e45a0ae24d1f249a529d9f71fe82e6fa6a3fd61414b829396ec585900", "a4f4460877a16ac73302a9c077ca545498d9fe64e6a81398d8e1a67e4695e3df", "a61255a765b3ac73ee4b110b28fccfbf758c985677f526c2b4b39c48cc4b509d", "ab4896a8c910b9a04c0142871d8800c76c8a2e5ff44763513e1dd9d9631ce897", "abbd6b1c2ef6199f4b7ca9f818eb6b31f17b73a6110aadc4e4298c3f00fab24e", "b16d88da290334e33ea992c56492326ea3b06233a00a1855414360b77ca72f26", "b78a1defedb0e8f6ae1eb55fa6ac74ab42acc4569c3a2eacc2a407ee5d42ebcb", "cfef82c43b8b29ca436560d51b2251d5117818a8d1fb74a8384a83c096745dad", "d160e57731fcdec2beda807ebcabf39823c47e9409485b5a3a1db3a8c6ce763e"]
 oauthlib = ["0ce32c5d989a1827e3f1148f98b9085ed2370fc939bf524c9c851d8714797298", "3e1e14f6cde7e5475128d30e97edc3bfb4dc857cb884d8714ec161fdbb3b358e"]
 pep8 = ["b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee", "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"]
 pillow = ["0683e80d81e840d401b687ebc00a02bbb23d0793c34d0852a5af64cfa1589540", "09c4e81c3277199898e8dc2d85d94febad87c41251ecbd447ba7d64d94765bd8", "0ee74a23022af9baf997e3016b4e090e4ff08688d37a6f49010338ab46cfe101", "10860baedfe5da7c43cd17835b091494dcc59dda5ad176a011713fe398ea6ac2", "15c056bfa284c30a7f265a41ac4cbbc93bdbfc0dfe0613b9cb8a8581b51a9e55", "1a4e06ba4f74494ea0c58c24de2bb752818e9d504474ec95b0aa94f6b0a7e479", "1c3c707c76be43c9e99cb7e3d5f1bee1c8e5be8b8a2a5eeee665efbf8ddde91a", "1fd0b290203e3b0882d9605d807b03c0f47e3440f97824586c173eca0aadd99d", "24114e4a6e1870c5a24b1da8f60d0ba77a0b4027907860188ea82bd3508c80eb", "258d886a49b6b058cd7abb0ab4b2b85ce78669a857398e83e8b8e28b317b5abb", "2734c55f7d054b0ad889c971136cbb0a5b35a921e27beaa44fdc2436af529c6e", "2ac36ec56727a95bd5a04dfca6abce1db8042c31ee73b65796a42f31fd52d009", "2bc1002b573d107c0b172a5da0f34b4900b2ddc6c3296b82d601e966d5ac1959", "33c79b6dd6bc7f65079ab9ca5bebffb5f5d1141c689c9c6a7855776d1b09b7e8", "367385fc797b2c31564c427430c7a8630db1a00bd040555dfc1d5c52e39fcd72", "3c1884ff078fb8bf5f63d7d86921838b82ed4a7d0c027add773c2f38b3168754", "44e5240e8f4f8861d748f2a58b3f04daadab5e22bfec896bf5434745f788f33f", "46aa988e15f3ea72dddd81afe3839437b755fffddb5e173886f11460be909dce", "492e1e4df823b57f9334f591c78a1e0e65a361e92594534e0568eeeeea56bbba", "50fb9e25d25cfcb50b2e6842c4e104e4f0b424be4624e1724532bf005c67589a", "5ceadd60dbd1e56ab7faffbfee1df5ecb83c3f0420e47f652cd5306d70eb0296", "74d90d499c9c736d52dd6d9b7221af5665b9c04f1767e35f5dd8694324bd4601", "7eeac51fc37e6b19631a4b8e38b8261a074efcf7cc27fc16a6bee4697af7aaa5", "809c0a2ce9032cbcd7b5313f71af4bdc5c8c771cb86eb7559afd954cab82ebb5", "85d1ef2cdafd5507c4221d201aaf62fc9276f8b0f71bd3933363e62a33abc734", "8c3889c7681af77ecfa4431cd42a2885d093ecb811e81fbe5e203abc07e0995b", "9218d81b9fca98d2c47d35d688a0cea0c42fd473159dfd5612dcb0483c63e40b", "9319215530e236822169cbe92426cdc18d16b88c943fdf365a6309a89876e335", "96ec275c83bf839972d6a7dd7d685fdfb6a3233c3c382ecff839d04e7d53955d", "9aa4f3827992288edd37c9df345783a69ef58bd20cc02e64b36e44bcd157bbf1", "9d80f44137a70b6f84c750d11019a3419f409c944526a95219bea0ac31f4dd91", "b7ebd36128a2fe93991293f997e44be9286503c7530ace6a55b938b20be288d8", "c30857e1fbf7d4a4b79d7d376eefaf293ea4307b8293d00a62e6f517f51bfe9b", "c4c78e2c71c257c136cdd43869fd3d5e34fc2162dc22e4a5406b0ebe86958239", "c5472ea3945e8f9eb0659f37fc1f592fd06f4f725f0f03774a8999ad8c130334", "c6a842537f887be1fe115d8abb5daa9bc8cc124e455ff995830cc785624a97af", "cf0a2e040fdf5a6d95f4c286c6ef1df6b36c218b528c8a9158ec2452a804b9b8", "cfd28aad6fc61f7a5d4ee556a997dc6e5555d9381d1390c00ecaf984d57e4232", "d0fd1ec2e7c3e0aeaae999efe83f5d0f42c1160a1f8be5120d40857d20baa452", "dca5660e25932771460d4688ccbb515677caaf8595f3f3240ec16c117deff89a", "de7aedc85918c2f887886442e50f52c1b93545606317956d65f342bd81cb4fc3", "e6c0bbf8e277b74196e3140c35f9a1ae3eafd818f7f2d3a15819c49135d6c062"]

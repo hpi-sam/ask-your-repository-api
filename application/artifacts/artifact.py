@@ -27,6 +27,10 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     drive_folder = RelationshipFrom(
         "application.models.Drive", "CONTAINS", cardinality=cardinality.ZeroOrOne, model=ContainsRel
     )
+
+    faces = RelationshipTo("application.models.Face", "CONTAINS_FACE", cardinality=cardinality.ZeroOrMore)
+    persons = RelationshipFrom("application.models.Person", "APPEARS_IN", cardinality=cardinality.ZeroOrMore)
+
     # <--Serialization methods-->
     # These methods should eventually be moved to the corresponding schema
     @property
