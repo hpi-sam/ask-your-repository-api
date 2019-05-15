@@ -15,7 +15,7 @@ def add_drive_sync_job(app):
             Drive.sync_all()
             print("done")  # noqa
 
-    sync_scheduler.add_job(sync_with_context, "interval", seconds=30)
+    sync_scheduler.add_job(sync_with_context, "interval", seconds=600)
     if app.config["START_DRIVE_SYNC_WORKER"]:
         sync_scheduler.start()
     app.sync_scheduler = sync_scheduler

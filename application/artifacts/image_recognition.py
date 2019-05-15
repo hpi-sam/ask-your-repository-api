@@ -4,8 +4,7 @@ import base64
 import os
 import json
 from eventlet import spawn_n
-from flask import copy_current_request_context, has_request_context
-from flask import current_app
+from flask import current_app, copy_current_request_context, has_request_context
 
 from application.artifacts.tags.tag import Tag
 from application.artifacts.artifact_connector import ArtifactConnector
@@ -19,22 +18,17 @@ class ImageRecognizer:
     def auto_add_tags(cls, artifact):
         """Adds automatically generated tags to the artifact.
         Returns nothing and will not raise exceptions or errors encountered during the process"""
-        if has_request_context():
-            temp = copy_current_request_context(cls._work_for_artifact)
-            spawn_n(temp, artifact)
-        else:
-            cls._work_for_artifact(artifact)
+        if not has_request_context(): return
+
+        temp = copy_current_request_context(cls._work_for_artifact)
+        spawn_n(temp, artifact)
 
     @classmethod
     def _work_for_artifact(cls, artifact):
         """Private method called asynchronously for image recognition."""
         res = cls._call_google_api(artifact)
-        current_app.logger.info("Google Response: " + str(res))
         label_annotations, text_annotations = cls._extract_tags(res)
         cls.add_tags_artifact(artifact, label_annotations, text_annotations)
-        current_app.logger.info(
-            "ML added the labels: " + str(label_annotations) + " Extracted text was: " + str(text_annotations)
-        )
 
     @classmethod
     def _call_google_api(cls, artifact):

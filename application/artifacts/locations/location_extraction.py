@@ -1,22 +1,19 @@
 import os
 import requests
-from pprint import pprint
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
-from flask import current_app
+from eventlet import spawn_n
+from flask import current_app, copy_current_request_context, has_request_context
 
 from application.artifacts.locations.location import Location
 
 class LocationExtractor:
-    def __init__(self, artifact, file):
+    def __init__(self, artifact, image):
         self.artifact = artifact
-        self.file = file
-
-    def _load_image(self):
-        self.image = Image.open(self.file)
+        self.image = image
 
     def _dms2dd(self, degrees, minutes, seconds, direction):
-        dd = float(degrees) + float(minutes)/60 + float(seconds)/(60*60);
+        dd = float(degrees) + float(minutes) / 60 + float(seconds) / (60 * 60)
         if direction == 'S' or direction == 'W': dd *= -1
         return dd
 
@@ -40,15 +37,28 @@ class LocationExtractor:
 
       return (latitude_dd, longitude_dd)
 
-    def _extract_gps_coordinates(self):
+    def _check_for_gps_data(self):
+        if not hasattr(self.image, "_getexif"): return False
+
         exif = self.image._getexif()
+        if not exif: return False
+
         gps_tag = 34853
+        if not gps_tag in exif: return False
+
         gps_info = {}
 
         for key in exif[gps_tag].keys():
             gps_info[GPSTAGS[key]] = exif[gps_tag][key]
 
-        self.coordinates = self._get_dd_coordinates(gps_info)
+        for prop in ["GPSLatitude", "GPSLongitude", "GPSLatitudeRef", "GPSLongitudeRef"]:
+            if not prop in gps_info: return False
+
+        self.gps_info = gps_info
+        return True
+
+    def _extract_gps_coordinates(self):
+        self.coordinates = self._get_dd_coordinates(self.gps_info)
 
     def _call_google_places_api(self):
         api_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
@@ -74,8 +84,12 @@ class LocationExtractor:
             db_location.save()
             db_location.artifact.connect(self.artifact)
 
-    def run(self):
-        self._load_image()
+    def run_in_thread(self):
+        if not self._check_for_gps_data(): return
         self._extract_gps_coordinates()
         self._find_locations()
         self._save_locations_to_db()
+
+    def run(self):
+        if not has_request_context(): return
+        spawn_n(copy_current_request_context(self.run_in_thread))

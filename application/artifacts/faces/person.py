@@ -11,4 +11,4 @@ class Person(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     name = StringProperty(required=True)
 
     faces = RelationshipFrom("application.models.Face", "BELONGS_TO", cardinality=cardinality.OneOrMore)
-    artifacts = RelationshipFrom("application.models.Artifact", "CONTAINS_FACE", cardinality=cardinality.ZeroOrMore)
+    artifacts = RelationshipTo("application.models.Artifact", "APPEARS_IN", cardinality=cardinality.OneOrMore)

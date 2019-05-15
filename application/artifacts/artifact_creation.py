@@ -98,11 +98,11 @@ class FileSaver:
         img = Image.open(image)
         if hasattr(img, "_getexif"):
             exif_data = img._getexif()
-            orientation = exif_data.get(274, 1) if exif_data else 1
+            orientation = max(1, exif_data[274]) if exif_data else 1
         else:
             orientation = 1
 
-        return img #self.ROTATION_FUNCTIONS[orientation](img)
+        return self.ROTATION_FUNCTIONS[orientation](img)
 
     def _file_path(self):
         return os.path.join(current_app.config["UPLOAD_FOLDER"], self.file_name)
@@ -127,9 +127,11 @@ class ArtifactCreator:
         """ Starts the creation process. """
         file_metadata = self._upload_file()
         artifact = self._save_to_db(file_metadata)
+
         ImageRecognizer.auto_add_tags(artifact)
         FaceExtractor(artifact).run()
-        LocationExtractor(artifact, self.file).run()
+        LocationExtractor(artifact, Image.open(self.file)).run()
+
         return artifact
 
     def _save_to_db(self, file_metadata):
@@ -143,7 +145,7 @@ class ArtifactCreator:
         file_saver = FileSaver(self.file)
         file_saver.save()
 
-        image_resizer = ImageResizer(file_saver.file_path)
-        image_resizer.save_sizes()
+        #image_resizer = ImageResizer(file_saver.file_path)
+        #image_resizer.save_sizes()
 
         return file_saver.get_metadata()
