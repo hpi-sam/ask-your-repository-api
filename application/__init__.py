@@ -8,6 +8,7 @@ All logic and features should go in this module
 
 import os
 
+import redis
 from elasticsearch import Elasticsearch
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -30,6 +31,7 @@ def create_app(config_filename=None):
     create_routes(app)
     app.config.from_pyfile(config_filename)
     app.es = Elasticsearch(app.config["ELASTICSEARCH_URL"]) if app.config["ELASTICSEARCH_URL"] else None
+    app.redis = redis.Redis(host=app.config["REDIS_HOST"], port=app.config["REDIS_PORT"])
     config.DATABASE_URL = app.config["NEO4J_URL"]
     install_all_labels()
     JWTManager(app)
