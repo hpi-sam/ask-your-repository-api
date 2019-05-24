@@ -11,7 +11,7 @@ from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.image_recognition import ImageRecognizer
 from application.artifacts.faces.face_extraction import FaceExtractor
 from application.date.date_extraction import DateExtractor
-from application.artifacts.locations.location_extraction import LocationExtractor
+from application.artifacts.locations.coordinates_extraction import CoordinatesExtractor
 
 
 class ImageResizer:
@@ -131,9 +131,8 @@ class ArtifactCreator:
 
         image = Image.open(self.file)
         DateExtractor(artifact, image).run()
-        ImageRecognizer.auto_add_tags(artifact)
+        CoordinatesExtractor(artifact, image).run()
         FaceExtractor(artifact).run()
-        LocationExtractor(artifact, image).run()
 
         return artifact
 

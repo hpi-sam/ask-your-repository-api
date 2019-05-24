@@ -1,13 +1,8 @@
-import os
-import requests
-from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
-from eventlet import spawn_n
-from flask import current_app, copy_current_request_context, has_request_context
 
 from application.artifacts.locations.location import Location
 
-class LocationExtractor:
+class CoordinatesExtractor:
     def __init__(self, artifact, image):
         self.artifact = artifact
         self.image = image
@@ -60,36 +55,10 @@ class LocationExtractor:
     def _extract_gps_coordinates(self):
         self.coordinates = self._get_dd_coordinates(self.gps_info)
 
-    def _call_google_places_api(self):
-        api_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-        api_key = current_app.config["GOOGLE_MAPS_API_KEY"]
-
-        params = {
-          "key": api_key,
-          "location": ','.join(map(str, self.coordinates)),
-          "radius": 50,
-        }
-
-        headers = {"Content-Type": "application/json"}
-        response = requests.request("GET", api_url, headers=headers, params=params)
-        return response.json()
-
-    def _find_locations(self):
-        response = self._call_google_places_api()
-        self.locations = response["results"]
-
-    def _save_locations_to_db(self):
-        for location in self.locations:
-            db_location = Location(name=location["name"])
-            db_location.save()
-            db_location.artifact.connect(self.artifact)
-
-    def run_in_thread(self):
-        if not self._check_for_gps_data(): return
-        self._extract_gps_coordinates()
-        self._find_locations()
-        self._save_locations_to_db()
+    def _save_coordinates_to_db(self):
+        self.artifact.update(coordinates=self.coordinates)
 
     def run(self):
-        if not has_request_context(): return
-        spawn_n(copy_current_request_context(self.run_in_thread))
+        if not self._check_for_gps_data(): return
+        self._extract_gps_coordinates()
+        self._save_coordinates_to_db()

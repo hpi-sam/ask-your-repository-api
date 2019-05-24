@@ -3,13 +3,14 @@ Handles all logic of the artifacts api
 """
 import logging
 
-from flask import abort
+from flask import abort, current_app
 from flask_apispec import MethodResource, use_kwargs, marshal_with
 from flask_jwt_extended import jwt_optional, get_jwt_identity, jwt_required
 from flask_socketio import emit
 
 from application.artifacts import artifacts_validator
 from application.artifacts.artifact_connector import ArtifactConnector
+from application.artifacts.artifact_recommendation import ArtifactRecommendator
 from application.artifacts.artifact_creation import ArtifactCreator
 from application.artifacts.artifact_schema import ARTIFACT_SCHEMA, ARTIFACTS_SCHEMA
 from application.artifacts.elastic import ElasticSearcher
@@ -82,6 +83,7 @@ class ArtifactView(MethodResource):
         """Logic for getting a single artifact"""
         try:
             artifact = Artifact.find_by(id_=params["id"])
+            current_app.redis.lpush('last_visited', artifact.id_)
             return artifact
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")
@@ -120,26 +122,14 @@ class ArtifactView(MethodResource):
     def related(self, **params):
         """Logic for getting the related artifacts of an artifact"""
         try:
-            target_artifact = Artifact.find_by(id_=params["id"])
+            artifact = Artifact.find_by(id_=params["id"])
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")
 
-        artifacts = {}
+        recommendator = ArtifactRecommendator(artifact)
+        artifacts = recommendator.run(params["limit"])
 
-        for tag in target_artifact.tags:
-            for artifact in tag.artifacts:
-                if artifact.id_ == target_artifact.id_:
-                    continue
-                if artifact.id_ in artifacts:
-                    artifacts[artifact.id_].score += 1
-                else:
-                    artifacts[artifact.id_] = artifact
-                    artifacts[artifact.id_].score = 1
-
-        sorted_artifacts = sorted(artifacts.items(), key=lambda kv: kv[1].score, reverse=True)
-        result_artifacts = map(lambda x: artifacts[x[0]], sorted_artifacts[0:params["limit"]])
-
-        return result_artifacts
+        return artifacts
 
 class ArtifactsView(MethodResource):
     """Controller for Artifacts"""

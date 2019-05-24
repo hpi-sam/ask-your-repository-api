@@ -2,7 +2,7 @@ FROM python:3.7-alpine
 
 WORKDIR /src
 
-RUN apk add libffi-dev build-base tzdata
+RUN apk add libffi-dev build-base tzdata cmake
 
 # pillow dependencies
 RUN apk add jpeg-dev zlib-dev

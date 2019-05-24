@@ -31,6 +31,7 @@ class ArtifactSchema(BaseSchema):
     locations = fields.Nested(LocationSchema, many=True, only="name")
     original_date = fields.Nested(DateSchema, only=["day", "month", "year"])
     score = fields.Number()
+    recommendation_scores = fields.Dict()
 
     @output_decorator
     def transform_fields(self, data):

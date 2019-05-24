@@ -28,6 +28,12 @@ class FaceView(MethodResource):
                 person = Person(name=params["name"])
                 person.save()
 
+            current_person = face.person.get_or_none()
+
+            if current_person:
+                current_person.faces.disconnect(face)
+                current_person.artifacts.disconnect(face.artifact.single())
+
             person.faces.connect(face)
             person.artifacts.connect(face.artifact.single())
 

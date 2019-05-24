@@ -9,26 +9,25 @@ from flask import current_app, copy_current_request_context, has_request_context
 from application.artifacts.tags.tag import Tag
 from application.artifacts.artifact_connector import ArtifactConnector
 from application.artifacts.artifact_schema import ArtifactSchema
+from application.artifacts.artifact import Artifact
 
 
 class ImageRecognizer:
     """Send images to google to gather additional tags"""
 
     @classmethod
-    def auto_add_tags(cls, artifact):
-        """Adds automatically generated tags to the artifact.
-        Returns nothing and will not raise exceptions or errors encountered during the process"""
-        if not has_request_context(): return
+    def run(cls):
+        unrecognized_artifacts = Artifact.nodes.has(label_tags=False)
 
-        temp = copy_current_request_context(cls._work_for_artifact)
-        spawn_n(temp, artifact)
+        for artifact in unrecognized_artifacts:
+            cls._work_for_artifact(artifact)
 
     @classmethod
     def _work_for_artifact(cls, artifact):
         """Private method called asynchronously for image recognition."""
         res = cls._call_google_api(artifact)
         label_annotations, text_annotations = cls._extract_tags(res)
-        cls.add_tags_artifact(artifact, label_annotations, text_annotations)
+        cls._add_tags_to_artifact(artifact, label_annotations, text_annotations)
 
     @classmethod
     def _call_google_api(cls, artifact):
@@ -84,7 +83,7 @@ class ImageRecognizer:
         return label_annotations, text_annotations
 
     @classmethod
-    def add_tags_artifact(cls, artifact, label_annotations, text_annotations):
+    def _add_tags_to_artifact(cls, artifact, label_annotations, text_annotations):
         """Adds annotations to an artifact"""
         builder = ArtifactConnector.for_artifact(artifact)
         builder.update_with(override_tags=False, text_tags=text_annotations)

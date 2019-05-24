@@ -1,6 +1,6 @@
 """Access to Artifacts via Neo4J"""
 
-from neomodel import StructuredNode, StringProperty, DateTimeProperty, RelationshipTo, RelationshipFrom, cardinality
+from neomodel import StructuredNode, ArrayProperty, FloatProperty, StringProperty, DateTimeProperty, RelationshipTo, RelationshipFrom, cardinality
 
 from application.model_mixins import DefaultPropertyMixin, DefaultHelperMixin
 from application.artifacts.artifact_schema import ArtifactSchema
@@ -16,6 +16,7 @@ class Artifact(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
     schema = ArtifactSchema
     file_url = StringProperty(required=True)
     file_date = DateTimeProperty()
+    coordinates = ArrayProperty(base_property=FloatProperty())
 
     user_tags = RelationshipTo("application.models.Tag", "TAGGED_WITH", cardinality=cardinality.ZeroOrMore)
     label_tags = RelationshipTo(

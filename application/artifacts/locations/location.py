@@ -10,4 +10,4 @@ class Location(StructuredNode, DefaultPropertyMixin, DefaultHelperMixin):
 
     name = StringProperty(required=True)
 
-    artifact = RelationshipFrom("application.models.Artifact", "LOCATED_AT", cardinality=cardinality.OneOrMore)
+    artifacts = RelationshipFrom("application.models.Artifact", "LOCATED_AT", cardinality=cardinality.OneOrMore)
