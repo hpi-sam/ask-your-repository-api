@@ -82,8 +82,6 @@ class ArtifactView(MethodResource):
         """Logic for getting a single artifact"""
         try:
             artifact = Artifact.find_by(id_=params["id"])
-            for tag in artifact.label_tags:
-                print(tag)
             return artifact
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")

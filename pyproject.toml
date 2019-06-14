@@ -34,6 +34,7 @@ black = {version = "^18.3-alpha.0",allows-prereleases = true}
 pre-commit = "^1.15"
 python-magic = "^0.4.15"
 apscheduler = "^3.6"
+face_recognition = "^1.2"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
