@@ -1,4 +1,4 @@
-# Elija - Ask your Repository Backend API  
+# Elija &middot; Ask your Repository Backend API  
 [![Coverage Status](https://coveralls.io/repos/github/hpi-sam/ask-your-repository-api/badge.svg)](https://coveralls.io/github/hpi-sam/ask-your-repository-api)[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 This repo is part of the "Ask your Repository" Bachelor project containing the following repos:  
