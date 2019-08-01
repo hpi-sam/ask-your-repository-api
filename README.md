@@ -84,9 +84,9 @@ Autoformating and linting can be automized if you have [Pre-Commit](https://pre-
 # Start service
 - Run: `poetry run flask run`
 
-## Docu
+## Documentation
 
-You can find further documentation in the [wiki](https://github.com/hpi-sam/ask-your-repository-api/wiki).
+Further documentation can be found in the [wiki](https://github.com/hpi-sam/ask-your-repository-api/wiki).
 
 ## License
 This project is licensed under the terms of the MIT license.
