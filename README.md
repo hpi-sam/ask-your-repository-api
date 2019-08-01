@@ -6,7 +6,7 @@ This repo is part of the "Ask your Repository" Bachelor project containing the f
 - [Jona - Ask your Repository Web Frontend](https://github.com/hpi-sam/ask-your-repository-web)  
 - [Tobito - Ask your Repository Dialogflow Adapter](https://github.com/hpi-sam/ask-your-repository-dialogflow-adapter)  
 - [Ask your Repository Docker Deployment](https://github.com/hpi-sam/ask-your-repository-docker)  
-- [Wiki](https://github.com/hpi-sam/BP2018HG1)  
+- [Ask your Repository Wiki](https://github.com/hpi-sam/BP2018HG1)  
 
 
 # Setup service
