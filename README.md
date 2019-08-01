@@ -87,3 +87,6 @@ Autoformating and linting can be automized if you have [Pre-Commit](https://pre-
 ## Docu
 
 You can find further documentation in the [wiki](https://github.com/hpi-sam/ask-your-repository-api/wiki).
+
+## License
+This project is licensed under the terms of the MIT license.
