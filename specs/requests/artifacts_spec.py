@@ -122,7 +122,7 @@ with description("/images") as self:
 
                 with description("resized image versions"):
                     with before.each:
-                        self.widths = [320, 480, 640, 750, 1080]
+                        self.widths = [320, 640, 1080]
 
                         original_file_name = self.response.json.get("url").split("/")[-1]
                         [self.prefix, self.suffix] = original_file_name.rsplit(".", 1)
