@@ -82,6 +82,8 @@ class ArtifactView(MethodResource):
         """Logic for getting a single artifact"""
         try:
             artifact = Artifact.find_by(id_=params["id"])
+            for tag in artifact.label_tags:
+                print(tag)
             return artifact
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")
@@ -115,6 +117,31 @@ class ArtifactView(MethodResource):
         except Artifact.DoesNotExist:
             return abort(404, "artifact not found")
 
+    @use_kwargs(artifacts_validator.related_args())
+    @marshal_with(ARTIFACTS_SCHEMA)
+    def related(self, **params):
+        """Logic for getting the related artifacts of an artifact"""
+        try:
+            target_artifact = Artifact.find_by(id_=params["id"])
+        except Artifact.DoesNotExist:
+            return abort(404, "artifact not found")
+
+        artifacts = {}
+
+        for tag in target_artifact.tags:
+            for artifact in tag.artifacts:
+                if artifact.id_ == target_artifact.id_:
+                    continue
+                if artifact.id_ in artifacts:
+                    artifacts[artifact.id_].score += 1
+                else:
+                    artifacts[artifact.id_] = artifact
+                    artifacts[artifact.id_].score = 1
+
+        sorted_artifacts = sorted(artifacts.items(), key=lambda kv: kv[1].score, reverse=True)
+        result_artifacts = map(lambda x: artifacts[x[0]], sorted_artifacts[0:params["limit"]])
+
+        return result_artifacts
 
 class ArtifactsView(MethodResource):
     """Controller for Artifacts"""

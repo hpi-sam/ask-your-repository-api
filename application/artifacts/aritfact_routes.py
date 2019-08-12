@@ -8,5 +8,6 @@ ARTIFACTS = Blueprint("artifacts", __name__)
 
 ARTIFACTS.add_url_rule("", view_func=ArtifactsView.as_view("artifactsview"))
 ARTIFACTS.add_url_rule("/<id>", view_func=ArtifactView.as_view("artifactview"))
+ARTIFACTS.add_url_rule("/<id>/related", "related_artifacts", ArtifactView().related, methods=["GET"])
 
 ARTIFACTS.add_url_rule("/<id>/tags", "add_tags", TagsView().add_tags, methods=["POST"])
