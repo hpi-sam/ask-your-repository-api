@@ -14,7 +14,7 @@ from application.artifacts.image_recognition import ImageRecognizer
 class ImageResizer:
     """Saves resized versions of an image to disk"""
 
-    widths = [320, 480, 640, 750, 1080]
+    widths = [320, 640, 1080]
 
     def __init__(self, file_path):
         self.image = Image.open(file_path)
